@@ -1372,44 +1372,44 @@
         document.getElementById('nav-admin').classList.add('hidden-page');
         document.getElementById('nav-customer').classList.remove('hidden-page');
         navigateTo('page-customer');
-        calculateCost();
-    }
-    
-    // --- TAMBAHKAN KODE INI AGAR TERSIMPAN DI BROWSER ---
-   function startSession(role, userName) {
-    currentRole = role;
-    currentUser = userName;
-    
-    localStorage.setItem('water_role', role);
-    localStorage.setItem('water_user', userName);
+                calculateCost();
+            }
+        }
 
-    document.getElementById('page-login').classList.add('hidden-page');
-    document.getElementById('app-layout').classList.remove('hidden-page');
-    document.getElementById('user-role-badge').innerText = 'Role: ' + role;
+        function startSession(role, userName) {
+            currentRole = role;
+            currentUser = userName;
+            
+            localStorage.setItem('water_role', role);
+            localStorage.setItem('water_user', userName);
 
-    renderAllTables();
-    renderUserApprovalTable();
-    renderAuditTrailTable();
+            document.getElementById('page-login').classList.add('hidden-page');
+            document.getElementById('app-layout').classList.remove('hidden-page');
+            document.getElementById('user-role-badge').innerText = 'Role: ' + role;
 
-    if (role === 'Admin') {
-        document.getElementById('nav-admin').classList.remove('hidden-page');
-        navigateTo('page-dashboard');
-    } else {
-        document.getElementById('nav-admin').classList.add('hidden-page');
-        document.getElementById('nav-customer').classList.remove('hidden-page');
-        navigateTo('page-customer');
-        calculateCost();
-    }
+            renderAllTables();
+            renderUserApprovalTable();
+            renderAuditTrailTable();
 
-// --- CEK SESI SAAT HALAMAN DIMUAT ---
-window.addEventListener('DOMContentLoaded', () => {
-    const savedRole = localStorage.getItem('water_role');
-    const savedUser = localStorage.getItem('water_user');
-    
-    if (savedRole && savedUser) {
-        startSession(savedRole, savedUser);
-    }
-});
+            if (role === 'Admin') {
+                document.getElementById('nav-admin').classList.remove('hidden-page');
+                navigateTo('page-dashboard');
+            } else {
+                document.getElementById('nav-admin').classList.add('hidden-page');
+                document.getElementById('nav-customer').classList.remove('hidden-page');
+                navigateTo('page-customer');
+                calculateCost();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedRole = localStorage.getItem('water_role');
+            const savedUser = localStorage.getItem('water_user');
+            
+            if (savedRole && savedUser) {
+                startSession(savedRole, savedUser);
+            }
+        });
     
     localStorage.setItem('water_role', role);
     localStorage.setItem('water_user', userName);
