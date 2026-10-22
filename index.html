@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fresh Water - Port Baubau</title>
@@ -1844,7 +1845,11 @@
             document.getElementById('page-login').classList.remove('hidden-page');
             showToast("Berhasil keluar dari portal.", "info");
         }
-
+// Inisialisasi Supabase
+    const SUPABASE_URL = 'https://xapcbpqoaaccvmdjlukx.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcGNicHFvYWFjY3ZtZGpsdWt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NzE2MjQsImV4cCI6MjEwODI0NzYyNH0.vNJ9g31PWBDnVHYjiubeO-3D5NGUX3jySUy7s7xL0H8';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         const todayStr = new Date().toISOString().slice(0, 10);
         document.getElementById('custTanggalTiba').value = todayStr;
         document.getElementById('custTanggalMinta').value = todayStr;
