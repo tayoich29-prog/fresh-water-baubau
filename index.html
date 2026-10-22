@@ -1388,16 +1388,7 @@ function startSession(role, userName) {
         navigateTo('page-customer');
         calculateCost();
     }
-}
-
-// --- CEK SESI SAAT HALAMAN DIMUAT ---
-window.addEventListener('DOMContentLoaded', () => {
-    const savedRole = localStorage.getItem('water_role');
-    const savedUser = localStorage.getItem('water_user');
-    
-    if (savedRole && savedUser) {
-        startSession(savedRole, savedUser);
-    }
+ }    
 });
 
         function handleCustomerSubmit(e) {
