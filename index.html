@@ -1364,52 +1364,9 @@
                 document.getElementById('login-error').classList.remove('hidden-page');
             }
         }
-
-        if (role === 'Admin') {
-        document.getElementById('nav-admin').classList.remove('hidden-page');
-        navigateTo('page-dashboard');
-    } else {
-        document.getElementById('nav-admin').classList.add('hidden-page');
-        document.getElementById('nav-customer').classList.remove('hidden-page');
-        navigateTo('page-customer');
-                calculateCost();
-            }
-        }
-
-        function startSession(role, userName) {
-            currentRole = role;
-            currentUser = userName;
-            
-            localStorage.setItem('water_role', role);
-            localStorage.setItem('water_user', userName);
-
-            document.getElementById('page-login').classList.add('hidden-page');
-            document.getElementById('app-layout').classList.remove('hidden-page');
-            document.getElementById('user-role-badge').innerText = 'Role: ' + role;
-
-            renderAllTables();
-            renderUserApprovalTable();
-            renderAuditTrailTable();
-
-            if (role === 'Admin') {
-                document.getElementById('nav-admin').classList.remove('hidden-page');
-                navigateTo('page-dashboard');
-            } else {
-                document.getElementById('nav-admin').classList.add('hidden-page');
-                document.getElementById('nav-customer').classList.remove('hidden-page');
-                navigateTo('page-customer');
-                calculateCost();
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedRole = localStorage.getItem('water_role');
-            const savedUser = localStorage.getItem('water_user');
-            
-            if (savedRole && savedUser) {
-                startSession(savedRole, savedUser);
-            }
-        });
+function startSession(role, userName) {
+    currentRole = role;
+    currentUser = userName;
     
     localStorage.setItem('water_role', role);
     localStorage.setItem('water_user', userName);
@@ -1417,16 +1374,6 @@
     document.getElementById('page-login').classList.add('hidden-page');
     document.getElementById('app-layout').classList.remove('hidden-page');
     document.getElementById('user-role-badge').innerText = 'Role: ' + role;
-  
-    // --- CEK SESI SAAT HALAMAN DIMUAT ---
-    window.addEventListener('DOMContentLoaded', () => {
-    const savedRole = localStorage.getItem('water_role');
-    const savedUser = localStorage.getItem('water_user');
-    
-    if (savedRole && savedUser) {
-        startSession(savedRole, savedUser);
-    }
-});           
 
     renderAllTables();
     renderUserApprovalTable();
@@ -1434,13 +1381,24 @@
 
     if (role === 'Admin') {
         document.getElementById('nav-admin').classList.remove('hidden-page');
-            } else {
-                document.getElementById('nav-admin').classList.add('hidden-page');
-                document.getElementById('nav-customer').classList.remove('hidden-page');
-                navigateTo('page-customer');
-                calculateCost();
-            }
-        }
+        navigateTo('page-dashboard');
+    } else {
+        document.getElementById('nav-admin').classList.add('hidden-page');
+        document.getElementById('nav-customer').classList.remove('hidden-page');
+        navigateTo('page-customer');
+        calculateCost();
+    }
+}
+
+// --- CEK SESI SAAT HALAMAN DIMUAT ---
+window.addEventListener('DOMContentLoaded', () => {
+    const savedRole = localStorage.getItem('water_role');
+    const savedUser = localStorage.getItem('water_user');
+    
+    if (savedRole && savedUser) {
+        startSession(savedRole, savedUser);
+    }
+});
 
         function handleCustomerSubmit(e) {
             e.preventDefault();
