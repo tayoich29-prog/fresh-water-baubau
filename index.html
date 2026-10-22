@@ -1376,15 +1376,7 @@
     }
     
     // --- TAMBAHKAN KODE INI AGAR TERSIMPAN DI BROWSER ---
-    localStorage.setItem('water_role', role);
-    localStorage.setItem('water_user', userName);
-    // ----------------------------------------------------
-    document.getElementById('page-login').classList.add('hidden-page');
-    document.getElementById('app-layout').classList.remove('hidden-page');
-    document.getElementById('user-role-badge').innerText = 'Role: ' + role;
-    renderAllTables();
-}
-function startSession(role, userName) {
+   function startSession(role, userName) {
     currentRole = role;
     currentUser = userName;
     
