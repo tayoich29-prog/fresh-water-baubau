@@ -1844,19 +1844,18 @@ window.addEventListener('DOMContentLoaded', () => {
                 if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
                     sidebar.classList.add('-translate-x-full');
                     overlay.classList.add('hidden-page');
-                }
             }
-        }
+    function logout() {
+    // 1. Hapus data sesi dari penyimpanan browser
+    localStorage.removeItem('water_role');
+    localStorage.removeItem('water_user');
 
-        function logout() {
-            addAuditLog("USER_LOGOUT", `${currentUser || 'User'} logged out`);
-            currentRole = '';
-            currentUser = '';
-            document.getElementById('usernameInput').value = '';
-            document.getElementById('passwordInput').value = '';
-            document.getElementById('app-layout').classList.add('hidden-page');
-            document.getElementById('page-login').classList.remove('hidden-page');
-            showToast("Berhasil keluar dari portal.", "info");
+    // 2. Sembunyikan layout aplikasi dan tampilkan halaman login
+    document.getElementById('app-layout').classList.add('hidden-page');
+    document.getElementById('page-login').classList.remove('hidden-page');
+
+    // 3. Muat ulang halaman agar bersih total
+    location.reload();
         }
 // Inisialisasi Supabase
     const SUPABASE_URL = 'https://xapcbpqoaaccvmdjlukx.supabase.co';
