@@ -1365,9 +1365,15 @@
             }
         }
 
-        function startSession(role, userName) {
-    currentRole = role;
-    currentUser = userName; // Pastikan variabel user tersimpan
+        if (role === 'Admin') {
+        document.getElementById('nav-admin').classList.remove('hidden-page');
+        navigateTo('page-dashboard');
+    } else {
+        document.getElementById('nav-admin').classList.add('hidden-page');
+        document.getElementById('nav-customer').classList.remove('hidden-page');
+        navigateTo('page-customer');
+        calculateCost();
+    }
     
     // --- TAMBAHKAN KODE INI AGAR TERSIMPAN DI BROWSER ---
     localStorage.setItem('water_role', role);
