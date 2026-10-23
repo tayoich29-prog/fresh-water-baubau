@@ -25,10 +25,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .hidden-page { display: none !important; }
-
         .blend-multiply { mix-blend-mode: multiply; }
 
-        /* ANIMASI GELOMBANG AIR ULTRA-SMOOTH */
         @keyframes waveFlowSmooth {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-50%, 0, 0); }
@@ -36,53 +34,34 @@
 
         .wave-wrapper {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 200%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 200%; height: 100%;
             display: flex;
             animation: waveFlowSmooth 20s linear infinite;
             will-change: transform;
         }
 
-        .wave-svg-unit {
-            width: 50%;
-            height: 100%;
-        }
+        .wave-svg-unit { width: 50%; height: 100%; }
 
-        /* Radar Pulse Animation */
         @keyframes pulseGlow {
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.8); }
             70% { transform: scale(1.3); box-shadow: 0 0 0 12px rgba(14, 165, 233, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
         }
 
-        .radar-pulse {
-            animation: pulseGlow 2.2s infinite ease-in-out;
-        }
+        .radar-pulse { animation: pulseGlow 2.2s infinite ease-in-out; }
 
-        /* Hover Card 3D Effect */
-        .stat-card-3d {
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        .stat-card-3d { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .stat-card-3d:hover {
             transform: translateY(-5px) scale(1.01);
             box-shadow: 0 20px 25px -5px rgba(30, 58, 138, 0.15), 0 8px 10px -6px rgba(30, 58, 138, 0.1);
         }
 
-        /* Toast Notification Styling */
         #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px;
         }
-        .toast {
-            animation: slideIn 0.3s ease-out forwards;
-        }
+        .toast { animation: slideIn 0.3s ease-out forwards; }
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -93,33 +72,29 @@
 
     <div id="toast-container"></div>
 
-    <!-- PWA OFFLINE BANNER INDICATOR -->
     <div id="offlineIndicator" class="hidden-page fixed bottom-4 right-4 z-50 bg-amber-900/90 text-amber-200 border border-amber-500/50 px-4 py-2.5 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-2 backdrop-blur-md">
         <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-        <span>Mode Offline (Sinyal Terputus). Data lokal akan otomatis disinkronisasi saat terhubung internet.</span>
+        <span>Mode Offline (Sinyal Terputus).</span>
     </div>
 
-    <!-- OVERLAY BACKGROUND MOBILE MENU -->
     <div id="mobileOverlay" onclick="toggleMobileSidebar()" class="hidden-page fixed inset-0 bg-slate-950/70 z-40 md:hidden backdrop-blur-sm"></div>
 
-    <!-- ========================================== -->
-    <!-- MODAL REGISTRASI CUSTOMER / USER BARU      -->
-    <!-- ========================================== -->
+    <!-- MODAL REGISTRASI -->
     <div id="registerModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-slate-900 text-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl border border-blue-500/30">
             <div class="text-center mb-6">
                 <h3 class="text-xl font-black uppercase tracking-wider text-sky-400" data-i18n="reg_title">Daftar Akun Baru</h3>
-                <p class="text-xs text-slate-400 mt-1" data-i18n="reg_sub">Pendaftaran akan diverifikasi oleh Admin Utama Port Baubau sebelum dapat digunakan.</p>
+                <p class="text-xs text-slate-400 mt-1" data-i18n="reg_sub">Pendaftaran akan diverifikasi oleh Admin Utama Port Baubau.</p>
             </div>
 
             <form onsubmit="handleRegisterSubmit(event)">
                 <div class="mb-4">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1" data-i18n="lbl_company_name">Nama Agen / Perusahaan / Petugas *</label>
-                    <input type="text" id="regCompany" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="Contoh: PT Bahari Lines / Capt. Herman" required>
+                    <input type="text" id="regCompany" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="Contoh: PT Bahari Lines" required>
                 </div>
                 <div class="mb-4">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1" data-i18n="lbl_reg_user">Username / No. WA / Email *</label>
-                    <input type="text" id="regUsername" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="Contoh: bahari_agent / 08123456789" required>
+                    <input type="text" id="regUsername" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="Contoh: bahari_agent" required>
                 </div>
                 <div class="mb-6">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1" data-i18n="lbl_reg_pass">Password *</label>
@@ -128,19 +103,17 @@
 
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="closeRegisterModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2.5 rounded-xl font-bold text-xs uppercase cursor-pointer transition" data-i18n="btn_cancel">Batal</button>
-                    <button type="submit" class="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase cursor-pointer transition shadow-lg shadow-sky-500/20" data-i18n="btn_submit_reg">Kirim Pendaftaran</button>
+                    <button type="submit" class="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase cursor-pointer transition shadow-lg shadow-sky-500/20" data-i18n="btn_submit_reg">Kirim Pendaftaran</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL TAHAP 1: PILIH JETTY                 -->
-    <!-- ========================================== -->
+    <!-- MODAL JETTY -->
     <div id="jettyModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
             <h3 class="text-lg font-black text-slate-900 uppercase mb-1" data-i18n="m1_title">Tahap 1: Verifikasi Posisi Jetty</h3>
-            <p class="text-xs text-slate-500 mb-4" data-i18n="m1_sub">Pilih posisi dermaga sandar kapal berdasarkan laporan Grup WhatsApp operasional.</p>
+            <p class="text-xs text-slate-500 mb-4" data-i18n="m1_sub">Pilih posisi dermaga sandar kapal.</p>
             
             <input type="hidden" id="jettyModalOrderId">
 
@@ -160,13 +133,11 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL TAHAP 2: INPUT REALISASI AKHIR (TON) -->
-    <!-- ========================================== -->
+    <!-- MODAL VERIFIKASI REALISASI -->
     <div id="verifyModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
             <h3 class="text-lg font-black text-slate-900 uppercase mb-1" data-i18n="m2_title">Tahap 2: Verifikasi Selesai & Realisasi</h3>
-            <p class="text-xs text-slate-500 mb-4" data-i18n="m2_sub">Masukkan jumlah realisasi air (Ton) setelah pengisian komplit / BA ditandatangani.</p>
+            <p class="text-xs text-slate-500 mb-4" data-i18n="m2_sub">Masukkan jumlah realisasi air (Ton).</p>
             
             <input type="hidden" id="verifyModalOrderId">
             <input type="hidden" id="verifyModalActionType">
@@ -183,26 +154,12 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- HALAMAN LOGIN CINEMATIC MARITIME           -->
-    <!-- ========================================== -->
+    <!-- HALAMAN LOGIN -->
     <div id="page-login" class="relative min-h-screen flex flex-col justify-between overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 text-white">
-        
         <div class="absolute inset-0 opacity-10 pointer-events-none flex items-center justify-center overflow-hidden">
             <svg class="w-[800px] h-[800px] text-blue-400" viewBox="0 0 500 500" fill="currentColor">
                 <path d="M 210 100 Q 230 120 220 160 Q 250 180 290 170 Q 330 160 370 190 Q 330 210 280 200 Q 250 230 240 280 Q 270 300 320 290 Q 280 320 240 330 Q 220 380 230 420 Q 200 390 190 340 Q 170 320 120 330 Q 160 300 180 270 Q 160 220 190 170 Z"/>
             </svg>
-        </div>
-
-        <div class="absolute top-0 left-0 w-full h-36 overflow-hidden pointer-events-none opacity-40">
-            <div class="wave-wrapper">
-                <svg class="wave-svg-unit" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                    <path d="M0,0 C300,90 600,-40 900,45 C1050,80 1150,20 1200,40 L1200,0 L0,0 Z" fill="rgba(56, 189, 248, 0.3)"></path>
-                </svg>
-                <svg class="wave-svg-unit" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                    <path d="M0,0 C300,90 600,-40 900,45 C1050,80 1150,20 1200,40 L1200,0 L0,0 Z" fill="rgba(56, 189, 248, 0.3)"></path>
-                </svg>
-            </div>
         </div>
 
         <div class="relative z-10 max-w-6xl w-full mx-auto p-6 md:p-8 flex flex-col md:flex-row justify-between items-center border-b border-blue-800/40 gap-4">
@@ -212,16 +169,15 @@
                 </h1>
                 <p class="text-xs font-semibold text-sky-200 tracking-wider mt-1 uppercase" data-i18n="sub_title">Sistem Distribusi & Rekapitulasi Air Bersih Pelabuhan</p>
             </div>
-            
             <div class="flex items-center justify-center p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 shadow-inner">
-                <img src="LOGO_FRESH WATER.png" alt="Logo Fresh Water" class="h-12 md:h-16 w-auto object-contain blend-multiply brightness-200" onerror="this.onerror=null; this.src='LOGO_FRESH WATER.jpg';">
+                <img src="LOGO_FRESH WATER.png" alt="Logo" class="h-12 md:h-16 w-auto object-contain blend-multiply brightness-200" onerror="this.onerror=null; this.src='LOGO_FRESH WATER.jpg';">
             </div>
         </div>
 
         <div class="relative z-10 max-w-md w-full mx-auto my-8 bg-slate-900/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-blue-500/20">
             <div class="text-center mb-6">
                 <h2 class="text-2xl font-bold text-white tracking-tight" data-i18n="portal_login">Portal Akses Masuk</h2>
-                <p class="text-xs text-slate-400 mt-1 font-medium" data-i18n="login_sub">Masukkan kredensial akun Anda untuk melanjutkan</p>
+                <p class="text-xs text-slate-400 mt-1 font-medium" data-i18n="login_sub">Masukkan kredensial akun Anda</p>
             </div>
             
             <div id="login-error" class="hidden-page mb-5 p-3 bg-red-950/80 border border-red-500/50 text-red-200 text-xs rounded-2xl text-center font-semibold">
@@ -231,107 +187,78 @@
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="mb-4">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2" data-i18n="lbl_user">User / No Telpon / Email</label>
-                    <input type="text" id="usernameInput" class="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/80 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition placeholder-slate-500" placeholder="Masukkan ID / Phone / Email" required>
+                    <input type="text" id="usernameInput" class="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/80 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition" placeholder="Masukkan ID / Phone / Email" required>
                 </div>
                 <div class="mb-2">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2" data-i18n="lbl_pass">Password</label>
-                    <input type="password" id="passwordInput" class="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/80 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition placeholder-slate-500" placeholder="••••••••" required>
+                    <input type="password" id="passwordInput" class="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/80 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition" placeholder="••••••••" required>
                 </div>
 
                 <div class="text-right mb-6">
                     <button type="button" onclick="forgotPasswordNotice()" class="text-xs text-sky-400 hover:underline font-semibold cursor-pointer">Lupa Password?</button>
                 </div>
                 
-                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white py-3.5 rounded-xl font-bold text-sm tracking-wider uppercase transition shadow-lg shadow-sky-500/25 cursor-pointer mb-4" data-i18n="btn_login">
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-sky-500 text-white py-3.5 rounded-xl font-bold text-sm tracking-wider uppercase transition shadow-lg shadow-sky-500/25 cursor-pointer mb-4" data-i18n="btn_login">
                     Masuk ke Sistem
                 </button>
             </form>
 
             <div class="text-center pt-2 border-t border-slate-800/80">
-                <span class="text-xs text-slate-400" data-i18n="no_account_text">Belum punya akun Customer / User?</span>
+                <span class="text-xs text-slate-400" data-i18n="no_account_text">Belum punya akun Customer?</span>
                 <button type="button" onclick="openRegisterModal()" class="text-xs font-bold text-sky-400 hover:underline ml-1 cursor-pointer" data-i18n="btn_register_now">Daftar Sekarang</button>
             </div>
         </div>
 
         <div class="relative z-10 w-full max-w-5xl mx-auto text-center px-4">
-            <img src="LOGO KAPAL.png" alt="Gambar Kapal" class="w-full h-36 md:h-44 object-contain mx-auto blend-multiply brightness-150 opacity-90" onerror="this.onerror=null; this.src='LOGO KAPAL.jpg';">
+            <img src="LOGO KAPAL.png" alt="Kapal" class="w-full h-36 md:h-44 object-contain mx-auto blend-multiply brightness-150 opacity-90" onerror="this.onerror=null; this.src='LOGO KAPAL.jpg';">
         </div>
     </div>
 
-
-    <!-- ========================================== -->
-    <!-- LAYOUT DASHBOARD UTAMA                     -->
-    <!-- ========================================== -->
+    <!-- LAYOUT DASHBOARD UTAMA -->
     <div id="app-layout" class="hidden-page flex min-h-screen relative">
-        
-        <!-- Sidebar Navigation (RESPONSIF MOBILE DRAWER) -->
+        <!-- Sidebar -->
         <div id="mainSidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out z-50 w-64 bg-slate-950 text-white flex flex-col justify-between p-5 min-h-screen shadow-2xl border-r border-slate-800">
             <div>
                 <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-3">
-                    <div class="text-lg font-black tracking-wider uppercase text-sky-400">
-                        Fresh Water
-                    </div>
-                    <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white text-xl p-1">
-                        ✕
-                    </button>
+                    <div class="text-lg font-black tracking-wider uppercase text-sky-400">Fresh Water</div>
+                    <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white text-xl p-1">✕</button>
                 </div>
 
                 <div id="user-role-badge" class="text-[11px] bg-blue-900/60 border border-blue-500/30 text-sky-300 px-3 py-1 rounded-full inline-block mb-6 font-bold tracking-wider uppercase">
                     Role: -
                 </div>
 
-                <!-- NAVIGASI POV ADMIN -->
+                <!-- NAV ADMIN -->
                 <nav id="nav-admin" class="space-y-1.5">
-                    <button type="button" onclick="navigateTo('page-dashboard')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_dash">
-                        Dashboard
-                    </button>
-                    <button type="button" onclick="navigateTo('page-permintaan')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_permintaan">
-                        Order Fresh Water
-                    </button>
-                    <button type="button" onclick="navigateTo('page-rekapitulasi')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_rekap">
-                        Rekapitulasi Fresh Water
-                    </button>
-                    <button type="button" onclick="navigateTo('page-laporan')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_laporan">
-                        Laporan Seluruh Kegiatan
-                    </button>
+                    <button type="button" onclick="navigateTo('page-dashboard')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_dash">Dashboard</button>
+                    <button type="button" onclick="navigateTo('page-permintaan')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_permintaan">Order Fresh Water</button>
+                    <button type="button" onclick="navigateTo('page-rekapitulasi')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_rekap">Rekapitulasi Fresh Water</button>
+                    <button type="button" onclick="navigateTo('page-laporan')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_laporan">Laporan Seluruh Kegiatan</button>
                     <button type="button" onclick="navigateTo('page-user-approval')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition flex items-center justify-between">
                         <span data-i18n="nav_users">Persetujuan Akun</span>
                         <span id="pendingUserBadge" class="hidden-page bg-rose-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button type="button" onclick="navigateTo('page-audit-trail')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition flex items-center justify-between text-slate-300">
-                        <span>🔍 Audit Trail Log</span>
-                    </button>
+                    <button type="button" onclick="navigateTo('page-audit-trail')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition text-slate-300"><span>🔍 Audit Trail Log</span></button>
                 </nav>
 
-                <!-- NAVIGASI POV CUSTOMER -->
+                <!-- NAV CUSTOMER -->
                 <nav id="nav-customer" class="space-y-1.5 hidden-page">
-                    <button type="button" onclick="navigateTo('page-customer')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_form_cust">
-                        Form Order Air
-                    </button>
-                    <button type="button" onclick="navigateTo('page-customer-history')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_hist_cust">
-                        Riwayat Pesanan Saya
-                    </button>
+                    <button type="button" onclick="navigateTo('page-customer')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_form_cust">Form Order Air</button>
+                    <button type="button" onclick="navigateTo('page-customer-history')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_hist_cust">Riwayat Pesanan Saya</button>
                 </nav>
             </div>
             
             <div class="border-t border-slate-800 pt-4">
-                <button type="button" onclick="logout()" class="w-full text-left px-3.5 py-2.5 text-red-400 hover:bg-red-950/30 rounded-xl font-bold text-sm transition cursor-pointer" data-i18n="btn_logout">
-                    Keluar / Logout
-                </button>
+                <button type="button" onclick="logout()" class="w-full text-left px-3.5 py-2.5 text-red-400 hover:bg-red-950/30 rounded-xl font-bold text-sm transition cursor-pointer" data-i18n="btn_logout">Keluar / Logout</button>
             </div>
         </div>
 
-        <!-- Main Content Area -->
+        <!-- Main Content -->
         <div class="flex-1 bg-slate-50 flex flex-col min-h-screen overflow-y-auto w-full">
-
-            <!-- HEADER UTAMA WITH HAMBURGER MENU FOR MOBILE -->
             <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-3 flex justify-between items-center shadow-sm sticky top-0 z-30">
                 <div class="flex items-center gap-3">
-                    <!-- HAMBURGER BUTTON MOBILE -->
-                    <button onclick="toggleMobileSidebar()" class="md:hidden p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 focus:outline-none">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
+                    <button onclick="toggleMobileSidebar()" class="md:hidden p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
                     <div>
                         <h2 class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">Pertamina Trans Kontinental</h2>
@@ -340,29 +267,23 @@
                 </div>
 
                 <div class="flex items-center gap-2 md:gap-4">
-                    <!-- LANGUAGE SWITCHER (ID / EN) -->
                     <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
                         <button id="lang-btn-id" onclick="changeLanguage('id')" class="px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold bg-blue-900 text-white transition">🇮🇩 ID</button>
                         <button id="lang-btn-en" onclick="changeLanguage('en')" class="px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold text-slate-600 hover:bg-slate-200 transition">🇬🇧 EN</button>
                     </div>
-
-                    <img src="LOGO_FRESH WATER.png" alt="Logo Fresh Water" class="h-8 md:h-10 w-auto object-contain blend-multiply" onerror="this.onerror=null; this.src='LOGO_FRESH WATER.jpg';">
+                    <img src="LOGO_FRESH WATER.png" alt="Logo" class="h-8 md:h-10 w-auto object-contain blend-multiply" onerror="this.onerror=null; this.src='LOGO_FRESH WATER.jpg';">
                 </div>
             </header>
 
             <main class="p-4 md:p-8 flex-1">
-
-                <!-- ========================================== -->
-                <!-- 1. DASHBOARD COMMAND CENTER                -->
-                <!-- ========================================== -->
+                <!-- 1. DASHBOARD -->
                 <div id="page-dashboard" class="content-section hidden-page">
-                    
                     <div id="admin-warning-banner" class="hidden-page mb-6 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-xl shadow-sm flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="text-xl">⚠️</span>
                             <div>
                                 <h4 class="text-xs font-bold text-amber-900 uppercase tracking-wide" data-i18n="warn_title">Peringatan / Back-up Plan Operasional</h4>
-                                <p id="warning-banner-text" class="text-xs text-amber-700 mt-0.5">Terdapat order baru yang belum diverifikasi posisi Jetty atau realisasinya.</p>
+                                <p id="warning-banner-text" class="text-xs text-amber-700 mt-0.5">Terdapat order baru yang belum diverifikasi.</p>
                             </div>
                         </div>
                         <button onclick="navigateTo('page-permintaan')" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow transition cursor-pointer" data-i18n="btn_review_now">Tinjau Sekarang</button>
@@ -371,54 +292,35 @@
                     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-slate-200 pb-4 mb-6 gap-4">
                         <div>
                             <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight" data-i18n="dash_title">Command Center - Fresh Water Baubau</h1>
-                            <p class="text-xs text-slate-500 mt-0.5" data-i18n="dash_sub">Sistem Monitoring & Peta Live AIS Distribusi Air Bersih Pelabuhan</p>
+                            <p class="text-xs text-slate-500 mt-0.5" data-i18n="dash_sub">Sistem Monitoring & Peta Live AIS</p>
                         </div>
-
                         <div class="flex flex-wrap items-center gap-2 bg-white p-2 border border-slate-200 rounded-2xl shadow-sm">
                             <span class="text-xs font-bold text-slate-500 uppercase px-2" data-i18n="lbl_period">Periode:</span>
-                            <select id="dashMonthFilter" onchange="renderAllTables()" class="p-2 border rounded-xl text-xs bg-slate-50 font-bold focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                            <select id="dashMonthFilter" onchange="renderAllTables()" class="p-2 border rounded-xl text-xs bg-slate-50 font-bold focus:ring-2 focus:ring-blue-600">
                                 <option value="ALL">Semua Bulan</option>
-                                <option value="01">Januari</option>
-                                <option value="02">Februari</option>
-                                <option value="03">Maret</option>
-                                <option value="04">April</option>
-                                <option value="05">Mei</option>
-                                <option value="06">Juni</option>
-                                <option value="07">Juli</option>
-                                <option value="08">Agustus</option>
-                                <option value="09">September</option>
-                                <option value="10" selected>Oktober</option>
-                                <option value="11">November</option>
-                                <option value="12">Desember</option>
+                                <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10" selected>Oktober</option><option value="11">November</option><option value="12">Desember</option>
                             </select>
-                            <select id="dashYearFilter" onchange="renderAllTables()" class="p-2 border rounded-xl text-xs bg-slate-50 font-bold focus:ring-2 focus:ring-blue-600 focus:outline-none">
-                                <option value="2026" selected>2026</option>
-                                <option value="2025">2025</option>
+                            <select id="dashYearFilter" onchange="renderAllTables()" class="p-2 border rounded-xl text-xs bg-slate-50 font-bold focus:ring-2 focus:ring-blue-600">
+                                <option value="2026" selected>2026</option><option value="2025">2025</option>
                             </select>
                             <button onclick="resetDashFilter()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer" data-i18n="btn_reset">Reset</button>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="stat-card-3d bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 relative overflow-hidden">
+                        <div class="stat-card-3d bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
                             <p class="text-xs font-bold uppercase tracking-wider text-slate-500" data-i18n="card_total_order">Total Order Air</p>
                             <h3 id="stat-total" class="text-3xl font-black text-blue-600 mt-2">0</h3>
-                            <p class="text-[11px] text-slate-400 mt-1 font-medium" data-i18n="card_sub_period">Order periode terpilih</p>
                         </div>
-
-                        <div class="stat-card-3d bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 relative overflow-hidden">
+                        <div class="stat-card-3d bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
                             <p class="text-xs font-bold uppercase tracking-wider text-slate-500" data-i18n="card_supplied">Kapal Ter-supply</p>
                             <h3 id="stat-supplied" class="text-3xl font-black text-emerald-600 mt-2">0</h3>
-                            <p class="text-[11px] text-slate-400 mt-1 font-medium" data-i18n="card_sub_supplied">Pengisian diselesaikan</p>
                         </div>
-
-                        <div class="stat-card-3d bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 relative overflow-hidden">
+                        <div class="stat-card-3d bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
                             <p class="text-xs font-bold uppercase tracking-wider text-slate-500" data-i18n="card_cancelled">Batal / Unsupplied</p>
                             <h3 id="stat-cancelled" class="text-3xl font-black text-rose-600 mt-2">0</h3>
-                            <p class="text-[11px] text-slate-400 mt-1 font-medium" data-i18n="card_sub_cancelled">Order dibatalkan</p>
                         </div>
-
-                        <div class="stat-card-3d bg-gradient-to-br from-slate-900 to-blue-950 text-white p-6 rounded-2xl shadow-md border border-blue-800/50 relative overflow-hidden">
+                        <div class="stat-card-3d bg-gradient-to-br from-slate-900 to-blue-950 text-white p-6 rounded-2xl shadow-md border border-blue-800/50">
                             <p class="text-xs font-bold uppercase tracking-wider text-sky-400" data-i18n="card_revenue">Total Pendapatan Air</p>
                             <h3 id="stat-revenue" class="text-2xl font-black text-emerald-400 mt-2">Rp 0</h3>
                             <div class="mt-2 pt-2 border-t border-blue-900/80 text-[10px] text-slate-300 flex justify-between">
@@ -428,55 +330,34 @@
                         </div>
                     </div>
 
-                    <!-- MAP NAUTICAL CHART REAL-TIME LIVE AIS -->
+                    <!-- MAP -->
                     <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl border border-slate-800 relative overflow-hidden mb-8">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
                             <div>
-                                <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                                    <span data-i18n="map_title">Nautical Chart Live AIS - Jetty Pertamina Baubau</span>
-                                </h3>
-                                <p class="text-xs text-slate-400" data-i18n="map_sub">Monitoring Sandar Berdasarkan Sinkronisasi Grup WA & OpenCPN AIS</p>
+                                <h3 class="text-lg font-bold text-white"><span data-i18n="map_title">Nautical Chart Live AIS - Jetty Pertamina Baubau</span></h3>
+                                <p class="text-xs text-slate-400" data-i18n="map_sub">Monitoring Berthing & OpenCPN AIS Sync</p>
                             </div>
                             <span class="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800/80 px-3 py-1 rounded-full font-mono font-bold flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> WA Group & AIS Active Sync
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Database & AIS Active Sync
                             </span>
                         </div>
 
                         <div class="relative w-full h-96 bg-[#0a1128] rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
-                            
                             <svg class="w-full h-full text-slate-800/80" viewBox="0 0 600 350" preserveAspectRatio="none" fill="currentColor">
                                 <path d="M 0,0 L 120,0 Q 110,60 70,100 Q 40,130 0,160 Z" />
                                 <path d="M 600,0 L 470,0 L 480,90 Q 470,120 470,150 L 460,180 L 475,185 L 460,190 L 470,240 L 460,250 L 475,255 L 460,260 L 470,280 L 460,290 L 475,295 L 460,300 L 600,350 Z" />
                             </svg>
-
                             <div class="absolute top-4 left-4 text-slate-400 font-bold text-xs pointer-events-none">
                                 <div class="text-sky-400">SELAT BUTON</div>
-                                <div class="text-[10px] text-slate-500">Depth: 12m - 52m</div>
                             </div>
-
-                            <div class="absolute top-[35%] right-[22%] w-12 h-2 bg-slate-600 border-t border-b border-sky-400/80 flex items-center justify-start">
-                                <span class="text-[9px] font-black text-sky-300 ml-1">J1</span>
-                            </div>
-                            <div class="absolute top-[55%] right-[22%] w-12 h-2 bg-slate-600 border-t border-b border-sky-400/80 flex items-center justify-start">
-                                <span class="text-[9px] font-black text-sky-300 ml-1">J2</span>
-                            </div>
-                            <div class="absolute top-[75%] right-[22%] w-12 h-2 bg-slate-600 border-t border-b border-sky-400/80 flex items-center justify-start">
-                                <span class="text-[9px] font-black text-sky-300 ml-1">J3</span>
-                            </div>
-
-                            <div id="map-jetty-1" class="absolute top-[33%] right-[20%]"></div>
-                            <div id="map-jetty-2" class="absolute top-[53%] right-[20%]"></div>
-                            <div id="map-jetty-3" class="absolute top-[73%] right-[20%]"></div>
-
-                            <div class="absolute bottom-3 left-3 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-xl text-xs text-slate-300">
-                                <p class="font-bold text-sky-400">Terminal BBM Baubau - Selat Buton</p>
-                                <p class="text-[10px] text-slate-400" data-i18n="map_footer_note">Posisi kapal otomatis terploting setelah Admin menyelesaikan Tahap 1 Verifikasi Jetty</p>
-                            </div>
+                            <div class="absolute top-[33%] right-[20%]" id="map-jetty-1"></div>
+                            <div class="absolute top-[53%] right-[20%]" id="map-jetty-2"></div>
+                            <div class="absolute top-[73%] right-[20%]" id="map-jetty-3"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. ORDER FRESH WATER (POV ADMIN) -->
+                <!-- 2. ORDER (ADMIN) -->
                 <div id="page-permintaan" class="content-section hidden-page">
                     <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6" data-i18n="order_title_admin">Order Fresh Water (Alur Verifikasi 3 Tahap)</h1>
                     <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
@@ -494,14 +375,12 @@
                                     <th class="p-3.5 border-b text-center" data-i18n="th_action_verify">AKSI VERIFIKASI & WA</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-permintaan-body" class="divide-y divide-slate-100 text-sm">
-                                <!-- Render JS -->
-                            </tbody>
+                            <tbody id="table-permintaan-body" class="divide-y divide-slate-100 text-sm"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- 3. REKAPITULASI FRESH WATER -->
+                <!-- 3. REKAPITULASI -->
                 <div id="page-rekapitulasi" class="content-section hidden-page">
                     <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6" data-i18n="rekap_title">Rekapitulasi Fresh Water</h1>
                     <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
@@ -519,24 +398,21 @@
                                     <th class="p-3.5 border-b text-center" data-i18n="th_proof_doc">BUKTI KEGIATAN FRESH WATER</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-rekapitulasi-body" class="divide-y divide-slate-100 text-sm">
-                                <!-- Render JS -->
-                            </tbody>
+                            <tbody id="table-rekapitulasi-body" class="divide-y divide-slate-100 text-sm"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- 4. LAPORAN SELURUH KEGIATAN -->
+                <!-- 4. LAPORAN -->
                 <div id="page-laporan" class="content-section hidden-page">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 mb-6 gap-4">
                         <h1 class="text-xl md:text-2xl font-bold text-slate-900" data-i18n="report_title">Laporan Seluruh Kegiatan</h1>
                         <div class="flex flex-wrap items-center gap-2">
-                            <input type="text" id="searchReportInput" oninput="renderAllTables()" placeholder="Cari Kapal / Kode Order..." class="p-2.5 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
-                            <input type="date" id="filterDateInput" onchange="renderAllTables()" class="p-2.5 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
-                            <button onclick="resetReportFilter()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer transition" data-i18n="btn_reset">Reset</button>
+                            <input type="text" id="searchReportInput" oninput="renderAllTables()" placeholder="Cari Kapal / Kode Order..." class="p-2.5 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-blue-600">
+                            <input type="date" id="filterDateInput" onchange="renderAllTables()" class="p-2.5 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-blue-600">
+                            <button onclick="resetReportFilter()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer" data-i18n="btn_reset">Reset</button>
                         </div>
                     </div>
-
                     <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80 mb-6">
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
@@ -548,206 +424,149 @@
                                     <th class="p-3.5 border-b" data-i18n="th_jetty">JETTY</th>
                                     <th class="p-3.5 border-b" data-i18n="th_realization">REALISASI</th>
                                     <th class="p-3.5 border-b" data-i18n="th_total_cost">TOTAL BIAYA</th>
-                                    <th class="p-3.5 border-b whitespace-nowrap" data-i18n="th_arrival_date">TGL TIBA (ETA/TA)</th>
+                                    <th class="p-3.5 border-b whitespace-nowrap" data-i18n="th_arrival_date">TGL TIBA</th>
                                     <th class="p-3.5 border-b whitespace-nowrap" data-i18n="th_order_date">TGL ORDER</th>
-                                    <th class="p-3.5 border-b text-center" data-i18n="th_doc">BUKTI DOKUMEN & AUDIT LOG</th>
+                                    <th class="p-3.5 border-b text-center" data-i18n="th_doc">DOKUMEN & AUDIT</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-laporan-body" class="divide-y divide-slate-100 text-sm">
-                                <!-- Render JS -->
-                            </tbody>
+                            <tbody id="table-laporan-body" class="divide-y divide-slate-100 text-sm"></tbody>
                         </table>
                     </div>
                     <div class="flex justify-end gap-3">
-                        <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow transition flex items-center gap-2 cursor-pointer" data-i18n="btn_export">
-                            Export Excel (.csv)
-                        </button>
+                        <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow transition cursor-pointer" data-i18n="btn_export">Export Excel (.csv)</button>
                     </div>
                 </div>
 
-                <!-- 5. USER APPROVAL & MANAGEMENT (POV ADMIN UTAMA) -->
+                <!-- 5. USER APPROVAL -->
                 <div id="page-user-approval" class="content-section hidden-page">
                     <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6">Persetujuan & Manajemen Akun Pengguna</h1>
-                    
                     <div class="mb-8">
-                        <h2 class="text-sm font-extrabold uppercase text-amber-800 bg-amber-50 border border-amber-200 p-3 rounded-xl mb-3 flex items-center gap-2">
-                            <span>⏳ Pendaftaran Baru (Menunggu Approval Admin Utama)</span>
-                        </h2>
+                        <h2 class="text-sm font-extrabold uppercase text-amber-800 bg-amber-50 border border-amber-200 p-3 rounded-xl mb-3">⏳ Pendaftaran Baru (Menunggu Approval)</h2>
                         <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
                             <table class="w-full text-left border-collapse">
                                 <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
                                     <tr>
                                         <th class="p-3.5 border-b">NO</th>
-                                        <th class="p-3.5 border-b">NAMA AGEN / PERUSAHAAN / USER</th>
-                                        <th class="p-3.5 border-b">USERNAME / CONTACT</th>
-                                        <th class="p-3.5 border-b">TANGGAL DAFTAR</th>
-                                        <th class="p-3.5 border-b text-center">AKSI APPROVAL (CUSTOMER / ADMIN)</th>
+                                        <th class="p-3.5 border-b">NAMA PERUSAHAAN</th>
+                                        <th class="p-3.5 border-b">USERNAME</th>
+                                        <th class="p-3.5 border-b">TANGGAL</th>
+                                        <th class="p-3.5 border-b text-center">AKSI</th>
                                     </tr>
                                 </thead>
-                                <tbody id="table-pending-users-body" class="divide-y divide-slate-100 text-sm">
-                                    <!-- Render JS -->
-                                </tbody>
+                                <tbody id="table-pending-users-body" class="divide-y divide-slate-100 text-sm"></tbody>
                             </table>
                         </div>
                     </div>
-
                     <div>
-                        <h2 class="text-sm font-extrabold uppercase text-slate-800 bg-slate-100 border border-slate-200 p-3 rounded-xl mb-3">
-                            📋 Daftar Akun Terdaftar & Terverifikasi
-                        </h2>
+                        <h2 class="text-sm font-extrabold uppercase text-slate-800 bg-slate-100 border border-slate-200 p-3 rounded-xl mb-3">📋 Daftar Akun Terverifikasi</h2>
                         <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
                             <table class="w-full text-left border-collapse">
                                 <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
                                     <tr>
                                         <th class="p-3.5 border-b">NO</th>
-                                        <th class="p-3.5 border-b">NAMA PERUSAHAAN / USER</th>
+                                        <th class="p-3.5 border-b">NAMA PERUSAHAAN</th>
                                         <th class="p-3.5 border-b">USERNAME</th>
-                                        <th class="p-3.5 border-b">ROLE / HAK AKSES</th>
+                                        <th class="p-3.5 border-b">ROLE</th>
                                         <th class="p-3.5 border-b">STATUS</th>
-                                        <th class="p-3.5 border-b text-center">KELOLA AKUN</th>
+                                        <th class="p-3.5 border-b text-center">KELOLA</th>
                                     </tr>
                                 </thead>
-                                <tbody id="table-approved-users-body" class="divide-y divide-slate-100 text-sm">
-                                    <!-- Render JS -->
-                                </tbody>
+                                <tbody id="table-approved-users-body" class="divide-y divide-slate-100 text-sm"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- 6. AUDIT TRAIL LOG -->
+                <!-- 6. AUDIT TRAIL -->
                 <div id="page-audit-trail" class="content-section hidden-page">
                     <div class="flex justify-between items-center border-b pb-4 mb-6">
                         <div>
                             <h1 class="text-xl md:text-2xl font-bold text-slate-900">🔍 Activity Audit Trail Log</h1>
-                            <p class="text-xs text-slate-500 mt-0.5">Rekam Jejak Keamanan & Aktivitas Sistem (Kebutuhan Internal Audit Pertamina)</p>
+                            <p class="text-xs text-slate-500 mt-0.5">Rekam Jejak Keamanan Sistem</p>
                         </div>
-                        <span class="bg-slate-900 text-sky-400 border border-slate-700 px-3 py-1.5 rounded-xl font-mono text-xs font-bold">
-                            IP Logged: 180.252.18.42
-                        </span>
                     </div>
-
                     <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
                         <table class="w-full text-left border-collapse font-mono text-xs">
                             <thead class="bg-slate-900 text-slate-300 uppercase tracking-wider">
                                 <tr>
-                                    <th class="p-3.5 border-b border-slate-800">TIMESTAMP (WITA)</th>
-                                    <th class="p-3.5 border-b border-slate-800">USER / AKUN</th>
-                                    <th class="p-3.5 border-b border-slate-800">AKSI OPERASIONAL</th>
-                                    <th class="p-3.5 border-b border-slate-800">DETAIL REKAMAN</th>
+                                    <th class="p-3.5 border-b">TIMESTAMP</th>
+                                    <th class="p-3.5 border-b">USER</th>
+                                    <th class="p-3.5 border-b">AKSI</th>
+                                    <th class="p-3.5 border-b">DETAIL</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-audit-trail-body" class="divide-y divide-slate-100 text-slate-700">
-                                <!-- Render JS -->
-                            </tbody>
+                            <tbody id="table-audit-trail-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
                         </table>
                     </div>
                 </div>
 
                 <!-- 7. FORM CUSTOMER -->
                 <div id="page-customer" class="content-section hidden-page">
-                    
-                    <div class="mb-6 bg-gradient-to-r from-blue-900 via-slate-900 to-blue-950 text-white p-6 rounded-2xl shadow-lg border border-blue-700/50 relative overflow-hidden">
+                    <div class="mb-6 bg-gradient-to-r from-blue-900 via-slate-900 to-blue-950 text-white p-6 rounded-2xl shadow-lg border border-blue-700/50">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-blue-800/80 pb-4 mb-4">
                             <div class="flex items-center gap-3">
                                 <span class="text-2xl p-2 bg-blue-800/50 rounded-xl">💳</span>
                                 <div>
-                                    <h3 class="text-sm font-extrabold uppercase tracking-wider text-sky-400" data-i18n="bank_banner_title">Informasi Pembayaran & Rekening Bank</h3>
-                                    <p class="text-xs text-slate-300" data-i18n="bank_banner_sub">Silakan lakukan pembayaran ke rekening resmi berikut:</p>
+                                    <h3 class="text-sm font-extrabold uppercase tracking-wider text-sky-400">Informasi Pembayaran BNI</h3>
+                                    <p class="text-xs text-slate-300">No. Rekening: <strong class="text-emerald-400">184127595</strong> a.n PT Pertamina Trans Kontinental</p>
                                 </div>
                             </div>
-                            <span class="text-[11px] font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30 px-3 py-1 rounded-full uppercase">Official Bank BNI PTK</span>
+                            <button type="button" onclick="copyAccountNo()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow cursor-pointer">📋 Salin Rekening</button>
                         </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                            <div class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/60 flex justify-between items-center">
-                                <div>
-                                    <span class="text-slate-400 block text-[10px] uppercase font-bold" data-i18n="lbl_bank_acc">Bank & No. Rekening</span>
-                                    <span class="font-mono text-sm font-bold text-emerald-400">Bank BNI — 184127595</span>
-                                    <span class="block text-[10px] text-slate-300 mt-0.5">a.n. PT Pertamina Trans Kontinental</span>
-                                </div>
-                                <button type="button" onclick="copyAccountNo()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow cursor-pointer flex items-center gap-1" data-i18n="btn_copy_acc">
-                                    📋 Salin Rekening
-                                </button>
-                            </div>
-
-                            <div class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/60 flex justify-between items-center">
-                                <div>
-                                    <span class="text-amber-400 block text-[10px] uppercase font-bold" data-i18n="lbl_transfer_note_title">📌 Catatan / Berita Transfer (Wajib)</span>
-                                    <span id="transferNoteFormat" class="font-mono text-xs font-bold text-white">[Nama Kapal] - Port Baubau - Fresh Water</span>
-                                    <span class="block text-[10px] text-slate-400 mt-0.5" data-i18n="lbl_note_ex">(Contoh: MT PANDAN - Port Baubau - Fresh Water)</span>
-                                </div>
-                                <button type="button" onclick="copyNoteFormat()" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow cursor-pointer flex items-center gap-1" data-i18n="btn_copy_note">
-                                    📋 Salin Format
-                                </button>
-                            </div>
-                        </div>
-
-                        <p class="text-[11px] text-slate-400 mt-3 italic" data-i18n="bank_upload_note">*Harap simpan dan unggah bukti transfer pada kolom di bawah setelah transaksi berhasil.</p>
                     </div>
 
                     <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6" data-i18n="cust_form_title">Form Order Fresh Water</h1>
                     <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/80 mb-6">
                         <form onsubmit="handleCustomerSubmit(event)">
-                            
                             <div class="mb-6 p-3.5 bg-sky-50 border border-sky-200 rounded-xl flex items-center gap-3">
-                                <input type="checkbox" id="custIsCharter" onchange="toggleCharterMode(this)" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
-                                <label for="custIsCharter" class="text-xs font-bold text-blue-950 cursor-pointer" data-i18n="chk_charter_vessel">
-                                    Kapal Charter Pertamina / Bahari Group (Bebas Upload Bukti Bayar)
-                                </label>
+                                <input type="checkbox" id="custIsCharter" onchange="toggleCharterMode(this)" class="w-4 h-4 text-blue-600 rounded cursor-pointer">
+                                <label for="custIsCharter" class="text-xs font-bold text-blue-950 cursor-pointer">Kapal Charter Pertamina / Bahari Group (Bebas Upload Bukti Bayar)</label>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2" data-i18n="lbl_vessel_name">Nama Kapal *</label>
-                                    <input type="text" id="custNamaKapal" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600 focus:outline-none" placeholder="Contoh: MT PANDAN" required>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Nama Kapal *</label>
+                                    <input type="text" id="custNamaKapal" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600" placeholder="Contoh: MT PANDAN" required>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2" data-i18n="lbl_vessel_trade">Trayek Kapal *</label>
-                                    <select id="custTrayek" onchange="calculateCost()" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600 bg-white focus:outline-none" required>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Trayek Kapal *</label>
+                                    <select id="custTrayek" onchange="calculateCost()" class="w-full p-2.5 border rounded-xl bg-white focus:ring-2 focus:ring-blue-600" required>
                                         <option value="Domestik">Domestik</option>
                                         <option value="Import">Import</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2" data-i18n="lbl_order_qty">Jumlah Order Fresh Water (Ton) *</label>
-                                    <input type="number" id="custQty" min="1" oninput="calculateCost()" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600 focus:outline-none" placeholder="15" value="15" required>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Jumlah Order (Ton) *</label>
+                                    <input type="number" id="custQty" min="1" oninput="calculateCost()" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600" value="15" required>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2" data-i18n="lbl_est_cost">Perkiraan Total Biaya (Rp)</label>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Perkiraan Biaya</label>
                                     <input type="text" id="custTotalDisplay" class="w-full p-2.5 border rounded-xl bg-slate-100 font-bold text-blue-900" readonly value="Rp 825.000">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2" data-i18n="lbl_arrival_date">Tanggal Tiba Kapal (ETA/TA) *</label>
-                                    <input type="date" id="custTanggalTiba" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600 focus:outline-none" required>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Tanggal Tiba (ETA/TA) *</label>
+                                    <input type="date" id="custTanggalTiba" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600" required>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2" data-i18n="lbl_order_date">Tanggal Order Air *</label>
-                                    <input type="date" id="custTanggalMinta" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600 focus:outline-none" required>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Tanggal Order *</label>
+                                    <input type="date" id="custTanggalMinta" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600" required>
                                 </div>
                                 <div>
-                                    <label id="lblBuktiBayarText" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" data-i18n="lbl_upload_pay">
-                                        Upload Bukti Bayar * <span class="text-xs text-slate-400 font-normal">(Maks. 2 MB)</span>
-                                    </label>
+                                    <label id="lblBuktiBayarText" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Upload Bukti Bayar * <span class="text-xs text-slate-400 font-normal">(Maks. 2 MB)</span></label>
                                     <input type="file" id="custBuktiBayar" onchange="validateFileSize(this)" accept="image/*,.pdf" class="w-full p-2 border rounded-xl text-sm bg-slate-50" required>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" data-i18n="lbl_upload_ba">
-                                        Upload Berita Acara FW * <span class="text-xs text-slate-400 font-normal">(Maks. 2 MB)</span>
-                                    </label>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Upload Berita Acara FW * <span class="text-xs text-slate-400 font-normal">(Maks. 2 MB)</span></label>
                                     <input type="file" id="custBA" onchange="validateFileSize(this)" accept="image/*,.pdf" class="w-full p-2 border rounded-xl text-sm bg-slate-50" required>
                                 </div>
                             </div>
 
-                            <div class="flex flex-wrap items-center gap-4">
-                                <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-md transition cursor-pointer" data-i18n="btn_submit_order">Kirim Order Air</button>
-                                <p class="text-xs text-slate-500 italic">*Order akan otomatis terhubung ke Admin Port Baubau.</p>
-                            </div>
+                            <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-md cursor-pointer transition">Kirim Order Air</button>
                         </form>
                     </div>
                 </div>
 
-                <!-- 8. RIWAYAT PESANAN CUSTOMER -->
+                <!-- 8. RIWAYAT CUSTOMER -->
                 <div id="page-customer-history" class="content-section hidden-page">
                     <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6" data-i18n="cust_hist_title">Riwayat Pesanan Saya</h1>
                     <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
@@ -755,250 +574,120 @@
                             <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
                                 <tr>
                                     <th class="p-3.5 border-b">NO</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_order_code">KODE ORDER</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_vessel">KAPAL</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_trade">TRAYEK</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_request_ton">QTY (TON)</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_jetty">JETTY</th>
-                                    <th class="p-3.5 border-b whitespace-nowrap" data-i18n="th_order_date">TGL ORDER</th>
-                                    <th class="p-3.5 border-b text-center" data-i18n="th_status">STATUS VERIFIKASI & LOG</th>
+                                    <th class="p-3.5 border-b">KODE ORDER</th>
+                                    <th class="p-3.5 border-b">KAPAL</th>
+                                    <th class="p-3.5 border-b">TRAYEK</th>
+                                    <th class="p-3.5 border-b">QTY (TON)</th>
+                                    <th class="p-3.5 border-b">JETTY</th>
+                                    <th class="p-3.5 border-b">TGL ORDER</th>
+                                    <th class="p-3.5 border-b text-center">STATUS</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-customer-history-body" class="divide-y divide-slate-100 text-sm">
-                                <!-- Render JS -->
-                            </tbody>
+                            <tbody id="table-customer-history-body" class="divide-y divide-slate-100 text-sm"></tbody>
                         </table>
                     </div>
                 </div>
-
             </main>
         </div>
     </div>
 
-    <!-- SCRIPT LOGIKA SYSTEM & USER APPROVAL & AUDIT LOG -->
+    <!-- SCRIPTS -->
     <script>
         let currentLang = 'id';
         let currentRole = '';
         let currentUser = '';
+        let auditLogs = [];
+        let registeredUsers = [];
+        let requestsData = [];
 
-        // FUNGSIONALITAS MOBILE SIDEBAR DRAWER
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('mainSidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden-page');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden-page');
+        // Konfigurasi Supabase
+        const SUPABASE_URL = 'https://xapcbpqoaaccvmdjlukx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcGNicHFvYWFjY3ZtZGpsdWt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NzE2MjQsImV4cCI6MjEwODI0NzYyNH0.vNJ9g31PWBDnVHYjiubeO-3D5NGUX3jySUy7s7xL0H8';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Ambil data dari Supabase saat halaman dimuat
+        async function loadSupabaseData() {
+            try {
+                // 1. Load Users
+                const { data: users, error: userErr } = await supabaseClient.from('users').select('*');
+                if (userErr) throw userErr;
+
+                if (!users || users.length === 0) {
+                    // Seed Default Admin jika tabel kosong
+                    await supabaseClient.from('users').insert([
+                        { name: "Admin Utama Port Baubau", username: "ptkag0005", password: "Makassar@2025", role: "Admin", status: "Approved" }
+                    ]);
+                    const { data: retryUsers } = await supabaseClient.from('users').select('*');
+                    registeredUsers = retryUsers || [];
+                } else {
+                    registeredUsers = users;
+                }
+
+                // 2. Load Orders
+                const { data: orders, error: orderErr } = await supabaseClient.from('orders').select('*');
+                if (orderErr) throw orderErr;
+
+                if (orders) {
+                    requestsData = orders.map(o => ({
+                        id: o.id,
+                        orderCode: o.order_code,
+                        kapal: o.kapal,
+                        trayek: o.trayek,
+                        tarif: o.tarif || (o.trayek === 'Domestik' ? 55000 : 142000),
+                        permintaan: o.permintaan,
+                        realisasi: o.realisasi || 0,
+                        jetty: o.jetty || '-',
+                        tanggalTiba: o.tanggal_tiba,
+                        tanggalMinta: o.tanggal_minta,
+                        status: o.status || 'Pending',
+                        fileBA: o.url_ba || '',
+                        fileBuktiBayar: o.url_bukti_bayar || '',
+                        fileName: o.url_bukti_bayar ? o.url_bukti_bayar.split('/').pop() : '',
+                        isSent: true,
+                        auditLog: o.audit_log || 'Synced with Supabase'
+                    }));
+                }
+
+                renderAllTables();
+                renderUserApprovalTable();
+            } catch (err) {
+                console.error("Error loading Supabase data:", err);
+                showToast("Gagal memuat data dari database Supabase", "error");
             }
         }
 
-        // DATABASE AUDIT TRAIL LOG
-        let auditLogs = [];
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadSupabaseData();
 
-        // DATABASE USER TERREGISTER (LOAD DARI LOCALSTORAGE AGAR PERSISTEN)
-        let registeredUsers = JSON.parse(localStorage.getItem('water_registered_users')) || [
-            { id: 1, name: "Admin Utama Port Baubau", username: "ptkag0005", pass: "Makassar@2025", role: "Admin", status: "Approved", date: "2026-01-01" }
-        ];
-
-        const dictionary = {
-            id: {
-                sub_title: "Sistem Distribusi & Rekapitulasi Air Bersih Pelabuhan",
-                portal_login: "Portal Akses Masuk",
-                login_sub: "Masukkan kredensial akun Anda untuk melanjutkan",
-                lbl_user: "User / No Telpon / Email",
-                lbl_pass: "Password",
-                btn_login: "Masuk ke Sistem",
-                no_account_text: "Belum punya akun Customer / User?",
-                btn_register_now: "Daftar Sekarang",
-                nav_dash: "Dashboard",
-                nav_permintaan: "Order Fresh Water",
-                nav_rekap: "Rekapitulasi Fresh Water",
-                nav_laporan: "Laporan Seluruh Kegiatan",
-                nav_users: "Persetujuan Akun",
-                nav_form_cust: "Form Order Air",
-                nav_hist_cust: "Riwayat Pesanan Saya",
-                btn_logout: "Keluar / Logout",
-                warn_title: "Peringatan / Back-up Plan Operasional",
-                btn_review_now: "Tinjau Sekarang",
-                dash_title: "Command Center - Fresh Water Baubau",
-                dash_sub: "Sistem Monitoring & Peta Live AIS Distribusi Air Bersih Pelabuhan",
-                lbl_period: "Periode:",
-                btn_reset: "Reset",
-                card_total_order: "Total Order Air",
-                card_sub_period: "Order periode terpilih",
-                card_supplied: "Kapal Ter-supply",
-                card_sub_supplied: "Pengisian diselesaikan",
-                card_cancelled: "Batal / Unsupplied",
-                card_sub_cancelled: "Order dibatalkan",
-                card_revenue: "Total Pendapatan Air",
-                map_title: "Nautical Chart Live AIS - Jetty Pertamina Baubau",
-                map_sub: "Monitoring Sandar Berdasarkan Sinkronisasi Grup WA & OpenCPN AIS",
-                map_footer_note: "Posisi kapal otomatis terploting setelah Admin menyelesaikan Tahap 1 Verifikasi Jetty",
-                order_title_admin: "Order Fresh Water (Alur Verifikasi 3 Tahap)",
-                th_order_code: "KODE ORDER",
-                th_vessel: "KAPAL",
-                th_trade: "TRAYEK",
-                th_request_ton: "ORDER (TON)",
-                th_jetty_pos: "POSISI JETTY",
-                th_supplied_ton: "TER-SUPPLY",
-                th_order_date: "TGL ORDER",
-                th_arrival_date: "TGL TIBA (ETA/TA)",
-                th_action_verify: "AKSI VERIFIKASI & WA",
-                rekap_title: "Rekapitulasi Fresh Water",
-                th_jetty: "JETTY",
-                th_realization: "REALISASI",
-                th_total_cost: "TOTAL BIAYA",
-                th_dates: "TGL TIBA / ORDER",
-                th_proof_doc: "BUKTI KEGIATAN FRESH WATER",
-                report_title: "Laporan Seluruh Kegiatan",
-                th_doc: "BUKTI DOKUMEN & AUDIT LOG",
-                btn_export: "Export Excel (.csv)",
-                cust_form_title: "Form Order Fresh Water",
-                lbl_vessel_name: "Nama Kapal *",
-                lbl_vessel_trade: "Trayek Kapal *",
-                lbl_order_qty: "Jumlah Order Fresh Water (Ton) *",
-                lbl_est_cost: "Perkiraan Total Biaya (Rp)",
-                lbl_upload_pay: "Upload Bukti Bayar *",
-                lbl_upload_ba: "Upload Berita Acara FW *",
-                btn_submit_order: "Kirim Order Air",
-                bank_banner_title: "Informasi Pembayaran & Rekening Bank",
-                bank_banner_sub: "Silakan lakukan pembayaran ke rekening resmi berikut:",
-                lbl_bank_acc: "Bank & No. Rekening",
-                btn_copy_acc: "📋 Salin Rekening",
-                lbl_transfer_note_title: "📌 Catatan / Berita Transfer (Wajib)",
-                lbl_note_ex: "(Contoh: MT PANDAN - Port Baubau - Fresh Water)",
-                btn_copy_note: "📋 Salin Format",
-                bank_upload_note: "*Harap simpan dan unggah bukti transfer pada kolom di bawah setelah transaksi berhasil.",
-                chk_charter_vessel: "Kapal Charter Pertamina / Bahari Group (Bebas Upload Bukti Bayar)",
-                cust_hist_title: "Riwayat Pesanan Saya",
-                th_status: "STATUS VERIFIKASI & LOG",
-                reg_title: "Daftar Akun Baru",
-                reg_sub: "Pendaftaran akan diverifikasi oleh Admin Utama Port Baubau sebelum dapat digunakan.",
-                lbl_company_name: "Nama Agen / Perusahaan / Petugas *",
-                lbl_reg_user: "Username / No. WA / Email *",
-                lbl_reg_pass: "Password *",
-                btn_cancel: "Batal",
-                btn_submit_reg: "Kirim Pendaftaran",
-                m1_title: "Tahap 1: Verifikasi Posisi Jetty",
-                m1_sub: "Pilih posisi dermaga sandar kapal berdasarkan laporan Grup WhatsApp operasional.",
-                lbl_select_jetty: "Pilih Jetty *",
-                btn_set_jetty: "Set Posisi Jetty",
-                m2_title: "Tahap 2: Verifikasi Selesai & Realisasi",
-                m2_sub: "Masukkan jumlah realisasi air (Ton) setelah pengisian komplit / BA ditandatangani.",
-                lbl_realization_ton: "Realisasi (Ton) *",
-                btn_save_verify: "Selesai & Masuk Rekap"
-            },
-            en: {
-                sub_title: "Port Fresh Water Distribution & Summary System",
-                portal_login: "Login Access Portal",
-                login_sub: "Enter your account credentials to continue",
-                lbl_user: "User / Phone / Email",
-                lbl_pass: "Password",
-                btn_login: "Login to System",
-                no_account_text: "Don't have an account?",
-                btn_register_now: "Register Now",
-                nav_dash: "Dashboard",
-                nav_permintaan: "Fresh Water Orders",
-                nav_rekap: "Fresh Water Summary",
-                nav_laporan: "All Activity Reports",
-                nav_users: "User Approvals",
-                nav_form_cust: "Water Order Form",
-                nav_hist_cust: "My Order History",
-                btn_logout: "Logout",
-                warn_title: "Operational Alert / Back-up Plan",
-                btn_review_now: "Review Now",
-                dash_title: "Command Center - Fresh Water Baubau",
-                dash_sub: "Port Fresh Water Live AIS & Monitoring System",
-                lbl_period: "Period:",
-                btn_reset: "Reset",
-                card_total_order: "Total Water Orders",
-                card_sub_period: "Orders in selected period",
-                card_supplied: "Vessels Supplied",
-                card_sub_supplied: "Completed supply operations",
-                card_cancelled: "Cancelled / Unsupplied",
-                card_sub_cancelled: "Cancelled orders",
-                card_revenue: "Total Water Revenue",
-                map_title: "Live AIS Nautical Chart - Pertamina Baubau Jetty",
-                map_sub: "Berthing Monitoring Sync via WA Group & OpenCPN AIS",
-                map_footer_note: "Vessel position auto-plotted after Admin completes Stage 1 Jetty Verification",
-                order_title_admin: "Fresh Water Orders (3-Stage Verification Workflow)",
-                th_order_code: "ORDER CODE",
-                th_vessel: "VESSEL",
-                th_trade: "TRADE TYPE",
-                th_request_ton: "ORDER (TON)",
-                th_jetty_pos: "JETTY POSITION",
-                th_supplied_ton: "SUPPLIED",
-                th_order_date: "ORDER DATE",
-                th_arrival_date: "ARRIVAL DATE (ETA/TA)",
-                th_action_verify: "VERIFICATION ACTION & WA",
-                rekap_title: "Fresh Water Summary",
-                th_jetty: "JETTY",
-                th_realization: "REALIZATION",
-                th_total_cost: "TOTAL COST",
-                th_dates: "ARRIVAL / ORDER DATE",
-                th_proof_doc: "FRESH WATER OPERATION PROOF",
-                report_title: "All Activity Reports",
-                th_doc: "PROOF DOCUMENT & AUDIT LOG",
-                btn_export: "Export Excel (.csv)",
-                cust_form_title: "Fresh Water Order Form",
-                lbl_vessel_name: "Vessel Name *",
-                lbl_vessel_trade: "Vessel Trade Type *",
-                lbl_order_qty: "Fresh Water Order Qty (Ton) *",
-                lbl_est_cost: "Estimated Total Cost (Rp)",
-                lbl_upload_pay: "Upload Payment Proof *",
-                lbl_upload_ba: "Upload FW Statement of Facts *",
-                btn_submit_order: "Submit Water Order",
-                bank_banner_title: "Payment Information & Bank Account",
-                bank_banner_sub: "Please remit payment to our official bank account:",
-                lbl_bank_acc: "Bank & Account No.",
-                btn_copy_acc: "📋 Copy Account No.",
-                lbl_transfer_note_title: "📌 Transfer Payment Reference (Required)",
-                lbl_note_ex: "(Example: MT PANDAN - Port Baubau - Fresh Water)",
-                btn_copy_note: "📋 Copy Reference",
-                bank_upload_note: "*Kindly attach the payment receipt in the form below after completing the transaction.",
-                chk_charter_vessel: "Pertamina Charter Vessel / Bahari Group (Payment Proof Optional)",
-                cust_hist_title: "My Order History",
-                th_status: "VERIFICATION STATUS & LOG",
-                reg_title: "New Account Registration",
-                reg_sub: "Registration will be verified by Main Admin before activation.",
-                lbl_company_name: "Agency Name / Company / Officer *",
-                lbl_reg_user: "Username / WA Phone / Email *",
-                lbl_reg_pass: "Password *",
-                btn_cancel: "Cancel",
-                btn_submit_reg: "Submit Registration",
-                m1_title: "Stage 1: Jetty Position Verification",
-                m1_sub: "Select vessel berthing jetty position based on operational WA Group reports.",
-                lbl_select_jetty: "Select Jetty *",
-                btn_set_jetty: "Set Jetty Position",
-                m2_title: "Stage 2: Completion & Realization Verification",
-                m2_sub: "Enter final water realization (Ton) after completion / signed Statement of Facts.",
-                lbl_realization_ton: "Realization (Ton) *",
-                btn_save_verify: "Complete & Add to Summary"
+            const savedRole = localStorage.getItem('water_role');
+            const savedUser = localStorage.getItem('water_user');
+            if (savedRole && savedUser) {
+                startSession(savedRole, savedUser);
             }
-        };
+
+            const todayStr = new Date().toISOString().slice(0, 10);
+            if(document.getElementById('custTanggalTiba')) document.getElementById('custTanggalTiba').value = todayStr;
+            if(document.getElementById('custTanggalMinta')) document.getElementById('custTanggalMinta').value = todayStr;
+            calculateCost();
+        });
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden-page');
+        }
 
         function addAuditLog(action, detail) {
             const nowStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ", " + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + " WITA";
-            auditLogs.unshift({
-                timestamp: nowStr,
-                user: currentUser || "system",
-                action: action,
-                detail: detail
-            });
+            auditLogs.unshift({ timestamp: nowStr, user: currentUser || "system", action, detail });
             renderAuditTrailTable();
         }
 
         function renderAuditTrailTable() {
             const body = document.getElementById('table-audit-trail-body');
             if (!body) return;
-            body.innerHTML = '';
-            if (auditLogs.length === 0) {
-                body.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada aktivitas rekam jejak audit log.</td></tr>`;
-                return;
-            }
+            body.innerHTML = auditLogs.length === 0 ? `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada audit log.</td></tr>` : '';
             auditLogs.forEach(log => {
                 body.innerHTML += `
                     <tr class="hover:bg-slate-50">
@@ -1006,305 +695,8 @@
                         <td class="p-3 border-b font-bold text-blue-900">${log.user}</td>
                         <td class="p-3 border-b"><span class="bg-slate-800 text-sky-300 px-2 py-0.5 rounded text-[10px] font-bold">${log.action}</span></td>
                         <td class="p-3 border-b text-slate-800">${log.detail}</td>
-                    </tr>
-                `;
+                    </tr>`;
             });
-        }
-
-        // PWA DETECTION & DETEKSI OFFLINE
-        window.addEventListener('offline', () => {
-            document.getElementById('offlineIndicator').classList.remove('hidden-page');
-        });
-        window.addEventListener('online', () => {
-            document.getElementById('offlineIndicator').classList.add('hidden-page');
-            showToast("Koneksi Internet Kembali Terhubung! Data Tersinkronisasi.", "success");
-        });
-
-        function sendWhatsAppNotice(orderCode, kapal, status, jetty, qty) {
-            const adminPhone = "6281234567890"; // Nomor WA Admin Baubau
-            const textMsg = encodeURIComponent(
-                `*NOTIFIKASI FRESH WATER PORT BAUBAU*\n` +
-                `----------------------------------------\n` +
-                `Kode Order: *${orderCode}*\n` +
-                `Nama Kapal: *${kapal}*\n` +
-                `Status: *${status}*\n` +
-                `Posisi Jetty: *${jetty}*\n` +
-                `Volume: *${qty} Ton*\n\n` +
-                `_Pesan otomatis dikirim via Port Baubau System_`
-            );
-            window.open(`https://wa.me/${adminPhone}?text=${textMsg}`, '_blank');
-            addAuditLog("WA_NOTIFICATION", `Sent WhatsApp notification for ${kapal} (${orderCode})`);
-        }
-
-        function followUpWhatsApp(orderCode, kapal, status) {
-            const adminPhone = "6281234567890"; // Nomor WA Admin Baubau
-            const textMsg = encodeURIComponent(
-                `*FOLLOW UP ORDER FRESH WATER*\n` +
-                `----------------------------------------\n` +
-                `Halo Admin Port Baubau, mohon konfirmasi/follow up status order kami:\n\n` +
-                `Kode Order: *${orderCode}*\n` +
-                `Nama Kapal: *${kapal}*\n` +
-                `Status Saat Ini: *${status}*\n\n` +
-                `Mohon bantuan informasi jadwal/sandarnya. Terima kasih!`
-            );
-            window.open(`https://wa.me/${adminPhone}?text=${textMsg}`, '_blank');
-            addAuditLog("WA_FOLLOW_UP", `Customer followed up order ${orderCode} (${kapal})`);
-        }
-
-        function changeLanguage(lang) {
-            currentLang = lang;
-            const btnId = document.getElementById('lang-btn-id');
-            const btnEn = document.getElementById('lang-btn-en');
-
-            if (lang === 'id') {
-                btnId.className = "px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold bg-blue-900 text-white transition";
-                btnEn.className = "px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold text-slate-600 hover:bg-slate-200 transition";
-            } else {
-                btnEn.className = "px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold bg-blue-900 text-white transition";
-                btnId.className = "px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold text-slate-600 hover:bg-slate-200 transition";
-            }
-
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (dictionary[lang][key]) {
-                    el.innerText = dictionary[lang][key];
-                }
-            });
-
-            renderAllTables();
-        }
-
-        // DATABASE REQUESTS KOSONG / BERSIH
-        let requestsData = [];
-
-        function forgotPasswordNotice() {
-            showToast("Hubungi Admin Utama Port Baubau via WA/Email untuk reset password.", "info");
-        }
-
-        function resetUserPassword(userId) {
-            const user = registeredUsers.find(u => u.id === userId);
-            if (!user) return;
-            
-            const newPass = prompt(`Masukkan Password Baru untuk user ${user.username}:`, "baubau123");
-            if (newPass && newPass.trim() !== "") {
-                user.pass = newPass.trim();
-                localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
-                showToast(`Password untuk ${user.username} berhasil di-reset menjadi "${newPass.trim()}"!`, "success");
-                addAuditLog("PASSWORD_RESET", `Admin reset password for user ${user.username}`);
-                renderUserApprovalTable();
-            }
-        }
-
-        function deleteUser(userId) {
-            const userIndex = registeredUsers.findIndex(u => u.id === userId);
-            if (userIndex !== -1) {
-                const userName = registeredUsers[userIndex].name;
-                if (confirm(`Apakah Anda yakin ingin menghapus akun "${userName}"?`)) {
-                    registeredUsers.splice(userIndex, 1);
-                    localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
-                    showToast(`Akun ${userName} berhasil dihapus dari sistem!`, "info");
-                    addAuditLog("USER_DELETE", `Admin deleted account ${userName}`);
-                    renderUserApprovalTable();
-                }
-            }
-        }
-
-        function openRegisterModal() {
-            document.getElementById('registerModal').classList.remove('hidden-page');
-        }
-
-        function closeRegisterModal() {
-            document.getElementById('registerModal').classList.add('hidden-page');
-        }
-
-        function handleRegisterSubmit(e) {
-            e.preventDefault();
-            const company = document.getElementById('regCompany').value;
-            const username = document.getElementById('regUsername').value.trim().toLowerCase();
-            const password = document.getElementById('regPassword').value.trim();
-
-            const exists = registeredUsers.some(u => u.username === username);
-            if (exists) {
-                showToast("Username / Contact ini sudah terdaftar!", "error");
-                return;
-            }
-
-            const today = new Date().toISOString().slice(0, 10);
-            registeredUsers.push({
-                id: registeredUsers.length + 1,
-                name: company,
-                username: username,
-                pass: password,
-                role: "Customer",
-                status: "Pending",
-                date: today
-            });
-            
-            localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
-
-            showToast("Pendaftaran berhasil! Akun Anda menunggu verifikasi Admin Utama Port Baubau.");
-            addAuditLog("USER_REGISTER", `New registration submitted by ${company} (${username})`);
-            closeRegisterModal();
-            document.getElementById('regCompany').value = '';
-            document.getElementById('regUsername').value = '';
-            document.getElementById('regPassword').value = '';
-            renderUserApprovalTable();
-        }
-
-        function approveUserWithRole(userId, selectedRole) {
-            const user = registeredUsers.find(u => u.id === userId);
-            if (user) {
-                user.status = "Approved";
-                user.role = selectedRole;
-                localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
-                showToast(`Akun ${user.name} disetujui sebagai ${selectedRole}!`);
-                addAuditLog("USER_APPROVE", `Approved ${user.name} as ${selectedRole}`);
-                renderUserApprovalTable();
-            }
-        }
-
-        function rejectUser(userId) {
-            const user = registeredUsers.find(u => u.id === userId);
-            if (user) {
-                user.status = "Rejected";
-                localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
-                showToast(`Pendaftaran ${user.name} ditolak.`, "error");
-                addAuditLog("USER_REJECT", `Rejected registration for ${user.name}`);
-                renderUserApprovalTable();
-            }
-        }
-
-        function renderUserApprovalTable() {
-            const pendingBody = document.getElementById('table-pending-users-body');
-            const approvedBody = document.getElementById('table-approved-users-body');
-            const pendingBadge = document.getElementById('pendingUserBadge');
-
-            if (!pendingBody || !approvedBody) return;
-
-            pendingBody.innerHTML = '';
-            approvedBody.innerHTML = '';
-
-            const pendingUsers = registeredUsers.filter(u => u.status === 'Pending');
-            const approvedUsers = registeredUsers.filter(u => u.status === 'Approved' || u.status === 'Rejected');
-
-            if (pendingUsers.length > 0) {
-                pendingBadge.classList.remove('hidden-page');
-                pendingBadge.innerText = pendingUsers.length;
-            } else {
-                pendingBadge.classList.add('hidden-page');
-            }
-
-            if (pendingUsers.length === 0) {
-                pendingBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Tidak ada pendaftaran baru yang menunggu approval.</td></tr>`;
-            } else {
-                pendingUsers.forEach((u, i) => {
-                    pendingBody.innerHTML += `
-                        <tr>
-                            <td class="p-3.5">${i + 1}</td>
-                            <td class="p-3.5 font-bold text-slate-800">${u.name}</td>
-                            <td class="p-3.5 font-mono text-xs text-blue-900">${u.username}</td>
-                            <td class="p-3.5 text-xs text-slate-500">${u.date}</td>
-                            <td class="p-3.5 text-center">
-                                <div class="flex justify-center gap-2">
-                                    <button onclick="approveUserWithRole(${u.id}, 'Customer')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow cursor-pointer">
-                                        Approve (Customer)
-                                    </button>
-                                    <button onclick="approveUserWithRole(${u.id}, 'Admin')" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow cursor-pointer">
-                                        Approve (Admin)
-                                    </button>
-                                    <button onclick="rejectUser(${u.id})" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow cursor-pointer">
-                                        Tolak
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-
-            approvedUsers.forEach((u, i) => {
-                let statusBadge = u.status === 'Approved' 
-                    ? '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-2.5 py-0.5 rounded-full text-xs">Aktif / Approved</span>'
-                    : '<span class="bg-rose-100 text-rose-800 border border-rose-300 font-bold px-2.5 py-0.5 rounded-full text-xs">Ditolak / Rejected</span>';
-
-                let roleBadge = u.role === 'Admin'
-                    ? '<span class="bg-blue-900 text-white font-bold px-2.5 py-0.5 rounded-md text-xs">Admin</span>'
-                    : '<span class="bg-slate-200 text-slate-800 font-bold px-2.5 py-0.5 rounded-md text-xs">Customer</span>';
-
-                approvedBody.innerHTML += `
-                    <tr>
-                        <td class="p-3.5">${i + 1}</td>
-                        <td class="p-3.5 font-bold text-slate-800">${u.name}</td>
-                        <td class="p-3.5 font-mono text-xs text-slate-600">${u.username}</td>
-                        <td class="p-3.5">${roleBadge}</td>
-                        <td class="p-3.5">${statusBadge}</td>
-                        <td class="p-3.5 text-center">
-                            <div class="flex justify-center gap-2">
-                                <button onclick="resetUserPassword(${u.id})" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow transition cursor-pointer">
-                                    🔑 Reset Pass
-                                </button>
-                                <button onclick="deleteUser(${u.id})" class="bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow transition cursor-pointer">
-                                    🗑️ Hapus
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function getCurrentTimestamp() {
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-            const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-            return `Verified by Admin on ${dateStr}, ${timeStr} WITA`;
-        }
-
-        function copyAccountNo() {
-            navigator.clipboard.writeText('184127595');
-            showToast("Nomor rekening BNI (184127595) berhasil disalin!", "success");
-        }
-
-        function copyNoteFormat() {
-            navigator.clipboard.writeText('[Nama Kapal] - Port Baubau - Fresh Water');
-            showToast("Format berita transfer berhasil disalin!", "success");
-        }
-
-        function toggleCharterMode(checkbox) {
-            const inputBukti = document.getElementById('custBuktiBayar');
-            const lblText = document.getElementById('lblBuktiBayarText');
-
-            if (checkbox.checked) {
-                inputBukti.required = false;
-                inputBukti.disabled = true;
-                inputBukti.value = '';
-                lblText.innerHTML = `Upload Bukti Bayar <span class="text-xs text-sky-600 font-bold">(Khusus Charter - Tidak Wajib Upload)</span>`;
-            } else {
-                inputBukti.required = true;
-                inputBukti.disabled = false;
-                lblText.innerHTML = `Upload Bukti Bayar * <span class="text-xs text-slate-400 font-normal">(Maks. 2 MB)</span>`;
-            }
-        }
-
-        function setDeparted(id) {
-            const item = requestsData.find(d => d.id === id);
-            if (item) {
-                item.status = 'Departed';
-                item.auditLog = `Departed / Sail on ${new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'})} WITA`;
-                showToast(`Kapal ${item.kapal} telah Lepas Sandar (Departed). Dermaga ${item.jetty} kini VACANT!`, 'info');
-                addAuditLog("DEPARTED_SAIL", `${item.kapal} departed from ${item.jetty}`);
-                renderAllTables();
-            }
-        }
-
-        function formatShortDate(dateString) {
-            if (!dateString || dateString === '-') return '-';
-            const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-            const parts = dateString.split('-');
-            if (parts.length === 3) {
-                return `${parts[2]}-${months[parseInt(parts[1], 10) - 1] || parts[1]}`;
-            }
-            return dateString;
         }
 
         function showToast(message, type = 'success') {
@@ -1314,23 +706,7 @@
             toast.className = `toast text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-sm font-semibold ${bgClass}`;
             toast.innerHTML = `<div>${message}</div>`;
             container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function validateFileSize(inputElement) {
-            if (inputElement.files && inputElement.files[0]) {
-                const file = inputElement.files[0];
-                if (file.size > 2 * 1024 * 1024) {
-                    showToast(`Ukuran file "${file.name}" melebihi 2 MB!`, 'error');
-                    inputElement.value = '';
-                } else {
-                    showToast(`File "${file.name}" terverifikasi.`, 'success');
-                }
-            }
+            setTimeout(() => { toast.remove(); }, 3000);
         }
 
         function formatRupiah(number) {
@@ -1349,15 +725,15 @@
             const userVal = document.getElementById('usernameInput').value.trim().toLowerCase();
             const passVal = document.getElementById('passwordInput').value.trim();
 
-            const foundUser = registeredUsers.find(u => u.username.toLowerCase() === userVal && u.pass === passVal);
+            const foundUser = registeredUsers.find(u => u.username.toLowerCase() === userVal && (u.password === passVal || u.pass === passVal));
 
             if (foundUser) {
                 if (foundUser.status === 'Pending') {
-                    showToast("Akun Anda masih menunggu verifikasi/approval dari Admin Utama Port Baubau!", "error");
+                    showToast("Akun Anda masih menunggu verifikasi Admin!", "error");
                     return;
                 }
                 if (foundUser.status === 'Rejected') {
-                    showToast("Pendaftaran akun Anda ditolak oleh Admin.", "error");
+                    showToast("Pendaftaran akun Anda ditolak.", "error");
                     return;
                 }
 
@@ -1365,7 +741,7 @@
                 currentUser = foundUser.name;
                 addAuditLog("USER_LOGIN", `${foundUser.name} logged in as ${foundUser.role}`);
                 startSession(foundUser.role, foundUser.name);
-                showToast(`Selamat datang, ${foundUser.name}!`, "info");
+                showToast(`Selamat datang, ${foundUser.name}!`);
             } else {
                 document.getElementById('login-error').classList.remove('hidden-page');
             }
@@ -1374,7 +750,6 @@
         function startSession(role, userName) {
             currentRole = role;
             currentUser = userName;
-            
             localStorage.setItem('water_role', role);
             localStorage.setItem('water_user', userName);
 
@@ -1397,7 +772,148 @@
             }
         }
 
-        function handleCustomerSubmit(e) {
+        function logout() {
+            localStorage.removeItem('water_role');
+            localStorage.removeItem('water_user');
+            location.reload();
+        }
+
+        // REGISTRASI KE SUPABASE
+        async function handleRegisterSubmit(e) {
+            e.preventDefault();
+            const company = document.getElementById('regCompany').value;
+            const username = document.getElementById('regUsername').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value.trim();
+
+            const { data: existing } = await supabaseClient.from('users').select('*').eq('username', username);
+            if (existing && existing.length > 0) {
+                showToast("Username / Contact ini sudah terdaftar!", "error");
+                return;
+            }
+
+            const { error } = await supabaseClient.from('users').insert([
+                { name: company, username: username, password: password, role: "Customer", status: "Pending" }
+            ]);
+
+            if (error) {
+                showToast("Gagal mendaftar: " + error.message, "error");
+                return;
+            }
+
+            showToast("Pendaftaran berhasil! Menunggu verifikasi Admin.");
+            addAuditLog("USER_REGISTER", `New registration by ${company} (${username})`);
+            closeRegisterModal();
+            document.getElementById('regCompany').value = '';
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+
+            await loadSupabaseData();
+        }
+
+        async function approveUserWithRole(userId, selectedRole) {
+            const { error } = await supabaseClient.from('users').update({ status: 'Approved', role: selectedRole }).eq('id', userId);
+            if (!error) {
+                showToast(`Akun berhasil disetujui sebagai ${selectedRole}!`);
+                addAuditLog("USER_APPROVE", `Approved user ID ${userId} as ${selectedRole}`);
+                await loadSupabaseData();
+            } else {
+                showToast("Gagal menyetujui akun", "error");
+            }
+        }
+
+        async function rejectUser(userId) {
+            const { error } = await supabaseClient.from('users').update({ status: 'Rejected' }).eq('id', userId);
+            if (!error) {
+                showToast("Pendaftaran ditolak.", "error");
+                addAuditLog("USER_REJECT", `Rejected user ID ${userId}`);
+                await loadSupabaseData();
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (confirm("Yakin ingin menghapus akun ini?")) {
+                const { error } = await supabaseClient.from('users').delete().eq('id', userId);
+                if (!error) {
+                    showToast("Akun berhasil dihapus!");
+                    addAuditLog("USER_DELETE", `Deleted user ID ${userId}`);
+                    await loadSupabaseData();
+                }
+            }
+        }
+
+        async function resetUserPassword(userId) {
+            const newPass = prompt("Masukkan Password Baru:", "baubau123");
+            if (newPass) {
+                const { error } = await supabaseClient.from('users').update({ password: newPass }).eq('id', userId);
+                if (!error) {
+                    showToast("Password berhasil direset!");
+                    addAuditLog("PASSWORD_RESET", `Reset password for user ID ${userId}`);
+                    await loadSupabaseData();
+                }
+            }
+        }
+
+        function renderUserApprovalTable() {
+            const pendingBody = document.getElementById('table-pending-users-body');
+            const approvedBody = document.getElementById('table-approved-users-body');
+            const pendingBadge = document.getElementById('pendingUserBadge');
+            if (!pendingBody || !approvedBody) return;
+
+            pendingBody.innerHTML = '';
+            approvedBody.innerHTML = '';
+
+            const pendingUsers = registeredUsers.filter(u => u.status === 'Pending');
+            const approvedUsers = registeredUsers.filter(u => u.status === 'Approved' || u.status === 'Rejected');
+
+            if (pendingUsers.length > 0) {
+                pendingBadge.classList.remove('hidden-page');
+                pendingBadge.innerText = pendingUsers.length;
+            } else {
+                pendingBadge.classList.add('hidden-page');
+            }
+
+            if (pendingUsers.length === 0) {
+                pendingBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Tidak ada pendaftaran baru.</td></tr>`;
+            } else {
+                pendingUsers.forEach((u, i) => {
+                    pendingBody.innerHTML += `
+                        <tr>
+                            <td class="p-3.5">${i + 1}</td>
+                            <td class="p-3.5 font-bold">${u.name}</td>
+                            <td class="p-3.5 font-mono text-xs">${u.username}</td>
+                            <td class="p-3.5 text-xs">${u.created_at ? u.created_at.slice(0,10) : '-'}</td>
+                            <td class="p-3.5 text-center flex justify-center gap-2">
+                                <button onclick="approveUserWithRole(${u.id}, 'Customer')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer">Approve (Customer)</button>
+                                <button onclick="approveUserWithRole(${u.id}, 'Admin')" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer">Approve (Admin)</button>
+                                <button onclick="rejectUser(${u.id})" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer">Tolak</button>
+                            </td>
+                        </tr>`;
+                });
+            }
+
+            approvedUsers.forEach((u, i) => {
+                let statusBadge = u.status === 'Approved' 
+                    ? '<span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-xs font-bold">Aktif</span>'
+                    : '<span class="bg-rose-100 text-rose-800 px-2.5 py-0.5 rounded-full text-xs font-bold">Ditolak</span>';
+                let roleBadge = u.role === 'Admin' ? '<span class="bg-blue-900 text-white px-2 py-0.5 rounded text-xs font-bold">Admin</span>' : '<span class="bg-slate-200 text-slate-800 px-2 py-0.5 rounded text-xs font-bold">Customer</span>';
+
+                approvedBody.innerHTML += `
+                    <tr>
+                        <td class="p-3.5">${i + 1}</td>
+                        <td class="p-3.5 font-bold">${u.name}</td>
+                        <td class="p-3.5 font-mono text-xs">${u.username}</td>
+                        <td class="p-3.5">${roleBadge}</td>
+                        <td class="p-3.5">${statusBadge}</td>
+                        <td class="p-3.5 text-center flex justify-center gap-2">
+                            <button onclick="resetUserPassword(${u.id})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs font-bold">🔑 Reset</button>
+                            <button onclick="deleteUser(${u.id})" class="bg-red-600 text-white px-2.5 py-1 rounded text-xs font-bold">🗑️ Hapus</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // SUBMIT ORDER DENGAN UPLOAD FILE KE SUPABASE STORAGE BUCKET
+        async function handleCustomerSubmit(e) {
             e.preventDefault();
             const nama = document.getElementById('custNamaKapal').value;
             const trayek = document.getElementById('custTrayek').value;
@@ -1406,426 +922,171 @@
             const tglMinta = document.getElementById('custTanggalMinta').value;
             const isCharter = document.getElementById('custIsCharter').checked;
 
+            const fileBukti = document.getElementById('custBuktiBayar').files[0];
+            const fileBA = document.getElementById('custBA').files[0];
+
+            showToast("Mengunggah dokumen ke Supabase Storage...", "info");
+
+            let buktiUrl = "(Kapal Charter)";
+            let baUrl = "";
+
+            try {
+                if (!isCharter && fileBukti) {
+                    const fileNameBukti = `bukti_${Date.now()}_${fileBukti.name}`;
+                    const { error: errBukti } = await supabaseClient.storage.from('dokumen-order').upload(fileNameBukti, fileBukti);
+                    if (errBukti) throw errBukti;
+                    const { data: pubBukti } = supabaseClient.storage.from('dokumen-order').getPublicUrl(fileNameBukti);
+                    buktiUrl = pubBukti.publicUrl;
+                }
+
+                if (fileBA) {
+                    const fileNameBA = `ba_${Date.now()}_${fileBA.name}`;
+                    const { error: errBA } = await supabaseClient.storage.from('dokumen-order').upload(fileNameBA, fileBA);
+                    if (errBA) throw errBA;
+                    const { data: pubBA } = supabaseClient.storage.from('dokumen-order').getPublicUrl(fileNameBA);
+                    baUrl = pubBA.publicUrl;
+                }
+            } catch (err) {
+                showToast("Gagal upload file: " + err.message, "error");
+                return;
+            }
+
             const dateParts = tglMinta.split('-');
             const dateStr = dateParts.length === 3 ? `${dateParts[2]}${dateParts[1]}${dateParts[0]}` : '21102026';
             const generatedOrderCode = `FW-${String(requestsData.length + 1).padStart(3, '0')}/PTK/BAUBAU/${dateStr}`;
+            const tarifVal = trayek === 'Domestik' ? 55000 : 142000;
 
-            requestsData.push({
-                id: requestsData.length + 1,
-                orderCode: generatedOrderCode,
-                kapal: nama.toUpperCase(),
-                trayek: trayek,
-                tarif: trayek === 'Domestik' ? 55000 : 142000,
-                permintaan: qty,
-                realisasi: 0,
-                jetty: "-",
-                tanggalTiba: tglTiba,
-                tanggalMinta: tglMinta,
-                status: "Pending",
-                fileBA: "BA_" + nama.toUpperCase() + ".pdf",
-                fileBuktiBayar: isCharter ? "(Kapal Charter)" : "Bukti_Bayar_" + nama.toUpperCase() + ".pdf",
-                fileName: "",
-                isSent: false,
-                auditLog: "Order Created by Customer"
-            });
+            const { error: insertErr } = await supabaseClient.from('orders').insert([
+                {
+                    order_code: generatedOrderCode,
+                    kapal: nama.toUpperCase(),
+                    trayek: trayek,
+                    tarif: tarifVal,
+                    permintaan: qty,
+                    realisasi: 0,
+                    jetty: "-",
+                    tanggal_tiba: tglTiba,
+                    tanggal_minta: tglMinta,
+                    status: "Pending",
+                    url_bukti_bayar: buktiUrl,
+                    url_ba: baUrl,
+                    audit_log: "Order Created by Customer"
+                }
+            ]);
 
-            showToast(`Order Berhasil! Kode Order: ${generatedOrderCode}`);
-            addAuditLog("CREATE_ORDER", `Order ${generatedOrderCode} for ${nama.toUpperCase()} (${qty} Ton) created`);
-            
+            if (insertErr) {
+                showToast("Gagal menyimpan order: " + insertErr.message, "error");
+                return;
+            }
+
+            showToast(`Order Berhasil! Kode: ${generatedOrderCode}`);
+            addAuditLog("CREATE_ORDER", `Order ${generatedOrderCode} for ${nama.toUpperCase()}`);
             sendWhatsAppNotice(generatedOrderCode, nama.toUpperCase(), "ORDER BARU", "Belum Set Jetty", qty);
 
             document.getElementById('custNamaKapal').value = '';
-            renderAllTables();
+            await loadSupabaseData();
             navigateTo('page-customer-history');
+        }
+
+        async function submitJettyModal() {
+            const id = parseInt(document.getElementById('jettyModalOrderId').value);
+            const jettyVal = document.getElementById('modalJettyChoice').value;
+            const item = requestsData.find(d => d.id === id);
+
+            if (item) {
+                const { error } = await supabaseClient.from('orders').update({
+                    jetty: jettyVal,
+                    status: 'Moored',
+                    audit_log: `Jetty Assigned (${jettyVal})`
+                }).eq('id', id);
+
+                if (!error) {
+                    showToast(`Posisi ${item.kapal} diatur ke ${jettyVal}`);
+                    addAuditLog("SET_JETTY", `Assigned ${item.kapal} to ${jettyVal}`);
+                    await loadSupabaseData();
+                }
+            }
+            closeJettyModal();
+        }
+
+        async function submitVerificationModal() {
+            const id = parseInt(document.getElementById('verifyModalOrderId').value);
+            const actionType = document.getElementById('verifyModalActionType').value;
+            const realQty = parseFloat(document.getElementById('modalRealQty').value) || 0;
+            const item = requestsData.find(d => d.id === id);
+
+            if (item) {
+                const realisasiVal = actionType === 'Batal Supply' ? 0 : realQty;
+                const { error } = await supabaseClient.from('orders').update({
+                    status: actionType,
+                    realisasi: realisasiVal,
+                    audit_log: `Verified as ${actionType}`
+                }).eq('id', id);
+
+                if (!error) {
+                    showToast(`Status ${item.kapal} diverifikasi ${actionType}`);
+                    addAuditLog("VERIFY_COMPLETED", `Verified ${item.kapal} as ${actionType}`);
+                    await loadSupabaseData();
+                }
+            }
+            closeVerifyModal();
+        }
+
+        async function setDeparted(id) {
+            const item = requestsData.find(d => d.id === id);
+            if (item) {
+                const { error } = await supabaseClient.from('orders').update({
+                    status: 'Departed',
+                    audit_log: 'Departed / Sail'
+                }).eq('id', id);
+
+                if (!error) {
+                    showToast(`Kapal ${item.kapal} Lepas Sandar (Departed).`);
+                    addAuditLog("DEPARTED_SAIL", `${item.kapal} departed`);
+                    await loadSupabaseData();
+                }
+            }
+        }
+
+        async function resetVerification(id) {
+            const { error } = await supabaseClient.from('orders').update({
+                status: 'Pending',
+                jetty: '-',
+                realisasi: 0,
+                audit_log: 'Reset by Admin'
+            }).eq('id', id);
+
+            if (!error) {
+                showToast("Status berhasil di-reset.");
+                addAuditLog("RESET_ORDER", `Reset order ID ${id}`);
+                await loadSupabaseData();
+            }
         }
 
         function openJettyModal(id) {
             document.getElementById('jettyModalOrderId').value = id;
             document.getElementById('jettyModal').classList.remove('hidden-page');
         }
-        function closeJettyModal() {
-            document.getElementById('jettyModal').classList.add('hidden-page');
-        }
-        function submitJettyModal() {
-            const id = parseInt(document.getElementById('jettyModalOrderId').value);
-            const jettyVal = document.getElementById('modalJettyChoice').value;
-
-            const item = requestsData.find(d => d.id === id);
-            if (item) {
-                item.jetty = jettyVal;
-                item.status = 'Moored';
-                item.auditLog = `Jetty Assigned (${jettyVal}) on ${new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'})} WITA`;
-                showToast(`Posisi ${item.kapal} dikonfirmasi di ${jettyVal}`);
-                addAuditLog("SET_JETTY", `Assigned ${item.kapal} to ${jettyVal}`);
-            }
-            closeJettyModal();
-            renderAllTables();
-        }
+        function closeJettyModal() { document.getElementById('jettyModal').classList.add('hidden-page'); }
 
         function openVerifyModal(id, actionType) {
             const item = requestsData.find(d => d.id === id);
             if (!item) return;
-
             document.getElementById('verifyModalOrderId').value = id;
             document.getElementById('verifyModalActionType').value = actionType;
             document.getElementById('modalRealQty').value = actionType === 'Ter-supply' ? (item.realisasi || item.permintaan) : 0;
             document.getElementById('verifyModal').classList.remove('hidden-page');
         }
-        function closeVerifyModal() {
-            document.getElementById('verifyModal').classList.add('hidden-page');
-        }
-        function submitVerificationModal() {
-            const id = parseInt(document.getElementById('verifyModalOrderId').value);
-            const actionType = document.getElementById('verifyModalActionType').value;
-            const realQty = parseFloat(document.getElementById('modalRealQty').value) || 0;
+        function closeVerifyModal() { document.getElementById('verifyModal').classList.add('hidden-page'); }
 
-            const item = requestsData.find(d => d.id === id);
-            if (item) {
-                item.status = actionType;
-                item.realisasi = actionType === 'Batal Supply' ? 0 : realQty;
-                item.auditLog = getCurrentTimestamp();
-                showToast(`Status ${item.kapal} diverifikasi ${actionType} (${item.realisasi} Ton)`);
-                addAuditLog("VERIFY_COMPLETED", `Verified ${item.kapal} as ${actionType} (${item.realisasi} Ton)`);
-            }
-            closeVerifyModal();
-            renderAllTables();
-        }
+        function openRegisterModal() { document.getElementById('registerModal').classList.remove('hidden-page'); }
+        function closeRegisterModal() { document.getElementById('registerModal').classList.add('hidden-page'); }
 
-        function resetVerification(id) {
-            const item = requestsData.find(d => d.id === id);
-            if(item) {
-                item.status = 'Pending';
-                item.jetty = '-';
-                item.realisasi = 0;
-                item.auditLog = 'Reset by Admin';
-                showToast(`Status ${item.kapal} di-reset.`);
-                addAuditLog("RESET_ORDER", `Reset status for ${item.kapal}`);
-            }
-            renderAllTables();
-        }
-
-        function resetDashFilter() {
-            document.getElementById('dashMonthFilter').value = 'ALL';
-            document.getElementById('dashYearFilter').value = '2026';
-            renderAllTables();
-        }
-
-        function handleFileSelect(id, inputElement) {
-            const item = requestsData.find(d => d.id === id);
-            if (item && inputElement.files.length > 0) {
-                const file = inputElement.files[0];
-                if (file.size > 2 * 1024 * 1024) {
-                    showToast(`Ukuran file melebihi 2 MB!`, 'error');
-                    inputElement.value = '';
-                    return;
-                }
-                item.fileName = file.name;
-                item.isSent = false;
-                showToast(`File ${file.name} terpilih.`);
-                renderAllTables();
-            }
-        }
-
-        function previewDocument(id) {
-            const item = requestsData.find(d => d.id === id);
-            if (item) {
-                showToast(item.fileName ? `Preview File: ${item.fileName}` : `File belum dipilih!`, item.fileName ? 'info' : 'error');
-            }
-        }
-
-        function sendDocument(id) {
-            const item = requestsData.find(d => d.id === id);
-            if (item) {
-                if (!item.fileName) {
-                    showToast(`Pilih file terlebih dahulu!`, 'error');
-                    return;
-                }
-                item.isSent = true;
-                showToast(`Bukti Kegiatan (${item.orderCode}) TERKIRIM!`);
-                addAuditLog("SEND_DOCUMENT", `Sent document for ${item.orderCode}`);
-                renderAllTables();
-            }
-        }
-
-        function exportToExcel() {
-            const suppliedList = requestsData.filter(item => item.status === 'Ter-supply' || item.status === 'Departed');
-            if(suppliedList.length === 0) {
-                showToast(`Tidak ada data untuk di-export!`, 'error');
-                return;
-            }
-
-            let csvContent = "data:text/csv;charset=utf-8,No,Kode Order,Nama Kapal,Trayek,Jetty,Realisasi (Ton),Total Biaya (Rp),Tanggal Tiba,Tanggal Order,Audit Timestamp\n";
-            suppliedList.forEach((item, index) => {
-                csvContent += `${index + 1},"${item.orderCode}","${item.kapal}","${item.trayek}","${item.jetty}",${item.realisasi},${item.realisasi * item.tarif},"${item.tanggalTiba}","${item.tanggalMinta}","${item.auditLog || '-'}"\n`;
-            });
-
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `Laporan_Fresh_Water_Baubau_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            showToast(`Export Excel/CSV Berhasil!`);
-            addAuditLog("EXPORT_EXCEL", `Exported CSV report (${suppliedList.length} records)`);
-        }
-
-        function resetReportFilter() {
-            document.getElementById('searchReportInput').value = '';
-            document.getElementById('filterDateInput').value = '';
-            renderAllTables();
-        }
-
-        function renderAllTables() {
-            const selectedMonth = document.getElementById('dashMonthFilter').value;
-            const selectedYear = document.getElementById('dashYearFilter').value;
-
-            const filteredDataForDash = requestsData.filter(item => {
-                if (!item.tanggalMinta) return true;
-                const parts = item.tanggalMinta.split('-');
-                return parts[0] === selectedYear && (selectedMonth === 'ALL' || parts[1] === selectedMonth);
-            });
-
-            const totalCount = filteredDataForDash.length;
-            const suppliedListDash = filteredDataForDash.filter(d => d.status === 'Ter-supply' || d.status === 'Departed');
-            const suppliedCount = suppliedListDash.length;
-            const cancelledCount = filteredDataForDash.filter(d => d.status === 'Batal Supply').length;
-
-            const pendingCount = requestsData.filter(d => d.status === 'Pending' || d.status === 'Moored').length;
-            const banner = document.getElementById('admin-warning-banner');
-            if (pendingCount > 0 && currentRole === 'Admin') {
-                banner.classList.remove('hidden-page');
-                document.getElementById('warning-banner-text').innerText = currentLang === 'id' 
-                    ? `Terdapat ${pendingCount} order kapal yang menunggu verifikasi Jetty atau input realisasi akhir.`
-                    : `There are ${pendingCount} vessel orders awaiting Jetty verification or final realization input.`;
+        function previewDocument(url) {
+            if (url && url.startsWith('http')) {
+                window.open(url, '_blank');
             } else {
-                banner.classList.add('hidden-page');
-            }
-
-            const totalRevenue = suppliedListDash.reduce((sum, item) => sum + (item.realisasi * item.tarif), 0);
-            const revDomestik = suppliedListDash.filter(d => d.trayek === 'Domestik').reduce((sum, item) => sum + (item.realisasi * item.tarif), 0);
-            const revImport = suppliedListDash.filter(d => d.trayek === 'Import').reduce((sum, item) => sum + (item.realisasi * item.tarif), 0);
-
-            document.getElementById('stat-total').innerText = totalCount;
-            document.getElementById('stat-supplied').innerText = suppliedCount;
-            document.getElementById('stat-cancelled').innerText = cancelledCount;
-            document.getElementById('stat-revenue').innerText = formatRupiah(totalRevenue);
-            document.getElementById('stat-rev-dom').innerText = `Domestik: ${formatRupiah(revDomestik)}`;
-            document.getElementById('stat-rev-imp').innerText = `Import: ${formatRupiah(revImport)}`;
-
-            const mapJ1 = document.getElementById('map-jetty-1');
-            const mapJ2 = document.getElementById('map-jetty-2');
-            const mapJ3 = document.getElementById('map-jetty-3');
-            mapJ1.innerHTML = '<span class="text-[9px] font-bold text-slate-500 bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-700">J1 - VACANT</span>';
-            mapJ2.innerHTML = '<span class="text-[9px] font-bold text-slate-500 bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-700">J2 - VACANT</span>';
-            mapJ3.innerHTML = '<span class="text-[9px] font-bold text-slate-500 bg-slate-900/80 px-1.5 py-0.5 rounded border border-slate-700">J3 - VACANT</span>';
-
-            requestsData.forEach(item => {
-                if (item.jetty && item.jetty.includes('Jetty 1') && (item.status === 'Moored' || item.status === 'Ter-supply')) {
-                    mapJ1.innerHTML = `
-                        <div class="relative flex items-center gap-1">
-                            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-emerald-600/40 flex items-center justify-center radar-pulse">
-                                <div class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
-                            </div>
-                            <span class="text-[10px] font-bold bg-slate-900/90 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/40">${item.kapal}</span>
-                        </div>
-                    `;
-                }
-                if (item.jetty && item.jetty.includes('Jetty 2') && (item.status === 'Moored' || item.status === 'Ter-supply')) {
-                    mapJ2.innerHTML = `
-                        <div class="relative flex items-center gap-1">
-                            <div class="w-4 h-4 rounded-full border-2 border-emerald-500 bg-emerald-600/40 flex items-center justify-center radar-pulse">
-                                <div class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
-                            </div>
-                            <span class="text-[10px] font-bold bg-slate-900/90 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/40">${item.kapal}</span>
-                        </div>
-                    `;
-                }
-                if (item.jetty && item.jetty.includes('Jetty 3') && (item.status === 'Moored' || item.status === 'Ter-supply')) {
-                    mapJ3.innerHTML = `
-                        <div class="relative flex items-center gap-1">
-                            <div class="w-4 h-4 rounded-full border-2 border-amber-500 bg-amber-600/40 flex items-center justify-center radar-pulse">
-                                <div class="w-1.5 h-1.5 bg-amber-400 rounded-full"></div>
-                            </div>
-                            <span class="text-[10px] font-bold bg-slate-900/90 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/40">${item.kapal}</span>
-                        </div>
-                    `;
-                }
-            });
-
-            // 1. Order (POV Admin)
-            const permBody = document.getElementById('table-permintaan-body');
-            permBody.innerHTML = '';
-            if (requestsData.length === 0) {
-                permBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Belum ada order masuk.</td></tr>`;
-            } else {
-                requestsData.forEach((item, index) => {
-                    let actionHTML = '';
-                    let realisasiDisplay = item.realisasi > 0 ? `${item.realisasi} Tons` : '-';
-                    let jettyDisplay = item.jetty || '-';
-
-                    if (item.status === 'Pending') {
-                        actionHTML = `
-                            <div class="flex justify-center gap-2">
-                                <button onclick="openJettyModal(${item.id})" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow cursor-pointer">1. Set Jetty (WA)</button>
-                                <button onclick="openVerifyModal(${item.id}, 'Batal Supply')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-full w-7 h-7 flex items-center justify-center shadow cursor-pointer" title="Batalkan">✕</button>
-                            </div>
-                        `;
-                    } else if (item.status === 'Moored') {
-                        actionHTML = `
-                            <div class="flex justify-center gap-2">
-                                <button onclick="openVerifyModal(${item.id}, 'Ter-supply')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow cursor-pointer">2. Input Realisasi</button>
-                                <button onclick="sendWhatsAppNotice('${item.orderCode}', '${item.kapal}', 'Sandar di ${item.jetty}', '${item.jetty}', ${item.permintaan})" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-2.5 py-1.5 rounded-lg text-xs shadow cursor-pointer" title="Kirim WA">💬 WA</button>
-                                <button onclick="resetVerification(${item.id})" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1.5 rounded-lg text-xs font-bold cursor-pointer">Reset</button>
-                            </div>
-                        `;
-                    } else if (item.status === 'Ter-supply') {
-                        actionHTML = `
-                            <div class="flex justify-center gap-2">
-                                <button onclick="setDeparted(${item.id})" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow cursor-pointer">
-                                    3. Lepas Sandar (Sail)
-                                </button>
-                                <button onclick="sendWhatsAppNotice('${item.orderCode}', '${item.kapal}', 'Ter-supply Selesai', '${item.jetty}', ${item.realisasi})" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-2.5 py-1.5 rounded-lg text-xs shadow cursor-pointer" title="Kirim WA">💬 WA</button>
-                                <button onclick="resetVerification(${item.id})" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1.5 rounded-lg text-xs font-bold cursor-pointer">Reset</button>
-                            </div>
-                        `;
-                    } else if (item.status === 'Departed') {
-                        actionHTML = `
-                            <span class="inline-flex items-center gap-1 bg-slate-100 border border-slate-300 text-slate-700 font-bold px-3 py-1.5 rounded-full text-xs shadow-sm">
-                                ⛵ Departed (Vacant)
-                            </span>
-                        `;
-                    } else {
-                        actionHTML = `
-                            <button onclick="resetVerification(${item.id})" class="inline-flex items-center gap-1.5 bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-300 font-bold px-3 py-1.5 rounded-full text-xs shadow-sm transition cursor-pointer">
-                                <span>Batal Supply</span>
-                                <span class="text-[10px] opacity-70">✏️</span>
-                            </button>
-                        `;
-                    }
-
-                    permBody.innerHTML += `
-                        <tr>
-                            <td class="p-3.5">${index + 1}</td>
-                            <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                            <td class="p-3.5 font-bold text-slate-800">${item.kapal}</td>
-                            <td class="p-3.5"><span class="bg-slate-100 border px-2.5 py-0.5 rounded-md text-xs font-semibold text-slate-700">${item.trayek}</span></td>
-                            <td class="p-3.5">${item.permintaan} Tons</td>
-                            <td class="p-3.5 font-bold text-sky-700">${jettyDisplay}</td>
-                            <td class="p-3.5 font-bold text-blue-900">${realisasiDisplay}</td>
-                            <td class="p-3.5 whitespace-nowrap font-bold text-slate-800">${formatShortDate(item.tanggalMinta)}</td>
-                            <td class="p-3.5 text-center">${actionHTML}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            // 2. Rekapitulasi
-            const suppliedListAll = requestsData.filter(item => item.status === 'Ter-supply' || item.status === 'Departed');
-            const rekapBody = document.getElementById('table-rekapitulasi-body');
-            rekapBody.innerHTML = '';
-
-            if(suppliedListAll.length === 0) {
-                rekapBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Belum ada kapal berstatus Ter-supply.</td></tr>`;
-            } else {
-                suppliedListAll.forEach((item, index) => {
-                    rekapBody.innerHTML += `
-                        <tr>
-                            <td class="p-3.5">${index + 1}</td>
-                            <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                            <td class="p-3.5 font-bold text-slate-800">${item.kapal}</td>
-                            <td class="p-3.5"><span class="bg-slate-100 border px-2.5 py-0.5 rounded-md text-xs font-semibold text-slate-700">${item.trayek}</span></td>
-                            <td class="p-3.5 font-bold text-slate-700">${item.jetty}</td>
-                            <td class="p-3.5 font-bold text-blue-900">${item.realisasi} Tons</td>
-                            <td class="p-3.5 font-bold text-emerald-700">${formatRupiah(item.realisasi * item.tarif)}</td>
-                            <td class="p-3.5 text-xs text-slate-600 whitespace-nowrap">
-                                <div>Tiba: ${formatShortDate(item.tanggalTiba)}</div>
-                                <div>Order: <strong>${formatShortDate(item.tanggalMinta)}</strong></div>
-                            </td>
-                            <td class="p-3.5 text-center">
-                                <div class="flex items-center justify-center gap-2">
-                                    <input type="file" onchange="handleFileSelect(${item.id}, this)" accept="image/*,.pdf" class="text-xs text-slate-500 max-w-[150px]">
-                                    <button onclick="previewDocument(${item.id})" class="bg-sky-500 hover:bg-sky-600 text-white p-2 rounded-lg shadow transition cursor-pointer">Lihat</button>
-                                    <button onclick="sendDocument(${item.id})" class="${item.isSent ? 'bg-slate-300 text-slate-500' : 'bg-sky-500 hover:bg-sky-600 text-white'} p-2 rounded-lg shadow transition cursor-pointer">Kirim</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-
-            // 3. Laporan
-            const lapBody = document.getElementById('table-laporan-body');
-            lapBody.innerHTML = '';
-            const query = document.getElementById('searchReportInput').value.toLowerCase();
-            const dateVal = document.getElementById('filterDateInput').value;
-
-            const filtered = suppliedListAll.filter(item => {
-                const matchQ = item.kapal.toLowerCase().includes(query) || item.orderCode.toLowerCase().includes(query);
-                const matchD = dateVal ? (item.tanggalMinta === dateVal || item.tanggalTiba === dateVal) : true;
-                return matchQ && matchD;
-            });
-
-            if(filtered.length === 0) {
-                lapBody.innerHTML = `<tr><td colspan="10" class="p-4 text-center text-slate-400">Tidak ada data laporan yang sesuai.</td></tr>`;
-            } else {
-                filtered.forEach((item, index) => {
-                    lapBody.innerHTML += `
-                        <tr>
-                            <td class="p-3.5">${index + 1}</td>
-                            <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                            <td class="p-3.5 font-bold text-slate-800">${item.kapal}</td>
-                            <td class="p-3.5">${item.trayek}</td>
-                            <td class="p-3.5">${item.jetty}</td>
-                            <td class="p-3.5 font-bold text-blue-900">${item.realisasi} Tons</td>
-                            <td class="p-3.5 font-bold text-emerald-700">${formatRupiah(item.realisasi * item.tarif)}</td>
-                            <td class="p-3.5 whitespace-nowrap text-slate-700 font-semibold">${formatShortDate(item.tanggalTiba)}</td>
-                            <td class="p-3.5 whitespace-nowrap font-bold text-slate-800">${formatShortDate(item.tanggalMinta)}</td>
-                            <td class="p-3.5 text-center">
-                                <div class="text-[10px] text-slate-500 font-mono mb-1">${item.auditLog || '-'}</div>
-                                <button onclick="previewDocument(${item.id})" class="bg-blue-900 hover:bg-blue-800 text-white text-xs px-3 py-1 rounded-lg shadow transition cursor-pointer font-semibold">Lihat Dokumen</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-
-            // 4. Customer History
-            const custBody = document.getElementById('table-customer-history-body');
-            if(custBody) {
-                custBody.innerHTML = '';
-                if (requestsData.length === 0) {
-                    custBody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Belum ada riwayat pesanan.</td></tr>`;
-                    return;
-                }
-                requestsData.forEach((item, index) => {
-                    let badgeClass = 'bg-amber-100 text-amber-800 border border-amber-300';
-                    if(item.status === 'Ter-supply') badgeClass = 'bg-emerald-100 text-emerald-800 border border-emerald-300';
-                    if(item.status === 'Departed') badgeClass = 'bg-slate-100 text-slate-800 border border-slate-300';
-                    if(item.status === 'Moored') badgeClass = 'bg-sky-100 text-sky-800 border border-sky-300';
-                    if(item.status === 'Batal Supply') badgeClass = 'bg-rose-100 text-rose-800 border border-rose-300';
-
-                    custBody.innerHTML += `
-                        <tr>
-                            <td class="p-3.5">${index + 1}</td>
-                            <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                            <td class="p-3.5 font-bold text-slate-800">${item.kapal}</td>
-                            <td class="p-3.5">${item.trayek}</td>
-                            <td class="p-3.5">${item.permintaan} Tons</td>
-                            <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
-                            <td class="p-3.5 whitespace-nowrap font-bold text-slate-800">${formatShortDate(item.tanggalMinta)}</td>
-                            <td class="p-3.5 text-center">
-                                <span class="${badgeClass} font-bold px-3 py-1 rounded-full text-xs shadow-sm inline-block mb-1">
-                                    ${item.status === 'Moored' ? 'Sandar (Proses)' : (item.status === 'Departed' ? 'Selesai & Sail' : item.status)}
-                                </span>
-                                <button onclick="followUpWhatsApp('${item.orderCode}', '${item.kapal}', '${item.status}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2.5 py-1 rounded-lg text-xs shadow transition cursor-pointer flex items-center justify-center gap-1 mx-auto mt-1" title="Follow Up via WhatsApp Admin">
-                                    💬 Follow Up WA
-                                </button>
-                                <span class="text-[10px] text-slate-400 font-mono block mt-1">${item.auditLog || ''}</span>
-                            </td>
-                        </tr>
-                    `;
-                });
+                showToast("Dokumen tidak tersedia atau belum diupload.", "error");
             }
         }
 
@@ -1833,56 +1094,115 @@
             document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden-page'));
             const target = document.getElementById(pageId);
             if(target) target.classList.remove('hidden-page');
-
-            // Otomatis tutup sidebar di mobile jika user mengklik menu
             if (window.innerWidth < 768) {
-                const sidebar = document.getElementById('mainSidebar');
-                const overlay = document.getElementById('mobileOverlay');
-                if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
-                    sidebar.classList.add('-translate-x-full');
-                    overlay.classList.add('hidden-page');
+                document.getElementById('mainSidebar').classList.add('-translate-x-full');
+                document.getElementById('mobileOverlay').classList.add('hidden-page');
+            }
+        }
+
+        function renderAllTables() {
+            const selectedMonth = document.getElementById('dashMonthFilter') ? document.getElementById('dashMonthFilter').value : 'ALL';
+            const selectedYear = document.getElementById('dashYearFilter') ? document.getElementById('dashYearFilter').value : '2026';
+
+            const filteredForDash = requestsData.filter(item => {
+                if (!item.tanggalMinta) return true;
+                const parts = item.tanggalMinta.split('-');
+                return parts[0] === selectedYear && (selectedMonth === 'ALL' || parts[1] === selectedMonth);
+            });
+
+            const totalCount = filteredForDash.length;
+            const suppliedListDash = filteredForDash.filter(d => d.status === 'Ter-supply' || d.status === 'Departed');
+            const suppliedCount = suppliedListDash.length;
+            const cancelledCount = filteredForDash.filter(d => d.status === 'Batal Supply').length;
+            const totalRevenue = suppliedListDash.reduce((sum, item) => sum + (item.realisasi * item.tarif), 0);
+
+            if(document.getElementById('stat-total')) document.getElementById('stat-total').innerText = totalCount;
+            if(document.getElementById('stat-supplied')) document.getElementById('stat-supplied').innerText = suppliedCount;
+            if(document.getElementById('stat-cancelled')) document.getElementById('stat-cancelled').innerText = cancelledCount;
+            if(document.getElementById('stat-revenue')) document.getElementById('stat-revenue').innerText = formatRupiah(totalRevenue);
+
+            // Render Tabel Admin Order
+            const permBody = document.getElementById('table-permintaan-body');
+            if (permBody) {
+                permBody.innerHTML = '';
+                if (requestsData.length === 0) {
+                    permBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Belum ada order masuk.</td></tr>`;
+                } else {
+                    requestsData.forEach((item, index) => {
+                        let actionHTML = '';
+                        if (item.status === 'Pending') {
+                            actionHTML = `<div class="flex justify-center gap-2"><button onclick="openJettyModal(${item.id})" class="bg-sky-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">1. Set Jetty</button><button onclick="openVerifyModal(${item.id}, 'Batal Supply')" class="bg-rose-500 text-white w-7 h-7 rounded-full font-bold">✕</button></div>`;
+                        } else if (item.status === 'Moored') {
+                            actionHTML = `<div class="flex justify-center gap-2"><button onclick="openVerifyModal(${item.id}, 'Ter-supply')" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">2. Input Realisasi</button><button onclick="resetVerification(${item.id})" class="bg-slate-200 text-slate-700 px-2 py-1.5 rounded text-xs font-bold">Reset</button></div>`;
+                        } else if (item.status === 'Ter-supply') {
+                            actionHTML = `<div class="flex justify-center gap-2"><button onclick="setDeparted(${item.id})" class="bg-blue-800 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">3. Sail</button><button onclick="resetVerification(${item.id})" class="bg-slate-200 text-slate-700 px-2 py-1.5 rounded text-xs font-bold">Reset</button></div>`;
+                        } else {
+                            actionHTML = `<span class="font-bold text-xs">${item.status}</span>`;
+                        }
+
+                        permBody.innerHTML += `
+                            <tr>
+                                <td class="p-3.5">${index + 1}</td>
+                                <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
+                                <td class="p-3.5 font-bold">${item.kapal}</td>
+                                <td class="p-3.5">${item.trayek}</td>
+                                <td class="p-3.5">${item.permintaan} Tons</td>
+                                <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
+                                <td class="p-3.5 font-bold text-blue-900">${item.realisasi > 0 ? item.realisasi + ' Tons' : '-'}</td>
+                                <td class="p-3.5 whitespace-nowrap">${item.tanggalMinta || '-'}</td>
+                                <td class="p-3.5 text-center">${actionHTML}</td>
+                            </tr>`;
+                    });
                 }
             }
-        }
 
-        function logout() {
-            // 1. Hapus data sesi dari penyimpanan browser
-            localStorage.removeItem('water_role');
-            localStorage.removeItem('water_user');
-
-            // 2. Sembunyikan layout aplikasi dan tampilkan halaman login
-            document.getElementById('app-layout').classList.add('hidden-page');
-            document.getElementById('page-login').classList.remove('hidden-page');
-
-            // 3. Muat ulang halaman agar bersih total
-            location.reload();
-        }
-
-        // Inisialisasi Supabase
-        const SUPABASE_URL = 'https://xapcbpqoaaccvmdjlukx.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcGNicHFvYWFjY3ZtZGpsdWt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NzE2MjQsImV4cCI6MjEwODI0NzYyNH0.vNJ9g31PWBDnVHYjiubeO-3D5NGUX3jySUy7s7xL0H8';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        const todayStr = new Date().toISOString().slice(0, 10);
-        const inputTiba = document.getElementById('custTanggalTiba');
-        const inputMinta = document.getElementById('custTanggalMinta');
-        if (inputTiba) inputTiba.value = todayStr;
-        if (inputMinta) inputMinta.value = todayStr;
-        
-        // Memastikan elemen ada sebelum memanggil calculateCost
-        if(document.getElementById('custTrayek') && document.getElementById('custQty')) {
-             calculateCost();
-        }
-
-        // --- CEK SESI SAAT HALAMAN DIMUAT ---
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedRole = localStorage.getItem('water_role');
-            const savedUser = localStorage.getItem('water_user');
-            
-            if (savedRole && savedUser) {
-                startSession(savedRole, savedUser);
+            // Render Rekapitulasi
+            const rekapBody = document.getElementById('table-rekapitulasi-body');
+            if (rekapBody) {
+                rekapBody.innerHTML = '';
+                const suppliedAll = requestsData.filter(i => i.status === 'Ter-supply' || i.status === 'Departed');
+                if (suppliedAll.length === 0) {
+                    rekapBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Belum ada data rekap.</td></tr>`;
+                } else {
+                    suppliedAll.forEach((item, index) => {
+                        rekapBody.innerHTML += `
+                            <tr>
+                                <td class="p-3.5">${index + 1}</td>
+                                <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
+                                <td class="p-3.5 font-bold">${item.kapal}</td>
+                                <td class="p-3.5">${item.trayek}</td>
+                                <td class="p-3.5 font-bold">${item.jetty}</td>
+                                <td class="p-3.5 font-bold text-blue-900">${item.realisasi} Tons</td>
+                                <td class="p-3.5 font-bold text-emerald-700">${formatRupiah(item.realisasi * item.tarif)}</td>
+                                <td class="p-3.5 text-xs">Tiba: ${item.tanggalTiba}</td>
+                                <td class="p-3.5 text-center flex justify-center gap-2">
+                                    <button onclick="previewDocument('${item.fileBuktiBayar}')" class="bg-sky-500 text-white px-2 py-1 rounded text-xs">Bukti Bayar</button>
+                                    <button onclick="previewDocument('${item.fileBA}')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs">BA</button>
+                                </td>
+                            </tr>`;
+                    });
+                }
             }
-        });
+
+            // Render Customer History
+            const custBody = document.getElementById('table-customer-history-body');
+            if (custBody) {
+                custBody.innerHTML = '';
+                requestsData.forEach((item, index) => {
+                    custBody.innerHTML += `
+                        <tr>
+                            <td class="p-3.5">${index + 1}</td>
+                            <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
+                            <td class="p-3.5 font-bold">${item.kapal}</td>
+                            <td class="p-3.5">${item.trayek}</td>
+                            <td class="p-3.5">${item.permintaan} Tons</td>
+                            <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
+                            <td class="p-3.5">${item.tanggalMinta}</td>
+                            <td class="p-3.5 text-center"><span class="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-xs font-bold">${item.status}</span></td>
+                        </tr>`;
+                });
+            }
+        }
     </script>
 </body>
 </html>
