@@ -1100,7 +1100,7 @@
             }
         }
 
-        function renderAllTables() {
+       function renderAllTables() {
     const selectedMonth = document.getElementById('dashMonthFilter') ? document.getElementById('dashMonthFilter').value : 'ALL';
     const selectedYear = document.getElementById('dashYearFilter') ? document.getElementById('dashYearFilter').value : '2026';
 
@@ -1154,9 +1154,9 @@
                     </tr>`;
             });
         }
-    }
+    } // <--- Penutup untuk if (permBody) yang sebelumnya kurang
 
-    // Render Laporan Seluruh Kegiatan (Tambahan agar halaman laporan tidak kosong)
+    // Render Laporan Seluruh Kegiatan
     const laporanBody = document.getElementById('table-laporan-body');
     if (laporanBody) {
         laporanBody.innerHTML = '';
@@ -1192,55 +1192,54 @@
             });
         }
     }
-}
 
-            // Render Rekapitulasi
-            const rekapBody = document.getElementById('table-rekapitulasi-body');
-            if (rekapBody) {
-                rekapBody.innerHTML = '';
-                const suppliedAll = requestsData.filter(i => i.status === 'Ter-supply' || i.status === 'Departed');
-                if (suppliedAll.length === 0) {
-                    rekapBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Belum ada data rekap.</td></tr>`;
-                } else {
-                    suppliedAll.forEach((item, index) => {
-                        rekapBody.innerHTML += `
-                            <tr>
-                                <td class="p-3.5">${index + 1}</td>
-                                <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                                <td class="p-3.5 font-bold">${item.kapal}</td>
-                                <td class="p-3.5">${item.trayek}</td>
-                                <td class="p-3.5 font-bold">${item.jetty}</td>
-                                <td class="p-3.5 font-bold text-blue-900">${item.realisasi} Tons</td>
-                                <td class="p-3.5 font-bold text-emerald-700">${formatRupiah(item.realisasi * item.tarif)}</td>
-                                <td class="p-3.5 text-xs">Tiba: ${item.tanggalTiba}</td>
-                                <td class="p-3.5 text-center flex justify-center gap-2">
-                                    <button onclick="previewDocument('${item.fileBuktiBayar}')" class="bg-sky-500 text-white px-2 py-1 rounded text-xs">Bukti Bayar</button>
-                                    <button onclick="previewDocument('${item.fileBA}')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs">BA</button>
-                                </td>
-                            </tr>`;
-                    });
-                }
-            }
-
-            // Render Customer History
-            const custBody = document.getElementById('table-customer-history-body');
-            if (custBody) {
-                custBody.innerHTML = '';
-                requestsData.forEach((item, index) => {
-                    custBody.innerHTML += `
-                        <tr>
-                            <td class="p-3.5">${index + 1}</td>
-                            <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                            <td class="p-3.5 font-bold">${item.kapal}</td>
-                            <td class="p-3.5">${item.trayek}</td>
-                            <td class="p-3.5">${item.permintaan} Tons</td>
-                            <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
-                            <td class="p-3.5">${item.tanggalMinta}</td>
-                            <td class="p-3.5 text-center"><span class="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-xs font-bold">${item.status}</span></td>
-                        </tr>`;
-                });
-            }
+    // Render Rekapitulasi
+    const rekapBody = document.getElementById('table-rekapitulasi-body');
+    if (rekapBody) {
+        rekapBody.innerHTML = '';
+        const suppliedAll = requestsData.filter(i => i.status === 'Ter-supply' || i.status === 'Departed');
+        if (suppliedAll.length === 0) {
+            rekapBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Belum ada data rekap.</td></tr>`;
+        } else {
+            suppliedAll.forEach((item, index) => {
+                rekapBody.innerHTML += `
+                    <tr>
+                        <td class="p-3.5">${index + 1}</td>
+                        <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
+                        <td class="p-3.5 font-bold">${item.kapal}</td>
+                        <td class="p-3.5">${item.trayek}</td>
+                        <td class="p-3.5 font-bold">${item.jetty}</td>
+                        <td class="p-3.5 font-bold text-blue-900">${item.realisasi} Tons</td>
+                        <td class="p-3.5 font-bold text-emerald-700">${formatRupiah(item.realisasi * item.tarif)}</td>
+                        <td class="p-3.5 text-xs">Tiba: ${item.tanggalTiba}</td>
+                        <td class="p-3.5 text-center flex justify-center gap-2">
+                            <button onclick="previewDocument('${item.fileBuktiBayar}')" class="bg-sky-500 text-white px-2 py-1 rounded text-xs">Bukti Bayar</button>
+                            <button onclick="previewDocument('${item.fileBA}')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs">BA</button>
+                        </td>
+                    </tr>`;
+            });
         }
+    }
+
+    // Render Customer History
+    const custBody = document.getElementById('table-customer-history-body');
+    if (custBody) {
+        custBody.innerHTML = '';
+        requestsData.forEach((item, index) => {
+            custBody.innerHTML += `
+                <tr>
+                    <td class="p-3.5">${index + 1}</td>
+                    <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
+                    <td class="p-3.5 font-bold">${item.kapal}</td>
+                    <td class="p-3.5">${item.trayek}</td>
+                    <td class="p-3.5">${item.permintaan} Tons</td>
+                    <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
+                    <td class="p-3.5">${item.tanggalMinta}</td>
+                    <td class="p-3.5 text-center"><span class="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-xs font-bold">${item.status}</span></td>
+                </tr>`;
+        });
+    }
+}
         function toggleCharterMode(checkbox) {
     const inputBukti = document.getElementById('custBuktiBayar');
     const lblText = document.getElementById('lblBuktiBayarText');
