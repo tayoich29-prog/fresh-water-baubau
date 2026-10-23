@@ -1101,60 +1101,98 @@
         }
 
         function renderAllTables() {
-            const selectedMonth = document.getElementById('dashMonthFilter') ? document.getElementById('dashMonthFilter').value : 'ALL';
-            const selectedYear = document.getElementById('dashYearFilter') ? document.getElementById('dashYearFilter').value : '2026';
+    const selectedMonth = document.getElementById('dashMonthFilter') ? document.getElementById('dashMonthFilter').value : 'ALL';
+    const selectedYear = document.getElementById('dashYearFilter') ? document.getElementById('dashYearFilter').value : '2026';
 
-            const filteredForDash = requestsData.filter(item => {
-                if (!item.tanggalMinta) return true;
-                const parts = item.tanggalMinta.split('-');
-                return parts[0] === selectedYear && (selectedMonth === 'ALL' || parts[1] === selectedMonth);
-            });
+    const filteredForDash = requestsData.filter(item => {
+        if (!item.tanggalMinta) return true;
+        const parts = item.tanggalMinta.split('-');
+        return parts[0] === selectedYear && (selectedMonth === 'ALL' || parts[1] === selectedMonth);
+    });
 
-            const totalCount = filteredForDash.length;
-            const suppliedListDash = filteredForDash.filter(d => d.status === 'Ter-supply' || d.status === 'Departed');
-            const suppliedCount = suppliedListDash.length;
-            const cancelledCount = filteredForDash.filter(d => d.status === 'Batal Supply').length;
-            const totalRevenue = suppliedListDash.reduce((sum, item) => sum + (item.realisasi * item.tarif), 0);
+    const totalCount = filteredForDash.length;
+    const suppliedListDash = filteredForDash.filter(d => d.status === 'Ter-supply' || d.status === 'Departed');
+    const suppliedCount = suppliedListDash.length;
+    const cancelledCount = filteredForDash.filter(d => d.status === 'Batal Supply').length;
+    const totalRevenue = suppliedListDash.reduce((sum, item) => sum + (item.realisasi * item.tarif), 0);
 
-            if(document.getElementById('stat-total')) document.getElementById('stat-total').innerText = totalCount;
-            if(document.getElementById('stat-supplied')) document.getElementById('stat-supplied').innerText = suppliedCount;
-            if(document.getElementById('stat-cancelled')) document.getElementById('stat-cancelled').innerText = cancelledCount;
-            if(document.getElementById('stat-revenue')) document.getElementById('stat-revenue').innerText = formatRupiah(totalRevenue);
+    if(document.getElementById('stat-total')) document.getElementById('stat-total').innerText = totalCount;
+    if(document.getElementById('stat-supplied')) document.getElementById('stat-supplied').innerText = suppliedCount;
+    if(document.getElementById('stat-cancelled')) document.getElementById('stat-cancelled').innerText = cancelledCount;
+    if(document.getElementById('stat-revenue')) document.getElementById('stat-revenue').innerText = formatRupiah(totalRevenue);
 
-            // Render Tabel Admin Order
-            const permBody = document.getElementById('table-permintaan-body');
-            if (permBody) {
-                permBody.innerHTML = '';
-                if (requestsData.length === 0) {
-                    permBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Belum ada order masuk.</td></tr>`;
+    // Render Tabel Admin Order
+    const permBody = document.getElementById('table-permintaan-body');
+    if (permBody) {
+        permBody.innerHTML = '';
+        if (requestsData.length === 0) {
+            permBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Belum ada order masuk.</td></tr>`;
+        } else {
+            requestsData.forEach((item, index) => {
+                let actionHTML = '';
+                if (item.status === 'Pending') {
+                    actionHTML = `<div class="flex justify-center gap-2"><button onclick="openJettyModal(${item.id})" class="bg-sky-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">1. Set Jetty</button><button onclick="openVerifyModal(${item.id}, 'Batal Supply')" class="bg-rose-500 text-white w-7 h-7 rounded-full font-bold">✕</button></div>`;
+                } else if (item.status === 'Moored') {
+                    actionHTML = `<div class="flex justify-center gap-2"><button onclick="openVerifyModal(${item.id}, 'Ter-supply')" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">2. Input Realisasi</button><button onclick="resetVerification(${item.id})" class="bg-slate-200 text-slate-700 px-2 py-1.5 rounded text-xs font-bold">Reset</button></div>`;
+                } else if (item.status === 'Ter-supply') {
+                    actionHTML = `<div class="flex justify-center gap-2"><button onclick="setDeparted(${item.id})" class="bg-blue-800 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">3. Sail</button><button onclick="resetVerification(${item.id})" class="bg-slate-200 text-slate-700 px-2 py-1.5 rounded text-xs font-bold">Reset</button></div>`;
                 } else {
-                    requestsData.forEach((item, index) => {
-                        let actionHTML = '';
-                        if (item.status === 'Pending') {
-                            actionHTML = `<div class="flex justify-center gap-2"><button onclick="openJettyModal(${item.id})" class="bg-sky-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">1. Set Jetty</button><button onclick="openVerifyModal(${item.id}, 'Batal Supply')" class="bg-rose-500 text-white w-7 h-7 rounded-full font-bold">✕</button></div>`;
-                        } else if (item.status === 'Moored') {
-                            actionHTML = `<div class="flex justify-center gap-2"><button onclick="openVerifyModal(${item.id}, 'Ter-supply')" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">2. Input Realisasi</button><button onclick="resetVerification(${item.id})" class="bg-slate-200 text-slate-700 px-2 py-1.5 rounded text-xs font-bold">Reset</button></div>`;
-                        } else if (item.status === 'Ter-supply') {
-                            actionHTML = `<div class="flex justify-center gap-2"><button onclick="setDeparted(${item.id})" class="bg-blue-800 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">3. Sail</button><button onclick="resetVerification(${item.id})" class="bg-slate-200 text-slate-700 px-2 py-1.5 rounded text-xs font-bold">Reset</button></div>`;
-                        } else {
-                            actionHTML = `<span class="font-bold text-xs">${item.status}</span>`;
-                        }
-
-                        permBody.innerHTML += `
-                            <tr>
-                                <td class="p-3.5">${index + 1}</td>
-                                <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                                <td class="p-3.5 font-bold">${item.kapal}</td>
-                                <td class="p-3.5">${item.trayek}</td>
-                                <td class="p-3.5">${item.permintaan} Tons</td>
-                                <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
-                                <td class="p-3.5 font-bold text-blue-900">${item.realisasi > 0 ? item.realisasi + ' Tons' : '-'}</td>
-                                <td class="p-3.5 whitespace-nowrap">${item.tanggalMinta || '-'}</td>
-                                <td class="p-3.5 text-center">${actionHTML}</td>
-                            </tr>`;
-                    });
+                    actionHTML = `<span class="font-bold text-xs">${item.status}</span>`;
                 }
-            }
+
+                permBody.innerHTML += `
+                    <tr>
+                        <td class="p-3.5">${index + 1}</td>
+                        <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
+                        <td class="p-3.5 font-bold">${item.kapal}</td>
+                        <td class="p-3.5">${item.trayek}</td>
+                        <td class="p-3.5">${item.permintaan} Tons</td>
+                        <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
+                        <td class="p-3.5 font-bold text-blue-900">${item.realisasi > 0 ? item.realisasi + ' Tons' : '-'}</td>
+                        <td class="p-3.5 whitespace-nowrap">${item.tanggalMinta || '-'}</td>
+                        <td class="p-3.5 text-center">${actionHTML}</td>
+                    </tr>`;
+            });
+        }
+    }
+
+    // Render Laporan Seluruh Kegiatan (Tambahan agar halaman laporan tidak kosong)
+    const laporanBody = document.getElementById('table-laporan-body');
+    if (laporanBody) {
+        laporanBody.innerHTML = '';
+        const searchVal = document.getElementById('searchReportInput') ? document.getElementById('searchReportInput').value.toLowerCase() : '';
+        const filterDateVal = document.getElementById('filterDateInput') ? document.getElementById('filterDateInput').value : '';
+
+        const filteredLaporan = requestsData.filter(item => {
+            const matchSearch = !searchVal || item.kapal.toLowerCase().includes(searchVal) || item.orderCode.toLowerCase().includes(searchVal);
+            const matchDate = !filterDateVal || item.tanggalMinta === filterDateVal || item.tanggalTiba === filterDateVal;
+            return matchSearch && matchDate;
+        });
+
+        if (filteredLaporan.length === 0) {
+            laporanBody.innerHTML = `<tr><td colspan="10" class="p-4 text-center text-slate-400">Tidak ada data laporan yang sesuai.</td></tr>`;
+        } else {
+            filteredLaporan.forEach((item, index) => {
+                laporanBody.innerHTML += `
+                    <tr>
+                        <td class="p-3.5">${index + 1}</td>
+                        <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
+                        <td class="p-3.5 font-bold">${item.kapal}</td>
+                        <td class="p-3.5">${item.trayek}</td>
+                        <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
+                        <td class="p-3.5 font-bold text-blue-900">${item.realisasi > 0 ? item.realisasi + ' Tons' : '-'}</td>
+                        <td class="p-3.5 font-bold text-emerald-700">${item.realisasi > 0 ? formatRupiah(item.realisasi * item.tarif) : 'Rp 0'}</td>
+                        <td class="p-3.5 text-xs whitespace-nowrap">${item.tanggalTiba || '-'}</td>
+                        <td class="p-3.5 text-xs whitespace-nowrap">${item.tanggalMinta || '-'}</td>
+                        <td class="p-3.5 text-center flex justify-center gap-2">
+                            <button onclick="previewDocument('${item.fileBuktiBayar}')" class="bg-sky-500 text-white px-2 py-1 rounded text-xs">Bukti</button>
+                            <button onclick="previewDocument('${item.fileBA}')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs">BA</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+    }
+}
 
             // Render Rekapitulasi
             const rekapBody = document.getElementById('table-rekapitulasi-body');
