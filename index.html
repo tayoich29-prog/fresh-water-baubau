@@ -798,8 +798,8 @@
         // DATABASE AUDIT TRAIL LOG
         let auditLogs = [];
 
-        // DATABASE USER TERREGISTER (AKUN ADMIN UTAMA)
-        let registeredUsers = [
+        // DATABASE USER TERREGISTER (LOAD DARI LOCALSTORAGE AGAR PERSISTEN)
+        let registeredUsers = JSON.parse(localStorage.getItem('water_registered_users')) || [
             { id: 1, name: "Admin Utama Port Baubau", username: "ptkag0005", pass: "Makassar@2025", role: "Admin", status: "Approved", date: "2026-01-01" }
         ];
 
@@ -1088,24 +1088,23 @@
             const newPass = prompt(`Masukkan Password Baru untuk user ${user.username}:`, "baubau123");
             if (newPass && newPass.trim() !== "") {
                 user.pass = newPass.trim();
+                localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
                 showToast(`Password untuk ${user.username} berhasil di-reset menjadi "${newPass.trim()}"!`, "success");
                 addAuditLog("PASSWORD_RESET", `Admin reset password for user ${user.username}`);
                 renderUserApprovalTable();
             }
         }
-function deleteUser(userId) {
-    const userIndex = registeredUsers.findIndex(u => u.id === userId);
-    if (userIndex !== -1) {
-        const userName = registeredUsers[userIndex].name;
-        if (confirm(`Apakah Anda yakin ingin menghapus akun "${userName}"?`)) {
-            registeredUsers.splice(userIndex, 1);
 
-            // --- TAMBAHKAN INI ---
-            localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
-
-            showToast(`Akun ${userName} berhasil dihapus dari sistem!`, "info");
-            addAuditLog("USER_DELETE", `Admin deleted account ${userName}`);
-            renderUserApprovalTable();
+        function deleteUser(userId) {
+            const userIndex = registeredUsers.findIndex(u => u.id === userId);
+            if (userIndex !== -1) {
+                const userName = registeredUsers[userIndex].name;
+                if (confirm(`Apakah Anda yakin ingin menghapus akun "${userName}"?`)) {
+                    registeredUsers.splice(userIndex, 1);
+                    localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
+                    showToast(`Akun ${userName} berhasil dihapus dari sistem!`, "info");
+                    addAuditLog("USER_DELETE", `Admin deleted account ${userName}`);
+                    renderUserApprovalTable();
                 }
             }
         }
@@ -1119,67 +1118,61 @@ function deleteUser(userId) {
         }
 
         function handleRegisterSubmit(e) {
-    e.preventDefault();
-    const company = document.getElementById('regCompany').value;
-    const username = document.getElementById('regUsername').value.trim().toLowerCase();
-    const password = document.getElementById('regPassword').value.trim();
+            e.preventDefault();
+            const company = document.getElementById('regCompany').value;
+            const username = document.getElementById('regUsername').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value.trim();
 
-    const exists = registeredUsers.some(u => u.username === username);
-    if (exists) {
-        showToast("Username / Contact ini sudah terdaftar!", "error");
-        return;
-    }
+            const exists = registeredUsers.some(u => u.username === username);
+            if (exists) {
+                showToast("Username / Contact ini sudah terdaftar!", "error");
+                return;
+            }
 
-    const today = new Date().toISOString().slice(0, 10);
-    registeredUsers.push({
-        id: registeredUsers.length + 1,
-        name: company,
-        username: username,
-        pass: password,
-        role: "Customer",
-        status: "Pending",
-        date: today
-    });
+            const today = new Date().toISOString().slice(0, 10);
+            registeredUsers.push({
+                id: registeredUsers.length + 1,
+                name: company,
+                username: username,
+                pass: password,
+                role: "Customer",
+                status: "Pending",
+                date: today
+            });
+            
+            localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
 
-    // --- TAMBAHKAN INI AGAR TERSIMPAN KE STORAGE ---
-    localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
-
-    showToast("Pendaftaran berhasil! Akun Anda menunggu verifikasi Admin Utama Port Baubau.");
-    addAuditLog("USER_REGISTER", `New registration submitted by ${company} (${username})`);
-    closeRegisterModal();
-    document.getElementById('regCompany').value = '';
-    document.getElementById('regUsername').value = '';
-    document.getElementById('regPassword').value = '';
-    renderUserApprovalTable();
-}
+            showToast("Pendaftaran berhasil! Akun Anda menunggu verifikasi Admin Utama Port Baubau.");
+            addAuditLog("USER_REGISTER", `New registration submitted by ${company} (${username})`);
+            closeRegisterModal();
+            document.getElementById('regCompany').value = '';
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            renderUserApprovalTable();
         }
-       function approveUserWithRole(userId, selectedRole) {
-    const user = registeredUsers.find(u => u.id === userId);
-    if (user) {
-        user.status = "Approved";
-        user.role = selectedRole;
 
-        // --- TAMBAHKAN INI ---
-        localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
-
-        showToast(`Akun ${user.name} disetujui sebagai ${selectedRole}!`);
-        addAuditLog("USER_APPROVE", `Approved ${user.name} as ${selectedRole}`);
-        renderUserApprovalTable();
+        function approveUserWithRole(userId, selectedRole) {
+            const user = registeredUsers.find(u => u.id === userId);
+            if (user) {
+                user.status = "Approved";
+                user.role = selectedRole;
+                localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
+                showToast(`Akun ${user.name} disetujui sebagai ${selectedRole}!`);
+                addAuditLog("USER_APPROVE", `Approved ${user.name} as ${selectedRole}`);
+                renderUserApprovalTable();
             }
         }
-       function rejectUser(userId) {
-    const user = registeredUsers.find(u => u.id === userId);
-    if (user) {
-        user.status = "Rejected";
 
-        // --- TAMBAHKAN INI ---
-        localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
-
-        showToast(`Pendaftaran ${user.name} ditolak.`, "error");
-        addAuditLog("USER_REJECT", `Rejected registration for ${user.name}`);
-        renderUserApprovalTable();
-    }
-}
+        function rejectUser(userId) {
+            const user = registeredUsers.find(u => u.id === userId);
+            if (user) {
+                user.status = "Rejected";
+                localStorage.setItem('water_registered_users', JSON.stringify(registeredUsers));
+                showToast(`Pendaftaran ${user.name} ditolak.`, "error");
+                addAuditLog("USER_REJECT", `Rejected registration for ${user.name}`);
+                renderUserApprovalTable();
+            }
+        }
 
         function renderUserApprovalTable() {
             const pendingBody = document.getElementById('table-pending-users-body');
@@ -1377,31 +1370,33 @@ function deleteUser(userId) {
                 document.getElementById('login-error').classList.remove('hidden-page');
             }
         }
-function startSession(role, userName) {
-    currentRole = role;
-    currentUser = userName;
-    
-    localStorage.setItem('water_role', role);
-    localStorage.setItem('water_user', userName);
 
-    document.getElementById('page-login').classList.add('hidden-page');
-    document.getElementById('app-layout').classList.remove('hidden-page');
-    document.getElementById('user-role-badge').innerText = 'Role: ' + role;
+        function startSession(role, userName) {
+            currentRole = role;
+            currentUser = userName;
+            
+            localStorage.setItem('water_role', role);
+            localStorage.setItem('water_user', userName);
 
-    renderAllTables();
-    renderUserApprovalTable();
-    renderAuditTrailTable();
+            document.getElementById('page-login').classList.add('hidden-page');
+            document.getElementById('app-layout').classList.remove('hidden-page');
+            document.getElementById('user-role-badge').innerText = 'Role: ' + role;
 
-    if (role === 'Admin') {
-        document.getElementById('nav-admin').classList.remove('hidden-page');
-        navigateTo('page-dashboard');
-    } else {
-        document.getElementById('nav-admin').classList.add('hidden-page');
-        document.getElementById('nav-customer').classList.remove('hidden-page');
-        navigateTo('page-customer');
-        calculateCost();
-    }
- }   
+            renderAllTables();
+            renderUserApprovalTable();
+            renderAuditTrailTable();
+
+            if (role === 'Admin') {
+                document.getElementById('nav-admin').classList.remove('hidden-page');
+                navigateTo('page-dashboard');
+            } else {
+                document.getElementById('nav-admin').classList.add('hidden-page');
+                document.getElementById('nav-customer').classList.remove('hidden-page');
+                navigateTo('page-customer');
+                calculateCost();
+            }
+        }
+
         function handleCustomerSubmit(e) {
             e.preventDefault();
             const nama = document.getElementById('custNamaKapal').value;
@@ -1867,18 +1862,17 @@ function startSession(role, userName) {
         const SUPABASE_URL = 'https://xapcbpqoaaccvmdjlukx.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcGNicHFvYWFjY3ZtZGpsdWt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NzE2MjQsImV4cCI6MjEwODI0NzYyNH0.vNJ9g31PWBDnVHYjiubeO-3D5NGUX3jySUy7s7xL0H8';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // DATABASE USER TERREGISTER (LOAD DARI LOCALSTORAGE AGAR PERSISTEN)
-        let registeredUsers = JSON.parse(localStorage.getItem('water_registered_users')) || [
-            { id: 1, name: "Admin Utama Port Baubau", username: "ptkag0005", pass: "Makassar@2025", role: "Admin", status: "Approved", date: "2026-01-01" }
-        ];
-
+        
         const todayStr = new Date().toISOString().slice(0, 10);
-        const dateInputTiba = document.getElementById('custTanggalTiba');
-        const dateInputMinta = document.getElementById('custTanggalMinta');
-        if(dateInputTiba) dateInputTiba.value = todayStr;
-        if(dateInputMinta) dateInputMinta.value = todayStr;
-        calculateCost();
+        const inputTiba = document.getElementById('custTanggalTiba');
+        const inputMinta = document.getElementById('custTanggalMinta');
+        if (inputTiba) inputTiba.value = todayStr;
+        if (inputMinta) inputMinta.value = todayStr;
+        
+        // Memastikan elemen ada sebelum memanggil calculateCost
+        if(document.getElementById('custTrayek') && document.getElementById('custQty')) {
+             calculateCost();
+        }
 
         // --- CEK SESI SAAT HALAMAN DIMUAT ---
         window.addEventListener('DOMContentLoaded', () => {
@@ -1888,7 +1882,6 @@ function startSession(role, userName) {
             if (savedRole && savedUser) {
                 startSession(savedRole, savedUser);
             }
-            renderUserApprovalTable();
         });
     </script>
 </body>
