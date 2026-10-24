@@ -778,36 +778,45 @@
             location.reload();
         }
 
-        // REGISTRASI KE SUPABASE
-        async function handleRegisterSubmit(e) {
+       async function handleRegisterSubmit(e) {
             e.preventDefault();
-            const company = document.getElementById('regCompany').value;
-            const username = document.getElementById('regUsername').value.trim().toLowerCase();
-            const password = document.getElementById('regPassword').value.trim();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Memproses... ⏳';
 
-            const { data: existing } = await supabaseClient.from('users').select('*').eq('username', username);
-            if (existing && existing.length > 0) {
-                showToast("Username / Contact ini sudah terdaftar!", "error");
-                return;
+            try {
+                const company = document.getElementById('regCompany').value;
+                const username = document.getElementById('regUsername').value.trim().toLowerCase();
+                const password = document.getElementById('regPassword').value.trim();
+
+                const { data: existing } = await supabaseClient.from('users').select('*').eq('username', username);
+                if (existing && existing.length > 0) {
+                    showToast("Username / Contact ini sudah terdaftar!", "error");
+                    return;
+                }
+
+                const { error } = await supabaseClient.from('users').insert([
+                    { name: company, username: username, password: password, role: "Customer", status: "Pending" }
+                ]);
+
+                if (error) throw error;
+
+                showToast("Pendaftaran berhasil! Menunggu verifikasi Admin.");
+                addAuditLog("USER_REGISTER", `New registration by ${company} (${username})`);
+                closeRegisterModal();
+                document.getElementById('regCompany').value = '';
+                document.getElementById('regUsername').value = '';
+                document.getElementById('regPassword').value = '';
+
+                await loadSupabaseData();
+            } catch(err) {
+                showToast("Gagal mendaftar: " + err.message, "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             }
-
-            const { error } = await supabaseClient.from('users').insert([
-                { name: company, username: username, password: password, role: "Customer", status: "Pending" }
-            ]);
-
-            if (error) {
-                showToast("Gagal mendaftar: " + error.message, "error");
-                return;
-            }
-
-            showToast("Pendaftaran berhasil! Menunggu verifikasi Admin.");
-            addAuditLog("USER_REGISTER", `New registration by ${company} (${username})`);
-            closeRegisterModal();
-            document.getElementById('regCompany').value = '';
-            document.getElementById('regUsername').value = '';
-            document.getElementById('regPassword').value = '';
-
-            await loadSupabaseData();
         }
 
         async function approveUserWithRole(userId, selectedRole) {
@@ -912,9 +921,16 @@
             });
         }
 
-        // SUBMIT ORDER DENGAN UPLOAD FILE KE SUPABASE STORAGE BUCKET
         async function handleCustomerSubmit(e) {
             e.preventDefault();
+            
+            // CEGAH KLIK GANDA: Disable tombol dan ubah teksnya
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Mengirim... ⏳';
+            submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
             const nama = document.getElementById('custNamaKapal').value;
             const trayek = document.getElementById('custTrayek').value;
             const qty = parseFloat(document.getElementById('custQty').value) || 0;
@@ -932,7 +948,7 @@
 
             try {
                 if (!isCharter && fileBukti) {
-                    const fileNameBukti = `bukti_${Date.now()}_${fileBukti.name}`;
+                    const fileNameBukti = `bukti_${Date.now()}_${fileBukti.name.replace(/\s+/g, '_')}`;
                     const { error: errBukti } = await supabaseClient.storage.from('dokumen-order').upload(fileNameBukti, fileBukti);
                     if (errBukti) throw errBukti;
                     const { data: pubBukti } = supabaseClient.storage.from('dokumen-order').getPublicUrl(fileNameBukti);
@@ -940,52 +956,55 @@
                 }
 
                 if (fileBA) {
-                    const fileNameBA = `ba_${Date.now()}_${fileBA.name}`;
+                    const fileNameBA = `ba_${Date.now()}_${fileBA.name.replace(/\s+/g, '_')}`;
                     const { error: errBA } = await supabaseClient.storage.from('dokumen-order').upload(fileNameBA, fileBA);
                     if (errBA) throw errBA;
                     const { data: pubBA } = supabaseClient.storage.from('dokumen-order').getPublicUrl(fileNameBA);
                     baUrl = pubBA.publicUrl;
                 }
+
+                const dateParts = tglMinta.split('-');
+                const dateStr = dateParts.length === 3 ? `${dateParts[2]}${dateParts[1]}${dateParts[0]}` : '21102026';
+                const generatedOrderCode = `FW-${String(requestsData.length + 1).padStart(3, '0')}/PTK/BAUBAU/${dateStr}`;
+                const tarifVal = trayek === 'Domestik' ? 55000 : 142000;
+
+                // TAMBAHAN: Kolom pembuat_order (pastikan sudah dibuat di Supabase)
+                const { error: insertErr } = await supabaseClient.from('orders').insert([
+                    {
+                        order_code: generatedOrderCode,
+                        kapal: nama.toUpperCase(),
+                        trayek: trayek,
+                        tarif: tarifVal,
+                        permintaan: qty,
+                        realisasi: 0,
+                        jetty: "-",
+                        tanggal_tiba: tglTiba,
+                        tanggal_minta: tglMinta,
+                        status: "Pending",
+                        url_bukti_bayar: buktiUrl,
+                        url_ba: baUrl,
+                        audit_log: "Order Created by Customer",
+                        pembuat_order: currentUser // <-- Menggunakan username/nama login
+                    }
+                ]);
+
+                if (insertErr) throw insertErr;
+
+                showToast(`Order Berhasil! Kode: ${generatedOrderCode}`);
+                addAuditLog("CREATE_ORDER", `Order ${generatedOrderCode} for ${nama.toUpperCase()}`);
+                
+                document.getElementById('custNamaKapal').value = '';
+                await loadSupabaseData();
+                navigateTo('page-customer-history');
+
             } catch (err) {
-                showToast("Gagal upload file: " + err.message, "error");
-                return;
+                showToast("Terjadi kesalahan: " + err.message, "error");
+            } finally {
+                // KEMBALIKAN TOMBOL KE SEMULA
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
             }
-
-            const dateParts = tglMinta.split('-');
-            const dateStr = dateParts.length === 3 ? `${dateParts[2]}${dateParts[1]}${dateParts[0]}` : '21102026';
-            const generatedOrderCode = `FW-${String(requestsData.length + 1).padStart(3, '0')}/PTK/BAUBAU/${dateStr}`;
-            const tarifVal = trayek === 'Domestik' ? 55000 : 142000;
-
-            const { error: insertErr } = await supabaseClient.from('orders').insert([
-                {
-                    order_code: generatedOrderCode,
-                    kapal: nama.toUpperCase(),
-                    trayek: trayek,
-                    tarif: tarifVal,
-                    permintaan: qty,
-                    realisasi: 0,
-                    jetty: "-",
-                    tanggal_tiba: tglTiba,
-                    tanggal_minta: tglMinta,
-                    status: "Pending",
-                    url_bukti_bayar: buktiUrl,
-                    url_ba: baUrl,
-                    audit_log: "Order Created by Customer"
-                }
-            ]);
-
-            if (insertErr) {
-                showToast("Gagal menyimpan order: " + insertErr.message, "error");
-                return;
-            }
-
-            showToast(`Order Berhasil! Kode: ${generatedOrderCode}`);
-            addAuditLog("CREATE_ORDER", `Order ${generatedOrderCode} for ${nama.toUpperCase()}`);
-            sendWhatsAppNotice(generatedOrderCode, nama.toUpperCase(), "ORDER BARU", "Belum Set Jetty", qty);
-
-            document.getElementById('custNamaKapal').value = '';
-            await loadSupabaseData();
-            navigateTo('page-customer-history');
         }
 
         async function submitJettyModal() {
@@ -1225,21 +1244,31 @@
     const custBody = document.getElementById('table-customer-history-body');
     if (custBody) {
         custBody.innerHTML = '';
-        requestsData.forEach((item, index) => {
-            custBody.innerHTML += `
-                <tr>
-                    <td class="p-3.5">${index + 1}</td>
-                    <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                    <td class="p-3.5 font-bold">${item.kapal}</td>
-                    <td class="p-3.5">${item.trayek}</td>
-                    <td class="p-3.5">${item.permintaan} Tons</td>
-                    <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
-                    <td class="p-3.5">${item.tanggalMinta}</td>
-                    <td class="p-3.5 text-center"><span class="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-xs font-bold">${item.status}</span></td>
-                </tr>`;
-        });
+        // Filter agar hanya order miliknya sendiri yang tampil (Jika dia Customer)
+        let userHistory = requestsData;
+        if (currentRole === 'Customer') {
+            // Asumsi properti 'pembuat_order' ditambahkan ke requestsData map saat loadSupabaseData
+            userHistory = requestsData.filter(item => item.pembuat_order === currentUser);
+        }
+
+        if (userHistory.length === 0) {
+            custBody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Belum ada riwayat pesanan.</td></tr>`;
+        } else {
+            userHistory.forEach((item, index) => {
+                custBody.innerHTML += `
+                    <tr>
+                        <td class="p-3.5">${index + 1}</td>
+                        <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
+                        <td class="p-3.5 font-bold">${item.kapal}</td>
+                        <td class="p-3.5">${item.trayek}</td>
+                        <td class="p-3.5">${item.permintaan} Tons</td>
+                        <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
+                        <td class="p-3.5">${item.tanggalMinta}</td>
+                        <td class="p-3.5 text-center"><span class="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-xs font-bold">${item.status}</span></td>
+                    </tr>`;
+            });
+        }
     }
-}
         function toggleCharterMode(checkbox) {
     const inputBukti = document.getElementById('custBuktiBayar');
     const lblText = document.getElementById('lblBuktiBayarText');
