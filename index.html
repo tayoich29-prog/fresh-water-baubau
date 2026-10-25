@@ -1,1301 +1,1186 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fresh Water - Port Baubau</title>
-    
-    <!-- PWA MANIFEST & MOBILE SETUP -->
-    <meta name="theme-color" content="#0284c7">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="FreshWater PTK">
-    <link rel="manifest" href="data:application/manifest+json;utf8,{
-        %22name%22:%22Fresh%20Water%20Port%20Baubau%22,
-        %22short_name%22:%22FreshWater%22,
-        %22start_url%22:%22.%22,
-        %22display%22:%22standalone%22,
-        %22background_color%22:%22#0f172a%22,
-        %22theme_color%22:%22#0284c7%22,
-        %22description%22:%22Sistem%20Distribusi%20Air%20Bersih%20Port%20Baubau%22
-    }">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fresh Water - Port Baubau</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Tambahan Library untuk PDF -->
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<meta name="theme-color" content="#0284c7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FreshWater PTK">
+<link rel="manifest" href="data:application/manifest+json;utf8,{%22name%22:%22Fresh%20Water%20Port%20Baubau%22,%22short_name%22:%22FreshWater%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#0f172a%22,%22theme_color%22:%22#0284c7%22}">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+ @keyframes waveMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+@keyframes sailShip {
+    0%, 100% { transform: translateX(-15px) translateY(0) rotate(-0.5deg); }
+    50% { transform: translateX(15px) translateY(-6px) rotate(0.5deg); }
+}   
+.hidden-page{display:none!important}
+.blend-multiply{mix-blend-mode:multiply}
+@keyframes pulseGlow{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(14,165,233,.8)}70%{transform:scale(1.3);box-shadow:0 0 0 12px rgba(14,165,233,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(14,165,233,0)}}
+.radar-pulse{animation:pulseGlow 2.2s infinite ease-in-out}
+.stat-card-3d{transition:all .3s cubic-bezier(.16,1,.3,1)}
+.stat-card-3d:hover{transform:translateY(-5px) scale(1.01)}
+#toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{animation:slideIn .3s ease-out forwards}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+main{padding-bottom:5rem}
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .hidden-page { display: none !important; }
-        .blend-multiply { mix-blend-mode: multiply; }
-
-        @keyframes waveFlowSmooth {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-50%, 0, 0); }
-        }
-
-        .wave-wrapper {
-            position: absolute;
-            top: 0; left: 0;
-            width: 200%; height: 100%;
-            display: flex;
-            animation: waveFlowSmooth 20s linear infinite;
-            will-change: transform;
-        }
-
-        .wave-svg-unit { width: 50%; height: 100%; }
-
-        @keyframes pulseGlow {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.8); }
-            70% { transform: scale(1.3); box-shadow: 0 0 0 12px rgba(14, 165, 233, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
-        }
-
-        .radar-pulse { animation: pulseGlow 2.2s infinite ease-in-out; }
-
-        .stat-card-3d { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .stat-card-3d:hover {
-            transform: translateY(-5px) scale(1.01);
-            box-shadow: 0 20px 25px -5px rgba(30, 58, 138, 0.15), 0 8px 10px -6px rgba(30, 58, 138, 0.1);
-        }
-
-        #toast-container {
-            position: fixed; top: 20px; right: 20px; z-index: 9999;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .toast { animation: slideIn 0.3s ease-out forwards; }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-    </style>
+@media (prefers-reduced-motion: no-preference) {
+    @keyframes floatShip {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-3px) rotate(1deg); }
+    }
+    .animate-float { animation: floatShip 3.5s ease-in-out infinite; }
+}
+</style>
 </head>
-<body class="bg-slate-100 font-sans min-h-screen text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
+<body class="bg-slate-100 font-sans min-h-screen text-slate-800 antialiased">
+<div id="toast-container"></div>
+<div id="mobileOverlay" onclick="toggleMobileSidebar()" class="hidden-page fixed inset-0 bg-slate-950/70 z-40 md:hidden backdrop-blur-sm"></div>
 
-    <div id="toast-container"></div>
-
-    <div id="offlineIndicator" class="hidden-page fixed bottom-4 right-4 z-50 bg-amber-900/90 text-amber-200 border border-amber-500/50 px-4 py-2.5 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-2 backdrop-blur-md">
-        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-        <span>Mode Offline (Sinyal Terputus).</span>
-    </div>
-
-    <div id="mobileOverlay" onclick="toggleMobileSidebar()" class="hidden-page fixed inset-0 bg-slate-950/70 z-40 md:hidden backdrop-blur-sm"></div>
-
-    <!-- MODAL REGISTRASI -->
-    <div id="registerModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-slate-900 text-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl border border-blue-500/30">
-            <div class="text-center mb-6">
-                <h3 class="text-xl font-black uppercase tracking-wider text-sky-400" data-i18n="reg_title">Daftar Akun Baru</h3>
-                <p class="text-xs text-slate-400 mt-1" data-i18n="reg_sub">Pendaftaran akan diverifikasi oleh Admin Utama Port Baubau.</p>
-            </div>
-
-            <form onsubmit="handleRegisterSubmit(event)">
-                <div class="mb-4">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1" data-i18n="lbl_company_name">Nama Agen / Perusahaan / Petugas *</label>
-                    <input type="text" id="regCompany" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="Contoh: PT Bahari Lines" required>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1" data-i18n="lbl_reg_user">Username / No. WA / Email *</label>
-                    <input type="text" id="regUsername" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="Contoh: bahari_agent" required>
-                </div>
-                <div class="mb-6">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1" data-i18n="lbl_reg_pass">Password *</label>
-                    <input type="password" id="regPassword" class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="••••••••" required>
-                </div>
-
-                <div class="flex justify-end gap-3">
-                    <button type="button" onclick="closeRegisterModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2.5 rounded-xl font-bold text-xs uppercase cursor-pointer transition" data-i18n="btn_cancel">Batal</button>
-                    <button type="submit" class="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase cursor-pointer transition shadow-lg shadow-sky-500/20" data-i18n="btn_submit_reg">Kirim Pendaftaran</button>
-                </div>
-            </form>
+<!-- MODAL REGISTRASI LENGKAP -->
+<div id="registerModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 text-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl border border-blue-500/30 overflow-y-auto max-h-[90vh]">
+        <div class="text-center mb-6">
+            <h3 class="text-xl font-black uppercase tracking-wider text-sky-400">Daftar Akun Baru</h3>
+            <p class="text-xs text-slate-400 mt-1">Pendaftaran akan diperiksa Admin Port Baubau.</p>
         </div>
-    </div>
-
-    <!-- MODAL JETTY -->
-    <div id="jettyModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
-            <h3 class="text-lg font-black text-slate-900 uppercase mb-1" data-i18n="m1_title">Tahap 1: Verifikasi Posisi Jetty</h3>
-            <p class="text-xs text-slate-500 mb-4" data-i18n="m1_sub">Pilih posisi dermaga sandar kapal.</p>
-            
-            <input type="hidden" id="jettyModalOrderId">
-
-            <div class="mb-5">
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2" data-i18n="lbl_select_jetty">Pilih Jetty *</label>
-                <select id="modalJettyChoice" class="w-full p-3 border rounded-xl text-sm font-bold bg-slate-50 focus:ring-2 focus:ring-blue-600 focus:outline-none">
-                    <option value="Jetty 1 (North)">Jetty 1 (North - Main Deepwater)</option>
-                    <option value="Jetty 2 (Middle)">Jetty 2 (Middle)</option>
-                    <option value="Jetty 3 (South)">Jetty 3 (South)</option>
-                </select>
+        <form onsubmit="handleRegisterSubmit(event)">
+            <div class="mb-4">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1">Nama Agen / Perusahaan *</label>
+                <input type="text" id="regCompany" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="Contoh: PT Bahari Lines" required>
             </div>
-
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1">Nama P.Jawab *</label>
+                    <input type="text" id="regPIC" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="Nama Anda" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1">No. WhatsApp *</label>
+                    <input type="number" id="regWa" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="08123..." required>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1">Username (tanpa spasi) *</label>
+                <input type="text" id="regUsername" pattern="[a-z0-9_.@\-]+" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="bahari_agent" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1">Password *</label>
+                <input type="password" id="regPassword" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="••••••••" required>
+            </div>
+            <div class="mb-6">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1">Keterangan / Pesan Tambahan</label>
+                <textarea id="regNotes" rows="2" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-sky-400 focus:outline-none" placeholder="Opsional"></textarea>
+            </div>
             <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeJettyModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider cursor-pointer transition" data-i18n="btn_cancel">Batal</button>
-                <button type="button" onclick="submitJettyModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider cursor-pointer transition" data-i18n="btn_set_jetty">Set Posisi Jetty</button>
+                <button type="button" onclick="closeRegisterModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2.5 rounded-xl font-bold text-xs uppercase">Batal</button>
+                <button type="submit" class="bg-gradient-to-r from-blue-600 to-sky-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase shadow-lg">Kirim</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL JETTY -->
+<div id="jettyModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+<div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+<h3 class="text-lg font-black text-slate-900 uppercase mb-1">Tahap 1: Verifikasi Posisi Jetty</h3>
+<p class="text-xs text-slate-500 mb-4">Pilih dermaga tempat kapal sandar.</p>
+<input type="hidden" id="jettyModalOrderId">
+<select id="modalJettyChoice" class="w-full p-3 border rounded-xl text-sm font-bold bg-slate-50 mb-5">
+<option value="Jetty 1 (North)">Jetty 1 (North - Main Deepwater)</option><option value="Jetty 2 (Middle)">Jetty 2 (Middle)</option><option value="Jetty 3 (South)">Jetty 3 (South)</option></select>
+<div class="flex justify-end gap-3">
+<button type="button" onclick="closeJettyModal()" class="bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase">Batal</button>
+<button type="button" onclick="submitJettyModal()" class="bg-sky-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase">Set Posisi Jetty</button></div>
+</div></div>
+
+<!-- MODAL REALISASI / BATAL -->
+<div id="verifyModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+<div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+<h3 id="verifyModalTitle" class="text-lg font-black text-slate-900 uppercase mb-3">Tahap 2: Input Realisasi Supply</h3>
+<input type="hidden" id="verifyModalOrderId"><input type="hidden" id="verifyModalActionType">
+<div id="verifyRealBox">
+<div class="mb-4"><label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Realisasi (Ton) *</label>
+<input type="number" id="modalRealQty" min="0.1" step="any" inputmode="decimal" oninput="updateDiffInfo()" class="w-full p-3 border rounded-xl text-sm font-bold" placeholder="Contoh: 20">
+<p id="modalDiffInfo" class="text-xs text-slate-500 mt-2"></p></div>
+<div class="mb-4"><label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Tanggal Supply *</label>
+<input type="date" id="modalSupplyDate" class="w-full p-3 border rounded-xl text-sm font-bold"></div></div>
+<div class="mb-5"><label id="modalNoteLabel" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Catatan (opsional)</label>
+<textarea id="modalNote" rows="2" class="w-full p-3 border rounded-xl text-sm"></textarea></div>
+<div class="flex justify-end gap-3">
+<button type="button" onclick="closeVerifyModal()" class="bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase">Batal</button>
+<button type="button" onclick="submitVerificationModal()" class="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase">Simpan</button></div>
+</div></div>
+
+<!-- MODAL DOKUMEN KEGIATAN -->
+<div id="activityDocModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+<div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+<h3 class="text-lg font-black text-slate-900 uppercase mb-3">Tahap 3: Upload Dokumen Kegiatan</h3>
+<input type="hidden" id="activityDocOrderId">
+<input type="file" id="activityDocInput" accept=".jpg,.jpeg,.png,.pdf" class="w-full p-2 border rounded-xl text-sm bg-slate-50 mb-1">
+<p class="text-xs text-slate-400 mb-5">JPG, PNG, atau PDF. Maks. 2 MB.</p>
+<div class="flex justify-end gap-3">
+<button type="button" onclick="$('activityDocModal').classList.add('hidden-page')" class="bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase">Batal</button>
+<button type="button" id="activityDocBtn" onclick="submitActivityDoc()" class="bg-blue-800 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase">Simpan &amp; Selesai</button></div>
+</div></div>
+
+<!-- MODAL UPLOAD ULANG BUKTI BAYAR -->
+<div id="customerUploadModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+        <h3 class="text-lg font-black text-slate-900 uppercase mb-3">Upload Ulang Bukti Bayar</h3>
+        <p class="text-xs text-slate-500 mb-4">Klaim kapal charter Anda ditolak oleh admin. Silakan upload bukti pembayaran bank yang sah.</p>
+        <input type="hidden" id="customerUploadOrderId">
+        <input type="file" id="customerUploadInput" accept=".jpg,.jpeg,.png,.pdf" class="w-full p-2 border rounded-xl text-sm bg-slate-50 mb-1">
+        <p class="text-xs text-slate-400 mb-5">JPG, PNG, atau PDF. Maks. 1 MB (otomatis dikompresi).</p>
+        <div class="flex justify-end gap-3">
+            <button type="button" onclick="$('customerUploadModal').classList.add('hidden-page')" class="bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase">Batal</button>
+            <button type="button" onclick="submitCustomerUpload()" class="bg-blue-800 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase">Kirim Bukti Bayar</button>
+        </div>
+    </div>
+</div>
+
+<!-- LOGIN -->
+<div id="page-login" class="relative min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 text-white">
+<img src="KAPAL%20TANKER.jpg" alt="" fetchpriority="high" class="login-bg absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">
+<div class="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/10 to-slate-950/75 pointer-events-none"></div>
+<div class="login-sun absolute pointer-events-none"></div>
+<div class="login-shimmer absolute inset-x-0 bottom-0 pointer-events-none"></div>
+ 
+<div class="relative z-10 max-w-6xl w-full mx-auto p-6 md:p-8 flex flex-col md:flex-row justify-between items-center border-b border-white/20 gap-4">
+<div><h1 class="text-2xl md:text-3xl font-black tracking-[0.2em] uppercase text-white drop-shadow-md">Fresh Water <span class="text-sky-200">- Port Baubau</span></h1>
+<p class="text-xs font-semibold text-sky-100 tracking-wider mt-1 uppercase">Sistem Distribusi &amp; Rekapitulasi Air Bersih Pelabuhan</p></div>
+<div class="flex items-center gap-4">
+<div id="weatherBox" class="hidden-page items-center gap-3 bg-white/15 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/30 shadow-lg">
+<div id="weatherIcon" class="text-2xl"></div>
+<div><div class="text-[10px] uppercase font-bold tracking-wider text-sky-100">Baubau, Sultra</div><div id="weatherText" class="text-xs font-black"></div></div></div>
+<div class="flex items-center justify-center p-2 bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg">
+<img src="LOGO_FRESH WATER.png" alt="Logo" class="h-12 md:h-14 w-auto object-contain blend-multiply brightness-200" onerror="this.onerror=null;this.src='LOGO_FRESH WATER.jpg';"></div></div></div>
+ 
+<div class="relative z-10 flex-1 flex items-end md:items-center md:justify-end px-4 md:px-[6vw] py-6">
+<div class="w-full max-w-md bg-slate-950/35 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/30 ring-1 ring-white/10">
+<div class="text-center mb-6"><h2 class="text-2xl font-black text-white drop-shadow">Portal Akses Masuk</h2><p class="text-xs text-sky-100 mt-1 font-medium">Masukkan kredensial akun Anda</p></div>
+<div id="login-error" class="hidden-page mb-5 p-3 bg-red-900/80 border border-red-400/50 text-red-100 text-xs rounded-2xl text-center font-semibold">Username atau Password salah!</div>
+<form onsubmit="handleLogin(event)">
+<div class="mb-4"><label class="block text-xs font-bold uppercase tracking-wider text-sky-100 mb-2">User / No Telpon / Email</label>
+<input type="text" id="usernameInput" class="w-full px-4 py-3 bg-white/15 border border-white/30 rounded-xl text-sm text-white placeholder-sky-200 focus:outline-none focus:ring-2 focus:ring-white" placeholder="Masukkan ID / Phone / Email" required></div>
+<div class="mb-2"><label class="block text-xs font-bold uppercase tracking-wider text-sky-100 mb-2">Password</label>
+<input type="password" id="passwordInput" class="w-full px-4 py-3 bg-white/15 border border-white/30 rounded-xl text-sm text-white placeholder-sky-200 focus:outline-none focus:ring-2 focus:ring-white" placeholder="Password" required></div>
+<div class="text-right mb-6"><button type="button" onclick="forgotPasswordNotice()" class="text-xs text-sky-200 hover:underline font-bold">Lupa Password? Hubungi Admin</button></div>
+<button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-sky-400 hover:from-blue-500 hover:to-sky-300 text-white py-3.5 rounded-xl font-black text-sm tracking-wider uppercase shadow-xl transition-all transform hover:scale-[1.02] mb-4">Masuk ke Sistem</button></form>
+<div class="text-center pt-3 border-t border-white/20"><span class="text-xs text-sky-100">Belum punya akun?</span>
+<button type="button" onclick="openRegisterModal()" class="text-xs font-black text-white hover:underline ml-1">Daftar di sini</button></div></div></div>
+ 
+<div class="relative z-10 pb-4 text-center text-[11px] text-sky-100 font-semibold tracking-wider">PT Pertamina Trans Kontinental • Port Baubau</div>
+</div>
+
+<!-- APLIKASI -->
+<div id="app-layout" class="hidden-page flex min-h-screen relative">
+<div id="mainSidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 z-50 w-64 bg-slate-950 text-white flex flex-col justify-between p-5 h-[100dvh] md:h-auto md:min-h-screen overflow-y-auto shadow-2xl border-r border-slate-800">
+<div>
+<div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-3"><div class="text-lg font-black tracking-wider uppercase text-sky-400">Fresh Water</div>
+<button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 text-xl p-1">✕</button></div>
+<div id="user-role-badge" class="text-[11px] bg-blue-900/60 border border-blue-500/30 text-sky-300 px-3 py-1 rounded-full inline-block mb-6 font-bold uppercase">Role: -</div>
+<nav id="nav-admin" class="space-y-1.5 hidden-page">
+<button onclick="navigateTo('page-dashboard')" class="nav-btn w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm">Dashboard</button>
+<button onclick="navigateTo('page-permintaan')" class="nav-btn w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm flex items-center justify-between"><span>Order Fresh Water</span><span id="pendingOrderBadge" class="hidden-page bg-rose-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">0</span></button>
+<button onclick="navigateTo('page-rekapitulasi')" class="nav-btn w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm">Rekapitulasi Fresh Water</button>
+<button onclick="navigateTo('page-laporan')" class="nav-btn w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm">Laporan Seluruh Kegiatan</button>
+<button onclick="navigateTo('page-user-approval')" class="nav-btn w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm flex items-center justify-between"><span>Persetujuan Akun</span><span id="pendingUserBadge" class="hidden-page bg-rose-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">0</span></button>
+<button onclick="navigateTo('page-audit-trail')" class="nav-btn w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm text-slate-300">🔍 Audit Trail Log</button></nav>
+<nav id="nav-customer" class="space-y-1.5 hidden-page">
+<button onclick="navigateTo('page-customer')" class="nav-btn w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm">Form Order Air</button>
+<button onclick="navigateTo('page-customer-history')" class="nav-btn w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm">Riwayat Pesanan Saya</button></nav>
+</div>
+<div class="border-t border-slate-800 pt-4 space-y-1">
+<button onclick="contactAdmin()" class="w-full text-left px-3.5 py-2.5 text-sky-300 hover:bg-slate-800/80 rounded-xl font-semibold text-sm">💬 Hubungi Admin</button>
+<button onclick="logout()" class="w-full text-left px-3.5 py-2.5 text-red-400 hover:bg-red-950/30 rounded-xl font-bold text-sm">Keluar / Logout</button></div>
+</div>
+
+<div class="flex-1 bg-slate-50 flex flex-col min-h-screen overflow-y-auto w-full">
+<header class="bg-white border-b border-slate-200 px-4 md:px-6 py-3 flex justify-between items-center shadow-sm sticky top-0 z-30">
+<div class="flex items-center gap-3">
+<button onclick="toggleMobileSidebar()" class="md:hidden p-2 rounded-xl bg-slate-100 text-slate-700"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<div><h2 class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">Pertamina Trans Kontinental</h2><p class="text-xs md:text-sm font-extrabold text-slate-900 uppercase">Port Baubau System</p></div></div>
+<div class="flex items-center gap-2 md:gap-4">
+<div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+<button onclick="changeLanguage('id')" class="px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold bg-blue-900 text-white">🇮🇩 ID</button>
+<button onclick="changeLanguage('en')" class="px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold text-slate-600">🇬🇧 EN</button></div>
+<img src="LOGO_FRESH WATER.png" alt="Logo" class="h-8 md:h-10 w-auto object-contain blend-multiply" onerror="this.onerror=null;this.src='LOGO_FRESH WATER.jpg';"></div>
+</header>
+
+<main class="p-4 md:p-8 flex-1">
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="content-section hidden-page">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-slate-200 pb-4 mb-6 gap-4">
+        <div>
+            <h1 class="text-xl md:text-2xl font-black text-slate-900">Dashboard Operasional</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Status order dan jetty Pertamina Baubau</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 bg-white p-2 border border-slate-200 rounded-2xl shadow-sm">
+            <span class="text-xs font-bold text-slate-500 uppercase px-2">Tgl Supply:</span>
+            <input type="date" id="dashStartDate" onchange="renderAllTables()" class="p-2.5 border rounded-xl text-xs bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-sky-400">
+            <span class="text-xs font-bold text-slate-400">s/d</span>
+            <input type="date" id="dashEndDate" onchange="renderAllTables()" class="p-2.5 border rounded-xl text-xs bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-sky-400">
+            <button onclick="resetDashFilter()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2.5 rounded-xl text-xs font-bold transition-colors">Reset</button>
+        </div>
+    </div>
+
+    <!-- 5 Kartu Statistik -->
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+        <div class="stat-card-3d bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Order Masuk</p>
+            <h3 id="stat-total" class="text-2xl font-black text-blue-600 mt-1">0</h3>
+            <p id="stat-processing" class="text-[10px] font-bold text-amber-600 mt-1.5 bg-amber-50 px-2 py-0.5 rounded-md inline-block">Sedang diproses: 0</p>
+        </div>
+        
+        <div class="stat-card-3d bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Kapal Ter-supply</p>
+            <h3 id="stat-supplied" class="text-2xl font-black text-emerald-600 mt-1">0</h3>
+        </div>
+        
+        <div class="stat-card-3d bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Ton Ter-supply</p>
+            <h3 id="stat-ton" class="text-2xl font-black text-sky-600 mt-1">0 <span class="text-sm font-bold">Ton</span></h3>
+        </div>
+
+        <div class="stat-card-3d bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Dibatalkan</p>
+            <h3 id="stat-cancelled" class="text-2xl font-black text-rose-600 mt-1">0</h3>
+        </div>
+        
+        <div class="stat-card-3d bg-gradient-to-br from-slate-900 to-blue-950 text-white p-5 rounded-2xl shadow-md flex flex-col justify-between">
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-sky-400">Pemasukan</p>
+                <h3 id="stat-revenue" class="text-xl font-black text-emerald-400 mt-1 truncate">Rp 0</h3>
+            </div>
+            <div class="mt-2 pt-2 border-t border-blue-900/80 text-[10px] text-slate-300 flex justify-between font-bold">
+                <span id="stat-rev-dom">Dom: Rp 0</span>
+                <span id="stat-rev-imp">Imp: Rp 0</span>
             </div>
         </div>
     </div>
 
-    <!-- MODAL VERIFIKASI REALISASI -->
-    <div id="verifyModal" class="hidden-page fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
-            <h3 class="text-lg font-black text-slate-900 uppercase mb-1" data-i18n="m2_title">Tahap 2: Verifikasi Selesai & Realisasi</h3>
-            <p class="text-xs text-slate-500 mb-4" data-i18n="m2_sub">Masukkan jumlah realisasi air (Ton).</p>
-            
-            <input type="hidden" id="verifyModalOrderId">
-            <input type="hidden" id="verifyModalActionType">
-
-            <div class="mb-5">
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2" data-i18n="lbl_realization_ton">Realisasi (Ton) *</label>
-                <input type="number" id="modalRealQty" min="1" class="w-full p-3 border rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-600 focus:outline-none" placeholder="Contoh: 20">
-            </div>
-
-            <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeVerifyModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider cursor-pointer transition" data-i18n="btn_cancel">Batal</button>
-                <button type="button" onclick="submitVerificationModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider cursor-pointer transition" data-i18n="btn_save_verify">Selesai & Masuk Rekap</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- HALAMAN LOGIN -->
-    <div id="page-login" class="relative min-h-screen flex flex-col justify-between overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 text-white">
-        <div class="absolute inset-0 opacity-10 pointer-events-none flex items-center justify-center overflow-hidden">
-            <svg class="w-[800px] h-[800px] text-blue-400" viewBox="0 0 500 500" fill="currentColor">
-                <path d="M 210 100 Q 230 120 220 160 Q 250 180 290 170 Q 330 160 370 190 Q 330 210 280 200 Q 250 230 240 280 Q 270 300 320 290 Q 280 320 240 330 Q 220 380 230 420 Q 200 390 190 340 Q 170 320 120 330 Q 160 300 180 270 Q 160 220 190 170 Z"/>
+    <!-- Peta Jetty -->
+    <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl border border-slate-800 relative overflow-hidden">
+        <div class="absolute bottom-0 left-0 w-full opacity-10 pointer-events-none">
+            <svg viewBox="0 0 1440 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,96L80,106.7C160,117,320,139,480,133.3C640,128,800,96,960,85.3C1120,75,1280,85,1360,90.7L1440,96L1440,200L1360,200C1280,200,1120,200,960,200C800,200,640,200,480,200C320,200,160,200,80,200L0,200Z" fill="#0ea5e9"/>
             </svg>
         </div>
+        <h3 class="text-lg font-bold relative z-10">Live Map: Jetty Pertamina</h3>
+        <p class="text-xs text-slate-400 mb-5 relative z-10">Visualisasi status sandar kapal</p>
+        <div id="jetty-board" class="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-5"></div>
+    </div>
+</div>
 
-        <div class="relative z-10 max-w-6xl w-full mx-auto p-6 md:p-8 flex flex-col md:flex-row justify-between items-center border-b border-blue-800/40 gap-4">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-black tracking-[0.2em] text-white uppercase drop-shadow-md">
-                    Fresh Water <span class="text-sky-400">- Port Baubau</span>
-                </h1>
-                <p class="text-xs font-semibold text-sky-200 tracking-wider mt-1 uppercase" data-i18n="sub_title">Sistem Distribusi & Rekapitulasi Air Bersih Pelabuhan</p>
-            </div>
-            <div class="flex items-center justify-center p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 shadow-inner">
-                <img src="LOGO_FRESH WATER.png" alt="Logo" class="h-12 md:h-16 w-auto object-contain blend-multiply brightness-200" onerror="this.onerror=null; this.src='LOGO_FRESH WATER.jpg';">
-            </div>
-        </div>
+<!-- ORDER ADMIN -->
+<div id="page-permintaan" class="content-section hidden-page">
+<h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6">Order Fresh Water</h1>
+<div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80"><table class="w-full text-left border-collapse">
+<thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider"><tr><th class="p-3.5 border-b">No</th><th class="p-3.5 border-b">Kode Order</th><th class="p-3.5 border-b">Kapal</th><th class="p-3.5 border-b">Trayek</th><th class="p-3.5 border-b">Order (Ton)</th><th class="p-3.5 border-b">Posisi Jetty</th><th class="p-3.5 border-b">Ter-supply</th><th class="p-3.5 border-b">Status</th><th class="p-3.5 border-b whitespace-nowrap">Tgl Order</th><th class="p-3.5 border-b text-center">Tindakan</th></tr></thead>
+<tbody id="table-permintaan-body" class="divide-y divide-slate-100 text-sm"></tbody></table></div></div>
 
-        <div class="relative z-10 max-w-md w-full mx-auto my-8 bg-slate-900/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-blue-500/20">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-white tracking-tight" data-i18n="portal_login">Portal Akses Masuk</h2>
-                <p class="text-xs text-slate-400 mt-1 font-medium" data-i18n="login_sub">Masukkan kredensial akun Anda</p>
-            </div>
+<!-- REKAP -->
+<div id="page-rekapitulasi" class="content-section hidden-page">
+<h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6">Rekapitulasi Fresh Water</h1>
+<div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80"><table class="w-full text-left border-collapse">
+<thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
+    <tr><th class="p-3.5 border-b">No</th><th class="p-3.5 border-b">Kode Order</th><th class="p-3.5 border-b">Kapal</th><th class="p-3.5 border-b">Trayek</th><th class="p-3.5 border-b">Jetty</th><th class="p-3.5 border-b">Order</th><th class="p-3.5 border-b">Realisasi</th><th class="p-3.5 border-b">Selisih Ton</th><th class="p-3.5 border-b">Selisih Biaya</th><th class="p-3.5 border-b">Total Biaya</th><th class="p-3.5 border-b whitespace-nowrap">Tgl Supply</th><th class="p-3.5 border-b text-center">Dokumen</th></tr>
+</thead>
+<tbody id="table-rekapitulasi-body" class="divide-y divide-slate-100 text-sm"></tbody></table></div></div>
+
+<!-- LAPORAN -->
+<div id="page-laporan" class="content-section hidden-page">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 mb-6 gap-4">
+        <h1 class="text-xl md:text-2xl font-bold text-slate-900">Laporan Seluruh Kegiatan</h1>
+        <div class="flex flex-wrap items-center gap-2">
+            <input type="text" id="searchReportInput" oninput="renderAllTables()" placeholder="Cari Kapal / Kode Order..." class="p-2.5 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-sky-400 outline-none">
             
-            <div id="login-error" class="hidden-page mb-5 p-3 bg-red-950/80 border border-red-500/50 text-red-200 text-xs rounded-2xl text-center font-semibold">
-                Username atau Password salah!
+            <div class="flex items-center bg-white border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-sky-400">
+                <input type="date" id="filterStartDate" onchange="renderAllTables()" class="p-2 text-sm bg-white border-none outline-none">
+                <span class="text-xs font-bold text-slate-400 px-1">s/d</span>
+                <input type="date" id="filterEndDate" onchange="renderAllTables()" class="p-2 text-sm bg-white border-none outline-none">
             </div>
 
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="mb-4">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2" data-i18n="lbl_user">User / No Telpon / Email</label>
-                    <input type="text" id="usernameInput" class="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/80 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition" placeholder="Masukkan ID / Phone / Email" required>
-                </div>
-                <div class="mb-2">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2" data-i18n="lbl_pass">Password</label>
-                    <input type="password" id="passwordInput" class="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/80 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-400 transition" placeholder="••••••••" required>
-                </div>
+            <select id="reportLimit" onchange="renderAllTables()" class="p-2.5 border rounded-xl text-sm bg-white font-bold text-slate-700 outline-none focus:ring-2 focus:ring-sky-400">
+                <option value="10">10 Baris</option>
+                <option value="20">20 Baris</option>
+                <option value="50">50 Baris</option>
+                <option value="ALL">Semua Data</option>
+            </select>
 
-                <div class="text-right mb-6">
-                    <button type="button" onclick="forgotPasswordNotice()" class="text-xs text-sky-400 hover:underline font-semibold cursor-pointer">Lupa Password?</button>
-                </div>
-                
-                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-sky-500 text-white py-3.5 rounded-xl font-bold text-sm tracking-wider uppercase transition shadow-lg shadow-sky-500/25 cursor-pointer mb-4" data-i18n="btn_login">
-                    Masuk ke Sistem
-                </button>
-            </form>
-
-            <div class="text-center pt-2 border-t border-slate-800/80">
-                <span class="text-xs text-slate-400" data-i18n="no_account_text">Belum punya akun Customer?</span>
-                <button type="button" onclick="openRegisterModal()" class="text-xs font-bold text-sky-400 hover:underline ml-1 cursor-pointer" data-i18n="btn_register_now">Daftar Sekarang</button>
-            </div>
-        </div>
-
-        <div class="relative z-10 w-full max-w-5xl mx-auto text-center px-4">
-            <img src="LOGO KAPAL.png" alt="Kapal" class="w-full h-36 md:h-44 object-contain mx-auto blend-multiply brightness-150 opacity-90" onerror="this.onerror=null; this.src='LOGO KAPAL.jpg';">
+            <button onclick="resetReportFilter()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold">Reset</button>
+            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-md">Export (.csv)</button>
         </div>
     </div>
+    <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
+                <tr><th class="p-3.5 border-b">No</th><th class="p-3.5 border-b">Kode Order</th><th class="p-3.5 border-b">Kapal</th><th class="p-3.5 border-b">Trayek</th><th class="p-3.5 border-b">Jetty</th><th class="p-3.5 border-b">Status</th><th class="p-3.5 border-b">Order</th><th class="p-3.5 border-b">Realisasi</th><th class="p-3.5 border-b">Selisih Ton</th><th class="p-3.5 border-b">Selisih Biaya</th><th class="p-3.5 border-b">Total Biaya</th><th class="p-3.5 border-b whitespace-nowrap">Tgl Tiba</th><th class="p-3.5 border-b whitespace-nowrap">Tgl Order</th><th class="p-3.5 border-b whitespace-nowrap">Tgl Supply</th><th class="p-3.5 border-b text-center">Dokumen</th></tr>
+            </thead>
+            <tbody id="table-laporan-body" class="divide-y divide-slate-100 text-sm"></tbody>
+        </table>
+    </div>
+</div>
 
-    <!-- LAYOUT DASHBOARD UTAMA -->
-    <div id="app-layout" class="hidden-page flex min-h-screen relative">
-        <!-- Sidebar -->
-        <div id="mainSidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out z-50 w-64 bg-slate-950 text-white flex flex-col justify-between p-5 min-h-screen shadow-2xl border-r border-slate-800">
-            <div>
-                <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-3">
-                    <div class="text-lg font-black tracking-wider uppercase text-sky-400">Fresh Water</div>
-                    <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white text-xl p-1">✕</button>
+<!-- PERSETUJUAN AKUN -->
+<div id="page-user-approval" class="content-section hidden-page">
+<h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6">Persetujuan &amp; Manajemen Akun Pengguna</h1>
+<h2 class="text-sm font-extrabold uppercase text-amber-800 bg-amber-50 border border-amber-200 p-3 rounded-xl mb-3">⏳ Pendaftaran Baru (Menunggu Approval)</h2>
+<div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80 mb-8"><table class="w-full text-left border-collapse">
+<thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider"><tr><th class="p-3.5 border-b">No</th><th class="p-3.5 border-b">Nama</th><th class="p-3.5 border-b">Username</th><th class="p-3.5 border-b">Tanggal</th><th class="p-3.5 border-b text-center">Aksi</th></tr></thead>
+<tbody id="table-pending-users-body" class="divide-y divide-slate-100 text-sm"></tbody></table></div>
+<h2 class="text-sm font-extrabold uppercase text-slate-800 bg-slate-100 border border-slate-200 p-3 rounded-xl mb-3">📋 Daftar Akun Terverifikasi</h2>
+<div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80"><table class="w-full text-left border-collapse">
+<thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider"><tr><th class="p-3.5 border-b">No</th><th class="p-3.5 border-b">Nama</th><th class="p-3.5 border-b">Username</th><th class="p-3.5 border-b">Role</th><th class="p-3.5 border-b">Status</th><th class="p-3.5 border-b text-center">Kelola</th></tr></thead>
+<tbody id="table-approved-users-body" class="divide-y divide-slate-100 text-sm"></tbody></table></div></div>
+
+<!-- AUDIT -->
+<div id="page-audit-trail" class="content-section hidden-page">
+<h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6">🔍 Activity Audit Trail Log</h1>
+<div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80"><table class="w-full text-left border-collapse font-mono text-xs">
+<thead class="bg-slate-900 text-slate-300 uppercase tracking-wider"><tr><th class="p-3.5">Timestamp</th><th class="p-3.5">User</th><th class="p-3.5">Aksi</th><th class="p-3.5">Detail</th></tr></thead>
+<tbody id="table-audit-trail-body" class="divide-y divide-slate-100 text-slate-700"></tbody></table></div></div>
+
+<!-- FORM CUSTOMER -->
+<div id="page-customer" class="content-section hidden-page">
+    <div class="mb-6 bg-gradient-to-r from-blue-900 via-slate-900 to-blue-950 text-white p-6 rounded-2xl shadow-lg border border-blue-700/50">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl p-2 bg-blue-800/50 rounded-xl">💳</span>
+                <div>
+                    <h3 class="text-sm font-extrabold uppercase tracking-wider text-sky-400">Informasi Pembayaran BNI</h3>
+                    <p class="text-xs text-slate-300">No. Rekening: <strong class="text-emerald-400">184127595</strong> a.n PT Pertamina Trans Kontinental</p>
+                    <p class="text-[11px] text-amber-400 font-bold mt-1.5 italic">* Mohon diberi keterangan nama kapal pada bukti transfer</p>
                 </div>
-
-                <div id="user-role-badge" class="text-[11px] bg-blue-900/60 border border-blue-500/30 text-sky-300 px-3 py-1 rounded-full inline-block mb-6 font-bold tracking-wider uppercase">
-                    Role: -
-                </div>
-
-                <!-- NAV ADMIN -->
-                <nav id="nav-admin" class="space-y-1.5">
-                    <button type="button" onclick="navigateTo('page-dashboard')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_dash">Dashboard</button>
-                    <button type="button" onclick="navigateTo('page-permintaan')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_permintaan">Order Fresh Water</button>
-                    <button type="button" onclick="navigateTo('page-rekapitulasi')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_rekap">Rekapitulasi Fresh Water</button>
-                    <button type="button" onclick="navigateTo('page-laporan')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_laporan">Laporan Seluruh Kegiatan</button>
-                    <button type="button" onclick="navigateTo('page-user-approval')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition flex items-center justify-between">
-                        <span data-i18n="nav_users">Persetujuan Akun</span>
-                        <span id="pendingUserBadge" class="hidden-page bg-rose-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">0</span>
-                    </button>
-                    <button type="button" onclick="navigateTo('page-audit-trail')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition text-slate-300"><span>🔍 Audit Trail Log</span></button>
-                </nav>
-
-                <!-- NAV CUSTOMER -->
-                <nav id="nav-customer" class="space-y-1.5 hidden-page">
-                    <button type="button" onclick="navigateTo('page-customer')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_form_cust">Form Order Air</button>
-                    <button type="button" onclick="navigateTo('page-customer-history')" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 font-semibold text-sm transition" data-i18n="nav_hist_cust">Riwayat Pesanan Saya</button>
-                </nav>
             </div>
-            
-            <div class="border-t border-slate-800 pt-4">
-                <button type="button" onclick="logout()" class="w-full text-left px-3.5 py-2.5 text-red-400 hover:bg-red-950/30 rounded-xl font-bold text-sm transition cursor-pointer" data-i18n="btn_logout">Keluar / Logout</button>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 bg-slate-50 flex flex-col min-h-screen overflow-y-auto w-full">
-            <header class="bg-white border-b border-slate-200 px-4 md:px-6 py-3 flex justify-between items-center shadow-sm sticky top-0 z-30">
-                <div class="flex items-center gap-3">
-                    <button onclick="toggleMobileSidebar()" class="md:hidden p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                    </button>
-                    <div>
-                        <h2 class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">Pertamina Trans Kontinental</h2>
-                        <p class="text-xs md:text-sm font-extrabold text-slate-900 uppercase">Port Baubau System</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2 md:gap-4">
-                    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
-                        <button id="lang-btn-id" onclick="changeLanguage('id')" class="px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold bg-blue-900 text-white transition">🇮🇩 ID</button>
-                        <button id="lang-btn-en" onclick="changeLanguage('en')" class="px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg text-[10px] md:text-xs font-bold text-slate-600 hover:bg-slate-200 transition">🇬🇧 EN</button>
-                    </div>
-                    <img src="LOGO_FRESH WATER.png" alt="Logo" class="h-8 md:h-10 w-auto object-contain blend-multiply" onerror="this.onerror=null; this.src='LOGO_FRESH WATER.jpg';">
-                </div>
-            </header>
-
-            <main class="p-4 md:p-8 flex-1">
-                <!-- 1. DASHBOARD -->
-                <div id="page-dashboard" class="content-section hidden-page">
-                    <div id="admin-warning-banner" class="hidden-page mb-6 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-xl shadow-sm flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xl">⚠️</span>
-                            <div>
-                                <h4 class="text-xs font-bold text-amber-900 uppercase tracking-wide" data-i18n="warn_title">Peringatan / Back-up Plan Operasional</h4>
-                                <p id="warning-banner-text" class="text-xs text-amber-700 mt-0.5">Terdapat order baru yang belum diverifikasi.</p>
-                            </div>
-                        </div>
-                        <button onclick="navigateTo('page-permintaan')" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow transition cursor-pointer" data-i18n="btn_review_now">Tinjau Sekarang</button>
-                    </div>
-
-                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-slate-200 pb-4 mb-6 gap-4">
-                        <div>
-                            <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight" data-i18n="dash_title">Command Center - Fresh Water Baubau</h1>
-                            <p class="text-xs text-slate-500 mt-0.5" data-i18n="dash_sub">Sistem Monitoring & Peta Live AIS</p>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2 bg-white p-2 border border-slate-200 rounded-2xl shadow-sm">
-                            <span class="text-xs font-bold text-slate-500 uppercase px-2" data-i18n="lbl_period">Periode:</span>
-                            <select id="dashMonthFilter" onchange="renderAllTables()" class="p-2 border rounded-xl text-xs bg-slate-50 font-bold focus:ring-2 focus:ring-blue-600">
-                                <option value="ALL">Semua Bulan</option>
-                                <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10" selected>Oktober</option><option value="11">November</option><option value="12">Desember</option>
-                            </select>
-                            <select id="dashYearFilter" onchange="renderAllTables()" class="p-2 border rounded-xl text-xs bg-slate-50 font-bold focus:ring-2 focus:ring-blue-600">
-                                <option value="2026" selected>2026</option><option value="2025">2025</option>
-                            </select>
-                            <button onclick="resetDashFilter()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer" data-i18n="btn_reset">Reset</button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="stat-card-3d bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500" data-i18n="card_total_order">Total Order Air</p>
-                            <h3 id="stat-total" class="text-3xl font-black text-blue-600 mt-2">0</h3>
-                        </div>
-                        <div class="stat-card-3d bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500" data-i18n="card_supplied">Kapal Ter-supply</p>
-                            <h3 id="stat-supplied" class="text-3xl font-black text-emerald-600 mt-2">0</h3>
-                        </div>
-                        <div class="stat-card-3d bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500" data-i18n="card_cancelled">Batal / Unsupplied</p>
-                            <h3 id="stat-cancelled" class="text-3xl font-black text-rose-600 mt-2">0</h3>
-                        </div>
-                        <div class="stat-card-3d bg-gradient-to-br from-slate-900 to-blue-950 text-white p-6 rounded-2xl shadow-md border border-blue-800/50">
-                            <p class="text-xs font-bold uppercase tracking-wider text-sky-400" data-i18n="card_revenue">Total Pendapatan Air</p>
-                            <h3 id="stat-revenue" class="text-2xl font-black text-emerald-400 mt-2">Rp 0</h3>
-                            <div class="mt-2 pt-2 border-t border-blue-900/80 text-[10px] text-slate-300 flex justify-between">
-                                <span id="stat-rev-dom">Domestik: Rp 0</span>
-                                <span id="stat-rev-imp">Import: Rp 0</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- MAP -->
-                    <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl border border-slate-800 relative overflow-hidden mb-8">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
-                            <div>
-                                <h3 class="text-lg font-bold text-white"><span data-i18n="map_title">Nautical Chart Live AIS - Jetty Pertamina Baubau</span></h3>
-                                <p class="text-xs text-slate-400" data-i18n="map_sub">Monitoring Berthing & OpenCPN AIS Sync</p>
-                            </div>
-                            <span class="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800/80 px-3 py-1 rounded-full font-mono font-bold flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Database & AIS Active Sync
-                            </span>
-                        </div>
-
-                        <div class="relative w-full h-96 bg-[#0a1128] rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
-                            <svg class="w-full h-full text-slate-800/80" viewBox="0 0 600 350" preserveAspectRatio="none" fill="currentColor">
-                                <path d="M 0,0 L 120,0 Q 110,60 70,100 Q 40,130 0,160 Z" />
-                                <path d="M 600,0 L 470,0 L 480,90 Q 470,120 470,150 L 460,180 L 475,185 L 460,190 L 470,240 L 460,250 L 475,255 L 460,260 L 470,280 L 460,290 L 475,295 L 460,300 L 600,350 Z" />
-                            </svg>
-                            <div class="absolute top-4 left-4 text-slate-400 font-bold text-xs pointer-events-none">
-                                <div class="text-sky-400">SELAT BUTON</div>
-                            </div>
-                            <div class="absolute top-[33%] right-[20%]" id="map-jetty-1"></div>
-                            <div class="absolute top-[53%] right-[20%]" id="map-jetty-2"></div>
-                            <div class="absolute top-[73%] right-[20%]" id="map-jetty-3"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. ORDER (ADMIN) -->
-                <div id="page-permintaan" class="content-section hidden-page">
-                    <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6" data-i18n="order_title_admin">Order Fresh Water (Alur Verifikasi 3 Tahap)</h1>
-                    <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
-                                <tr>
-                                    <th class="p-3.5 border-b">NO</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_order_code">KODE ORDER</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_vessel">KAPAL</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_trade">TRAYEK</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_request_ton">ORDER (TON)</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_jetty_pos">POSISI JETTY</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_supplied_ton">TER-SUPPLY</th>
-                                    <th class="p-3.5 border-b whitespace-nowrap" data-i18n="th_order_date">TGL ORDER</th>
-                                    <th class="p-3.5 border-b text-center" data-i18n="th_action_verify">AKSI VERIFIKASI & WA</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-permintaan-body" class="divide-y divide-slate-100 text-sm"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- 3. REKAPITULASI -->
-                <div id="page-rekapitulasi" class="content-section hidden-page">
-                    <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6" data-i18n="rekap_title">Rekapitulasi Fresh Water</h1>
-                    <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
-                                <tr>
-                                    <th class="p-3.5 border-b">NO</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_order_code">KODE ORDER</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_vessel">KAPAL</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_trade">TRAYEK</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_jetty">JETTY</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_realization">REALISASI</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_total_cost">TOTAL BIAYA</th>
-                                    <th class="p-3.5 border-b whitespace-nowrap" data-i18n="th_dates">TGL TIBA / ORDER</th>
-                                    <th class="p-3.5 border-b text-center" data-i18n="th_proof_doc">BUKTI KEGIATAN FRESH WATER</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-rekapitulasi-body" class="divide-y divide-slate-100 text-sm"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- 4. LAPORAN -->
-                <div id="page-laporan" class="content-section hidden-page">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 mb-6 gap-4">
-                        <h1 class="text-xl md:text-2xl font-bold text-slate-900" data-i18n="report_title">Laporan Seluruh Kegiatan</h1>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <input type="text" id="searchReportInput" oninput="renderAllTables()" placeholder="Cari Kapal / Kode Order..." class="p-2.5 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-blue-600">
-                            <input type="date" id="filterDateInput" onchange="renderAllTables()" class="p-2.5 border rounded-xl text-sm bg-white focus:ring-2 focus:ring-blue-600">
-                            <button onclick="resetReportFilter()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer" data-i18n="btn_reset">Reset</button>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80 mb-6">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
-                                <tr>
-                                    <th class="p-3.5 border-b">NO</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_order_code">KODE ORDER</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_vessel">KAPAL</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_trade">TRAYEK</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_jetty">JETTY</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_realization">REALISASI</th>
-                                    <th class="p-3.5 border-b" data-i18n="th_total_cost">TOTAL BIAYA</th>
-                                    <th class="p-3.5 border-b whitespace-nowrap" data-i18n="th_arrival_date">TGL TIBA</th>
-                                    <th class="p-3.5 border-b whitespace-nowrap" data-i18n="th_order_date">TGL ORDER</th>
-                                    <th class="p-3.5 border-b text-center" data-i18n="th_doc">DOKUMEN & AUDIT</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-laporan-body" class="divide-y divide-slate-100 text-sm"></tbody>
-                        </table>
-                    </div>
-                    <div class="flex justify-end gap-3">
-                        <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow transition cursor-pointer" data-i18n="btn_export">Export Excel (.csv)</button>
-                    </div>
-                </div>
-
-                <!-- 5. USER APPROVAL -->
-                <div id="page-user-approval" class="content-section hidden-page">
-                    <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6">Persetujuan & Manajemen Akun Pengguna</h1>
-                    <div class="mb-8">
-                        <h2 class="text-sm font-extrabold uppercase text-amber-800 bg-amber-50 border border-amber-200 p-3 rounded-xl mb-3">⏳ Pendaftaran Baru (Menunggu Approval)</h2>
-                        <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
-                            <table class="w-full text-left border-collapse">
-                                <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
-                                    <tr>
-                                        <th class="p-3.5 border-b">NO</th>
-                                        <th class="p-3.5 border-b">NAMA PERUSAHAAN</th>
-                                        <th class="p-3.5 border-b">USERNAME</th>
-                                        <th class="p-3.5 border-b">TANGGAL</th>
-                                        <th class="p-3.5 border-b text-center">AKSI</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-pending-users-body" class="divide-y divide-slate-100 text-sm"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div>
-                        <h2 class="text-sm font-extrabold uppercase text-slate-800 bg-slate-100 border border-slate-200 p-3 rounded-xl mb-3">📋 Daftar Akun Terverifikasi</h2>
-                        <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
-                            <table class="w-full text-left border-collapse">
-                                <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
-                                    <tr>
-                                        <th class="p-3.5 border-b">NO</th>
-                                        <th class="p-3.5 border-b">NAMA PERUSAHAAN</th>
-                                        <th class="p-3.5 border-b">USERNAME</th>
-                                        <th class="p-3.5 border-b">ROLE</th>
-                                        <th class="p-3.5 border-b">STATUS</th>
-                                        <th class="p-3.5 border-b text-center">KELOLA</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-approved-users-body" class="divide-y divide-slate-100 text-sm"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 6. AUDIT TRAIL -->
-                <div id="page-audit-trail" class="content-section hidden-page">
-                    <div class="flex justify-between items-center border-b pb-4 mb-6">
-                        <div>
-                            <h1 class="text-xl md:text-2xl font-bold text-slate-900">🔍 Activity Audit Trail Log</h1>
-                            <p class="text-xs text-slate-500 mt-0.5">Rekam Jejak Keamanan Sistem</p>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
-                        <table class="w-full text-left border-collapse font-mono text-xs">
-                            <thead class="bg-slate-900 text-slate-300 uppercase tracking-wider">
-                                <tr>
-                                    <th class="p-3.5 border-b">TIMESTAMP</th>
-                                    <th class="p-3.5 border-b">USER</th>
-                                    <th class="p-3.5 border-b">AKSI</th>
-                                    <th class="p-3.5 border-b">DETAIL</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-audit-trail-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- 7. FORM CUSTOMER -->
-                <div id="page-customer" class="content-section hidden-page">
-                    <div class="mb-6 bg-gradient-to-r from-blue-900 via-slate-900 to-blue-950 text-white p-6 rounded-2xl shadow-lg border border-blue-700/50">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-blue-800/80 pb-4 mb-4">
-                            <div class="flex items-center gap-3">
-                                <span class="text-2xl p-2 bg-blue-800/50 rounded-xl">💳</span>
-                                <div>
-                                    <h3 class="text-sm font-extrabold uppercase tracking-wider text-sky-400">Informasi Pembayaran BNI</h3>
-                                    <p class="text-xs text-slate-300">No. Rekening: <strong class="text-emerald-400">184127595</strong> a.n PT Pertamina Trans Kontinental</p>
-                                </div>
-                            </div>
-                            <button type="button" onclick="copyAccountNo()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow cursor-pointer">📋 Salin Rekening</button>
-                        </div>
-                    </div>
-
-                    <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6" data-i18n="cust_form_title">Form Order Fresh Water</h1>
-                    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/80 mb-6">
-                        <form onsubmit="handleCustomerSubmit(event)">
-                            <div class="mb-6 p-3.5 bg-sky-50 border border-sky-200 rounded-xl flex items-center gap-3">
-                                <input type="checkbox" id="custIsCharter" onchange="toggleCharterMode(this)" class="w-4 h-4 text-blue-600 rounded cursor-pointer">
-                                <label for="custIsCharter" class="text-xs font-bold text-blue-950 cursor-pointer">Kapal Charter Pertamina / Bahari Group (Bebas Upload Bukti Bayar)</label>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Nama Kapal *</label>
-                                    <input type="text" id="custNamaKapal" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600" placeholder="Contoh: MT PANDAN" required>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Trayek Kapal *</label>
-                                    <select id="custTrayek" onchange="calculateCost()" class="w-full p-2.5 border rounded-xl bg-white focus:ring-2 focus:ring-blue-600" required>
-                                        <option value="Domestik">Domestik</option>
-                                        <option value="Import">Import</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Jumlah Order (Ton) *</label>
-                                    <input type="number" id="custQty" min="1" oninput="calculateCost()" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600" value="15" required>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Perkiraan Biaya</label>
-                                    <input type="text" id="custTotalDisplay" class="w-full p-2.5 border rounded-xl bg-slate-100 font-bold text-blue-900" readonly value="Rp 825.000">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Tanggal Tiba (ETA/TA) *</label>
-                                    <input type="date" id="custTanggalTiba" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600" required>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Tanggal Order *</label>
-                                    <input type="date" id="custTanggalMinta" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-blue-600" required>
-                                </div>
-                                <div>
-                                    <label id="lblBuktiBayarText" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Upload Bukti Bayar * <span class="text-xs text-slate-400 font-normal">(Maks. 2 MB)</span></label>
-                                    <input type="file" id="custBuktiBayar" onchange="validateFileSize(this)" accept="image/*,.pdf" class="w-full p-2 border rounded-xl text-sm bg-slate-50" required>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Upload Berita Acara FW * <span class="text-xs text-slate-400 font-normal">(Maks. 2 MB)</span></label>
-                                    <input type="file" id="custBA" onchange="validateFileSize(this)" accept="image/*,.pdf" class="w-full p-2 border rounded-xl text-sm bg-slate-50" required>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-md cursor-pointer transition">Kirim Order Air</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- 8. RIWAYAT CUSTOMER -->
-                <div id="page-customer-history" class="content-section hidden-page">
-                    <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6" data-i18n="cust_hist_title">Riwayat Pesanan Saya</h1>
-                    <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider">
-                                <tr>
-                                    <th class="p-3.5 border-b">NO</th>
-                                    <th class="p-3.5 border-b">KODE ORDER</th>
-                                    <th class="p-3.5 border-b">KAPAL</th>
-                                    <th class="p-3.5 border-b">TRAYEK</th>
-                                    <th class="p-3.5 border-b">QTY (TON)</th>
-                                    <th class="p-3.5 border-b">JETTY</th>
-                                    <th class="p-3.5 border-b">TGL ORDER</th>
-                                    <th class="p-3.5 border-b text-center">STATUS</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-customer-history-body" class="divide-y divide-slate-100 text-sm"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+            <button type="button" onclick="copyAccountNo()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md">📋 Salin Rekening</button>
         </div>
     </div>
+    <h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6">Form Order Fresh Water</h1>
+    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/80 mb-6">
+        <form onsubmit="handleCustomerSubmit(event)">
+            <div class="mb-6 p-3.5 bg-sky-50 border border-sky-200 rounded-xl flex items-start gap-3">
+                <input type="checkbox" id="custIsCharter" onchange="toggleCharterMode(this)" class="w-4 h-4 mt-0.5 text-blue-600 rounded cursor-pointer">
+                <label for="custIsCharter" class="text-xs font-bold text-blue-950 cursor-pointer">Kapal Charter Milik Pertamina (CMP) / Bahari Nusantara Group / Milik Dewi Harbour &amp; Transko Kenari <span class="font-normal">(tidak wajib upload bukti bayar)</span></label>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Nama Kapal *</label><input type="text" id="custNamaKapal" class="w-full p-2.5 border rounded-xl" placeholder="Contoh: MT PANDAN" required></div>
+                <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Trayek Kapal *</label><select id="custTrayek" onchange="calculateCost()" class="w-full p-2.5 border rounded-xl bg-white" required><option value="Domestik">Domestik</option><option value="Import">Import</option></select></div>
+                <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Jumlah Order (Ton) *</label><input type="number" id="custQty" min="1" step="any" inputmode="decimal" oninput="calculateCost()" class="w-full p-2.5 border rounded-xl" placeholder="Contoh: 15" required></div>
+                <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Perkiraan Biaya</label><input type="text" id="custTotalDisplay" class="w-full p-2.5 border rounded-xl bg-slate-100 font-bold text-blue-900" readonly value="Rp 0"></div>
+                <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Tanggal Tiba (ETA/TA) *</label><input type="date" id="custTanggalTiba" class="w-full p-2.5 border rounded-xl" required></div>
+                <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Tanggal Order *</label><input type="date" id="custTanggalMinta" class="w-full p-2.5 border rounded-xl" required></div>
+                <div><label id="lblBuktiBayarText" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Upload Bukti Bayar * <span class="text-xs text-slate-400 font-normal">(Maks. 1 MB)</span></label><input type="file" id="custBuktiBayar" onchange="validateFileSize(this)" accept=".jpg,.jpeg,.png,.pdf" class="w-full p-2 border rounded-xl text-sm bg-slate-50" required></div>
+                <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Upload Berita Acara FW * <span class="text-xs text-slate-400 font-normal">(Maks. 1 MB)</span></label><input type="file" id="custBA" onchange="validateFileSize(this)" accept=".jpg,.jpeg,.png,.pdf" class="w-full p-2 border rounded-xl text-sm bg-slate-50" required></div>
+            </div>
+            <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold text-sm shadow-md">Kirim Order Air</button>
+        </form>
+    </div>
+</div>
 
-    <!-- SCRIPTS -->
-    <script>
-        let currentLang = 'id';
-        let currentRole = '';
-        let currentUser = '';
-        let auditLogs = [];
-        let registeredUsers = [];
-        let requestsData = [];
+<!-- RIWAYAT CUSTOMER -->
+<div id="page-customer-history" class="content-section hidden-page">
+<h1 class="text-xl md:text-2xl font-bold text-slate-900 border-b pb-4 mb-6">Riwayat Pesanan Saya</h1>
+<div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-slate-200/80"><table class="w-full text-left border-collapse">
+<thead class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider"><tr><th class="p-3.5 border-b">No</th><th class="p-3.5 border-b">Kode Order</th><th class="p-3.5 border-b">Kapal</th><th class="p-3.5 border-b">Trayek</th><th class="p-3.5 border-b">Order</th><th class="p-3.5 border-b">Realisasi</th><th class="p-3.5 border-b">Jetty</th><th class="p-3.5 border-b">Tgl Order</th><th class="p-3.5 border-b text-center">Status</th></tr></thead>
+<tbody id="table-customer-history-body" class="divide-y divide-slate-100 text-sm"></tbody></table></div></div>
+</main></div></div>
 
-        // Konfigurasi Supabase
-        const SUPABASE_URL = 'https://xapcbpqoaaccvmdjlukx.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcGNicHFvYWFjY3ZtZGpsdWt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NzE2MjQsImV4cCI6MjEwODI0NzYyNH0.vNJ9g31PWBDnVHYjiubeO-3D5NGUX3jySUy7s7xL0H8';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<script>
+// ===== KONFIGURASI: ISI 3 BARIS INI =====
+const SUPABASE_URL = 'https://xapcbpqoaaccvmdjlukx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcGNicHFvYWFjY3ZtZGpsdWt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2NzE2MjQsImV4cCI6MjEwODI0NzYyNH0.vNJ9g31PWBDnVHYjiubeO-3D5NGUX3jySUy7s7xL0H8';
+const ADMIN_WA = '6281314375216';
+// ========================================
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const ADMIN_PAGES = ['page-dashboard','page-permintaan','page-rekapitulasi','page-laporan','page-user-approval','page-audit-trail'];
+let currentRole = '', currentUser = '', auditLogs = [], registeredUsers = [], requestsData = [];
 
-        // Ambil data dari Supabase saat halaman dimuat
-        async function loadSupabaseData() {
-            try {
-                // 1. Load Users
-                const { data: users, error: userErr } = await supabaseClient.from('users').select('*');
-                if (userErr) throw userErr;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const formatRupiah = n => new Intl.NumberFormat('id-ID', {style:'currency', currency:'IDR', maximumFractionDigits:0}).format(n);
+const todayLocal = () => new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Makassar'});
+const waLink = t => `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(t)}`;
+const td = (v, c = '') => `<td class="p-3.5 ${c}">${v}</td>`;
+const tarifOf = trayek => trayek === 'Domestik' ? 55000 : 142000;
+const isSupplied = o => o.status === 'Ter-supply' || o.status === 'Selesai';
 
-                if (!users || users.length === 0) {
-                    // Seed Default Admin jika tabel kosong
-                    await supabaseClient.from('users').insert([
-                        { name: "Admin Utama Port Baubau", username: "ptkag0005", password: "Makassar@2025", role: "Admin", status: "Approved" }
-                    ]);
-                    const { data: retryUsers } = await supabaseClient.from('users').select('*');
-                    registeredUsers = retryUsers || [];
-                } else {
-                    registeredUsers = users;
-                }
+function showToast(message, type = 'success') {
+    const t = document.createElement('div');
+    t.className = `toast text-white px-4 py-3 rounded-xl shadow-xl text-sm font-semibold ${type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-red-600' : 'bg-slate-900'}`;
+    t.textContent = message;
+    $('toast-container').appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+}
 
-                // 2. Load Orders
-                const { data: orders, error: orderErr } = await supabaseClient.from('orders').select('*');
-                if (orderErr) throw orderErr;
+async function loadSupabaseData() {
+    try {
+        const { data: users, error: ue } = await supabaseClient.from('users').select('*');
+        if (ue) throw ue;
+        registeredUsers = users || [];
+        const { data: orders, error: oe } = await supabaseClient.from('orders').select('*').order('id', {ascending:false});
+        if (oe) throw oe;
+        requestsData = (orders || []).map(o => ({
+            id: o.id, orderCode: o.order_code, kapal: o.kapal, trayek: o.trayek,
+            tarif: o.tarif || tarifOf(o.trayek), permintaan: o.permintaan, realisasi: o.realisasi || 0,
+            jetty: o.jetty || '-', tanggalTiba: o.tanggal_tiba, tanggalMinta: o.tanggal_minta,
+            status: o.status || 'Pending', tanggalSupply: o.tanggal_supply || '',
+            fileBA: o.url_ba || '', fileBuktiBayar: o.url_bukti_bayar || '', fileKegiatan: o.url_dokumen_kegiatan || '',
+            isCharter: !!o.is_charter, pembuat_order: o.pembuat_order || ''
+        }));
+        renderAllTables();
+        renderUserApprovalTable();
+    } catch (err) {
+        console.error(err);
+        showToast('Gagal memuat data dari database', 'error');
+    }
+}
 
-                if (orders) {
-                    requestsData = orders.map(o => ({
-                        id: o.id,
-                        orderCode: o.order_code,
-                        kapal: o.kapal,
-                        trayek: o.trayek,
-                        tarif: o.tarif || (o.trayek === 'Domestik' ? 55000 : 142000),
-                        permintaan: o.permintaan,
-                        realisasi: o.realisasi || 0,
-                        jetty: o.jetty || '-',
-                        tanggalTiba: o.tanggal_tiba,
-                        tanggalMinta: o.tanggal_minta,
-                        status: o.status || 'Pending',
-                        fileBA: o.url_ba || '',
-                        fileBuktiBayar: o.url_bukti_bayar || '',
-                        fileName: o.url_bukti_bayar ? o.url_bukti_bayar.split('/').pop() : '',
-                        isSent: true,
-                        auditLog: o.audit_log || 'Synced with Supabase'
-                    }));
-                }
+window.addEventListener('DOMContentLoaded', async () => {
+    await loadSupabaseData();
+    const r = localStorage.getItem('water_role'), u = localStorage.getItem('water_user');
+    if (r && u) startSession(r, u);
+    $('custTanggalTiba').value = todayLocal();
+    $('custTanggalMinta').value = todayLocal();
+    calculateCost();
+});
 
-                renderAllTables();
-                renderUserApprovalTable();
-            } catch (err) {
-                console.error("Error loading Supabase data:", err);
-                showToast("Gagal memuat data dari database Supabase", "error");
-            }
+function toggleMobileSidebar() {
+    $('mainSidebar').classList.toggle('-translate-x-full');
+    $('mobileOverlay').classList.toggle('hidden-page');
+}
+
+function addAuditLog(action, detail) {
+    const now = new Date();
+    const ts = now.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric', timeZone:'Asia/Makassar'}) + ', ' + now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', timeZone:'Asia/Makassar'}) + ' WITA';
+    auditLogs.unshift({timestamp: ts, user: currentUser || 'system', action, detail});
+    renderAuditTrailTable();
+}
+
+function renderAuditTrailTable() {
+    const b = $('table-audit-trail-body');
+    if (!b) return;
+    b.innerHTML = auditLogs.length ? auditLogs.map(l => `<tr class="hover:bg-slate-50"><td class="p-3 text-slate-500 font-bold whitespace-nowrap">${esc(l.timestamp)}</td><td class="p-3 font-bold text-blue-900">${esc(l.user)}</td><td class="p-3"><span class="bg-slate-800 text-sky-300 px-2 py-0.5 rounded text-[10px] font-bold">${esc(l.action)}</span></td><td class="p-3">${esc(l.detail)}</td></tr>`).join('') : `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada audit log.</td></tr>`;
+}
+
+function calculateCost() {
+    const qty = parseFloat($('custQty').value) || 0;
+    $('custTotalDisplay').value = formatRupiah(qty * tarifOf($('custTrayek').value));
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const uv = $('usernameInput').value.trim().toLowerCase();
+    const pv = $('passwordInput').value.trim();
+    const f = registeredUsers.find(u => (u.username || '').toLowerCase() === uv && u.password === pv);
+    if (!f) { $('login-error').classList.remove('hidden-page'); return; }
+    if (f.status === 'Pending') { showToast('Akun Anda masih menunggu verifikasi Admin.', 'error'); return; }
+    if (f.status === 'Rejected') { showToast('Pendaftaran akun Anda ditolak.', 'error'); return; }
+    $('login-error').classList.add('hidden-page');
+    currentUser = f.name;
+    addAuditLog('USER_LOGIN', `${f.name} masuk sebagai ${f.role}`);
+    startSession(f.role, f.name);
+    showToast(`Selamat datang, ${f.name}!`);
+}
+
+function startSession(role, userName) {
+    currentRole = role; currentUser = userName;
+    localStorage.setItem('water_role', role);
+    localStorage.setItem('water_user', userName);
+    $('page-login').classList.add('hidden-page');
+    $('app-layout').classList.remove('hidden-page');
+    $('user-role-badge').innerText = 'Role: ' + role;
+    renderAllTables(); renderUserApprovalTable(); renderAuditTrailTable();
+    if (role === 'Admin') {
+        $('nav-admin').classList.remove('hidden-page');
+        navigateTo('page-dashboard');
+    } else {
+        $('nav-customer').classList.remove('hidden-page');
+        navigateTo('page-customer');
+        calculateCost();
+    }
+}
+
+function logout() {
+    localStorage.removeItem('water_role');
+    localStorage.removeItem('water_user');
+    location.reload();
+}
+
+function navigateTo(pageId) {
+    if (currentRole !== 'Admin' && ADMIN_PAGES.includes(pageId)) return;
+    document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden-page'));
+    const t = $(pageId);
+    if (t) t.classList.remove('hidden-page');
+    
+    // Indikator Menu Aktif
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-900/60', 'text-sky-300', 'border', 'border-blue-500/30');
+        if (btn.getAttribute('onclick').includes(pageId)) {
+            btn.classList.add('bg-blue-900/60', 'text-sky-300', 'border', 'border-blue-500/30');
         }
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            await loadSupabaseData();
-
-            const savedRole = localStorage.getItem('water_role');
-            const savedUser = localStorage.getItem('water_user');
-            if (savedRole && savedUser) {
-                startSession(savedRole, savedUser);
-            }
-
-            const todayStr = new Date().toISOString().slice(0, 10);
-            if(document.getElementById('custTanggalTiba')) document.getElementById('custTanggalTiba').value = todayStr;
-            if(document.getElementById('custTanggalMinta')) document.getElementById('custTanggalMinta').value = todayStr;
-            calculateCost();
-        });
-
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('mainSidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden-page');
-        }
-
-        function addAuditLog(action, detail) {
-            const nowStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ", " + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + " WITA";
-            auditLogs.unshift({ timestamp: nowStr, user: currentUser || "system", action, detail });
-            renderAuditTrailTable();
-        }
-
-        function renderAuditTrailTable() {
-            const body = document.getElementById('table-audit-trail-body');
-            if (!body) return;
-            body.innerHTML = auditLogs.length === 0 ? `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada audit log.</td></tr>` : '';
-            auditLogs.forEach(log => {
-                body.innerHTML += `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-3 border-b text-slate-500 font-bold whitespace-nowrap">${log.timestamp}</td>
-                        <td class="p-3 border-b font-bold text-blue-900">${log.user}</td>
-                        <td class="p-3 border-b"><span class="bg-slate-800 text-sky-300 px-2 py-0.5 rounded text-[10px] font-bold">${log.action}</span></td>
-                        <td class="p-3 border-b text-slate-800">${log.detail}</td>
-                    </tr>`;
-            });
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const bgClass = type === 'success' ? 'bg-emerald-600' : (type === 'error' ? 'bg-red-600' : 'bg-slate-900');
-            toast.className = `toast text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-sm font-semibold ${bgClass}`;
-            toast.innerHTML = `<div>${message}</div>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3000);
-        }
-
-        function formatRupiah(number) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
-        }
-
-        function calculateCost() {
-            const trayek = document.getElementById('custTrayek').value;
-            const qty = parseFloat(document.getElementById('custQty').value) || 0;
-            const tarif = trayek === 'Domestik' ? 55000 : 142000;
-            document.getElementById('custTotalDisplay').value = formatRupiah(qty * tarif);
-        }
-
-        function handleLogin(event) {
-            event.preventDefault();
-            const userVal = document.getElementById('usernameInput').value.trim().toLowerCase();
-            const passVal = document.getElementById('passwordInput').value.trim();
-
-            const foundUser = registeredUsers.find(u => u.username.toLowerCase() === userVal && (u.password === passVal || u.pass === passVal));
-
-            if (foundUser) {
-                if (foundUser.status === 'Pending') {
-                    showToast("Akun Anda masih menunggu verifikasi Admin!", "error");
-                    return;
-                }
-                if (foundUser.status === 'Rejected') {
-                    showToast("Pendaftaran akun Anda ditolak.", "error");
-                    return;
-                }
-
-                document.getElementById('login-error').classList.add('hidden-page');
-                currentUser = foundUser.name;
-                addAuditLog("USER_LOGIN", `${foundUser.name} logged in as ${foundUser.role}`);
-                startSession(foundUser.role, foundUser.name);
-                showToast(`Selamat datang, ${foundUser.name}!`);
-            } else {
-                document.getElementById('login-error').classList.remove('hidden-page');
-            }
-        }
-
-        function startSession(role, userName) {
-            currentRole = role;
-            currentUser = userName;
-            localStorage.setItem('water_role', role);
-            localStorage.setItem('water_user', userName);
-
-            document.getElementById('page-login').classList.add('hidden-page');
-            document.getElementById('app-layout').classList.remove('hidden-page');
-            document.getElementById('user-role-badge').innerText = 'Role: ' + role;
-
-            renderAllTables();
-            renderUserApprovalTable();
-            renderAuditTrailTable();
-
-            if (role === 'Admin') {
-                document.getElementById('nav-admin').classList.remove('hidden-page');
-                navigateTo('page-dashboard');
-            } else {
-                document.getElementById('nav-admin').classList.add('hidden-page');
-                document.getElementById('nav-customer').classList.remove('hidden-page');
-                navigateTo('page-customer');
-                calculateCost();
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('water_role');
-            localStorage.removeItem('water_user');
-            location.reload();
-        }
-
-       async function handleRegisterSubmit(e) {
-            e.preventDefault();
-            
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = 'Memproses... ⏳';
-
-            try {
-                const company = document.getElementById('regCompany').value;
-                const username = document.getElementById('regUsername').value.trim().toLowerCase();
-                const password = document.getElementById('regPassword').value.trim();
-
-                const { data: existing } = await supabaseClient.from('users').select('*').eq('username', username);
-                if (existing && existing.length > 0) {
-                    showToast("Username / Contact ini sudah terdaftar!", "error");
-                    return;
-                }
-
-                const { error } = await supabaseClient.from('users').insert([
-                    { name: company, username: username, password: password, role: "Customer", status: "Pending" }
-                ]);
-
-                if (error) throw error;
-
-                showToast("Pendaftaran berhasil! Menunggu verifikasi Admin.");
-                addAuditLog("USER_REGISTER", `New registration by ${company} (${username})`);
-                closeRegisterModal();
-                document.getElementById('regCompany').value = '';
-                document.getElementById('regUsername').value = '';
-                document.getElementById('regPassword').value = '';
-
-                await loadSupabaseData();
-            } catch(err) {
-                showToast("Gagal mendaftar: " + err.message, "error");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-            }
-        }
-
-        async function approveUserWithRole(userId, selectedRole) {
-            const { error } = await supabaseClient.from('users').update({ status: 'Approved', role: selectedRole }).eq('id', userId);
-            if (!error) {
-                showToast(`Akun berhasil disetujui sebagai ${selectedRole}!`);
-                addAuditLog("USER_APPROVE", `Approved user ID ${userId} as ${selectedRole}`);
-                await loadSupabaseData();
-            } else {
-                showToast("Gagal menyetujui akun", "error");
-            }
-        }
-
-        async function rejectUser(userId) {
-            const { error } = await supabaseClient.from('users').update({ status: 'Rejected' }).eq('id', userId);
-            if (!error) {
-                showToast("Pendaftaran ditolak.", "error");
-                addAuditLog("USER_REJECT", `Rejected user ID ${userId}`);
-                await loadSupabaseData();
-            }
-        }
-
-        async function deleteUser(userId) {
-            if (confirm("Yakin ingin menghapus akun ini?")) {
-                const { error } = await supabaseClient.from('users').delete().eq('id', userId);
-                if (!error) {
-                    showToast("Akun berhasil dihapus!");
-                    addAuditLog("USER_DELETE", `Deleted user ID ${userId}`);
-                    await loadSupabaseData();
-                }
-            }
-        }
-
-        async function resetUserPassword(userId) {
-            const newPass = prompt("Masukkan Password Baru:", "baubau123");
-            if (newPass) {
-                const { error } = await supabaseClient.from('users').update({ password: newPass }).eq('id', userId);
-                if (!error) {
-                    showToast("Password berhasil direset!");
-                    addAuditLog("PASSWORD_RESET", `Reset password for user ID ${userId}`);
-                    await loadSupabaseData();
-                }
-            }
-        }
-
-        function renderUserApprovalTable() {
-            const pendingBody = document.getElementById('table-pending-users-body');
-            const approvedBody = document.getElementById('table-approved-users-body');
-            const pendingBadge = document.getElementById('pendingUserBadge');
-            if (!pendingBody || !approvedBody) return;
-
-            pendingBody.innerHTML = '';
-            approvedBody.innerHTML = '';
-
-            const pendingUsers = registeredUsers.filter(u => u.status === 'Pending');
-            const approvedUsers = registeredUsers.filter(u => u.status === 'Approved' || u.status === 'Rejected');
-
-            if (pendingUsers.length > 0) {
-                pendingBadge.classList.remove('hidden-page');
-                pendingBadge.innerText = pendingUsers.length;
-            } else {
-                pendingBadge.classList.add('hidden-page');
-            }
-
-            if (pendingUsers.length === 0) {
-                pendingBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Tidak ada pendaftaran baru.</td></tr>`;
-            } else {
-                pendingUsers.forEach((u, i) => {
-                    pendingBody.innerHTML += `
-                        <tr>
-                            <td class="p-3.5">${i + 1}</td>
-                            <td class="p-3.5 font-bold">${u.name}</td>
-                            <td class="p-3.5 font-mono text-xs">${u.username}</td>
-                            <td class="p-3.5 text-xs">${u.created_at ? u.created_at.slice(0,10) : '-'}</td>
-                            <td class="p-3.5 text-center flex justify-center gap-2">
-                                <button onclick="approveUserWithRole(${u.id}, 'Customer')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer">Approve (Customer)</button>
-                                <button onclick="approveUserWithRole(${u.id}, 'Admin')" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer">Approve (Admin)</button>
-                                <button onclick="rejectUser(${u.id})" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer">Tolak</button>
-                            </td>
-                        </tr>`;
-                });
-            }
-
-            approvedUsers.forEach((u, i) => {
-                let statusBadge = u.status === 'Approved' 
-                    ? '<span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-xs font-bold">Aktif</span>'
-                    : '<span class="bg-rose-100 text-rose-800 px-2.5 py-0.5 rounded-full text-xs font-bold">Ditolak</span>';
-                let roleBadge = u.role === 'Admin' ? '<span class="bg-blue-900 text-white px-2 py-0.5 rounded text-xs font-bold">Admin</span>' : '<span class="bg-slate-200 text-slate-800 px-2 py-0.5 rounded text-xs font-bold">Customer</span>';
-
-                approvedBody.innerHTML += `
-                    <tr>
-                        <td class="p-3.5">${i + 1}</td>
-                        <td class="p-3.5 font-bold">${u.name}</td>
-                        <td class="p-3.5 font-mono text-xs">${u.username}</td>
-                        <td class="p-3.5">${roleBadge}</td>
-                        <td class="p-3.5">${statusBadge}</td>
-                        <td class="p-3.5 text-center flex justify-center gap-2">
-                            <button onclick="resetUserPassword(${u.id})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs font-bold">🔑 Reset</button>
-                            <button onclick="deleteUser(${u.id})" class="bg-red-600 text-white px-2.5 py-1 rounded text-xs font-bold">🗑️ Hapus</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        async function handleCustomerSubmit(e) {
-            e.preventDefault();
-            
-            // CEGAH KLIK GANDA: Disable tombol dan ubah teksnya
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = 'Mengirim... ⏳';
-            submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
-
-            const nama = document.getElementById('custNamaKapal').value;
-            const trayek = document.getElementById('custTrayek').value;
-            const qty = parseFloat(document.getElementById('custQty').value) || 0;
-            const tglTiba = document.getElementById('custTanggalTiba').value;
-            const tglMinta = document.getElementById('custTanggalMinta').value;
-            const isCharter = document.getElementById('custIsCharter').checked;
-
-            const fileBukti = document.getElementById('custBuktiBayar').files[0];
-            const fileBA = document.getElementById('custBA').files[0];
-
-            showToast("Mengunggah dokumen ke Supabase Storage...", "info");
-
-            let buktiUrl = "(Kapal Charter)";
-            let baUrl = "";
-
-            try {
-                if (!isCharter && fileBukti) {
-                    const fileNameBukti = `bukti_${Date.now()}_${fileBukti.name.replace(/\s+/g, '_')}`;
-                    const { error: errBukti } = await supabaseClient.storage.from('dokumen-order').upload(fileNameBukti, fileBukti);
-                    if (errBukti) throw errBukti;
-                    const { data: pubBukti } = supabaseClient.storage.from('dokumen-order').getPublicUrl(fileNameBukti);
-                    buktiUrl = pubBukti.publicUrl;
-                }
-
-                if (fileBA) {
-                    const fileNameBA = `ba_${Date.now()}_${fileBA.name.replace(/\s+/g, '_')}`;
-                    const { error: errBA } = await supabaseClient.storage.from('dokumen-order').upload(fileNameBA, fileBA);
-                    if (errBA) throw errBA;
-                    const { data: pubBA } = supabaseClient.storage.from('dokumen-order').getPublicUrl(fileNameBA);
-                    baUrl = pubBA.publicUrl;
-                }
-
-                const dateParts = tglMinta.split('-');
-                const dateStr = dateParts.length === 3 ? `${dateParts[2]}${dateParts[1]}${dateParts[0]}` : '21102026';
-                const generatedOrderCode = `FW-${String(requestsData.length + 1).padStart(3, '0')}/PTK/BAUBAU/${dateStr}`;
-                const tarifVal = trayek === 'Domestik' ? 55000 : 142000;
-
-                // TAMBAHAN: Kolom pembuat_order (pastikan sudah dibuat di Supabase)
-                const { error: insertErr } = await supabaseClient.from('orders').insert([
-                    {
-                        order_code: generatedOrderCode,
-                        kapal: nama.toUpperCase(),
-                        trayek: trayek,
-                        tarif: tarifVal,
-                        permintaan: qty,
-                        realisasi: 0,
-                        jetty: "-",
-                        tanggal_tiba: tglTiba,
-                        tanggal_minta: tglMinta,
-                        status: "Pending",
-                        url_bukti_bayar: buktiUrl,
-                        url_ba: baUrl,
-                        audit_log: "Order Created by Customer",
-                        pembuat_order: currentUser // <-- Menggunakan username/nama login
-                    }
-                ]);
-
-                if (insertErr) throw insertErr;
-
-                showToast(`Order Berhasil! Kode: ${generatedOrderCode}`);
-                addAuditLog("CREATE_ORDER", `Order ${generatedOrderCode} for ${nama.toUpperCase()}`);
-                
-                document.getElementById('custNamaKapal').value = '';
-                await loadSupabaseData();
-                navigateTo('page-customer-history');
-
-            } catch (err) {
-                showToast("Terjadi kesalahan: " + err.message, "error");
-            } finally {
-                // KEMBALIKAN TOMBOL KE SEMULA
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-            }
-        }
-
-        async function submitJettyModal() {
-            const id = parseInt(document.getElementById('jettyModalOrderId').value);
-            const jettyVal = document.getElementById('modalJettyChoice').value;
-            const item = requestsData.find(d => d.id === id);
-
-            if (item) {
-                const { error } = await supabaseClient.from('orders').update({
-                    jetty: jettyVal,
-                    status: 'Moored',
-                    audit_log: `Jetty Assigned (${jettyVal})`
-                }).eq('id', id);
-
-                if (!error) {
-                    showToast(`Posisi ${item.kapal} diatur ke ${jettyVal}`);
-                    addAuditLog("SET_JETTY", `Assigned ${item.kapal} to ${jettyVal}`);
-                    await loadSupabaseData();
-                }
-            }
-            closeJettyModal();
-        }
-
-        async function submitVerificationModal() {
-            const id = parseInt(document.getElementById('verifyModalOrderId').value);
-            const actionType = document.getElementById('verifyModalActionType').value;
-            const realQty = parseFloat(document.getElementById('modalRealQty').value) || 0;
-            const item = requestsData.find(d => d.id === id);
-
-            if (item) {
-                const realisasiVal = actionType === 'Batal Supply' ? 0 : realQty;
-                const { error } = await supabaseClient.from('orders').update({
-                    status: actionType,
-                    realisasi: realisasiVal,
-                    audit_log: `Verified as ${actionType}`
-                }).eq('id', id);
-
-                if (!error) {
-                    showToast(`Status ${item.kapal} diverifikasi ${actionType}`);
-                    addAuditLog("VERIFY_COMPLETED", `Verified ${item.kapal} as ${actionType}`);
-                    await loadSupabaseData();
-                }
-            }
-            closeVerifyModal();
-        }
-
-        async function setDeparted(id) {
-            const item = requestsData.find(d => d.id === id);
-            if (item) {
-                const { error } = await supabaseClient.from('orders').update({
-                    status: 'Departed',
-                    audit_log: 'Departed / Sail'
-                }).eq('id', id);
-
-                if (!error) {
-                    showToast(`Kapal ${item.kapal} Lepas Sandar (Departed).`);
-                    addAuditLog("DEPARTED_SAIL", `${item.kapal} departed`);
-                    await loadSupabaseData();
-                }
-            }
-        }
-
-        async function resetVerification(id) {
-            const { error } = await supabaseClient.from('orders').update({
-                status: 'Pending',
-                jetty: '-',
-                realisasi: 0,
-                audit_log: 'Reset by Admin'
-            }).eq('id', id);
-
-            if (!error) {
-                showToast("Status berhasil di-reset.");
-                addAuditLog("RESET_ORDER", `Reset order ID ${id}`);
-                await loadSupabaseData();
-            }
-        }
-
-        function openJettyModal(id) {
-            document.getElementById('jettyModalOrderId').value = id;
-            document.getElementById('jettyModal').classList.remove('hidden-page');
-        }
-        function closeJettyModal() { document.getElementById('jettyModal').classList.add('hidden-page'); }
-
-        function openVerifyModal(id, actionType) {
-            const item = requestsData.find(d => d.id === id);
-            if (!item) return;
-            document.getElementById('verifyModalOrderId').value = id;
-            document.getElementById('verifyModalActionType').value = actionType;
-            document.getElementById('modalRealQty').value = actionType === 'Ter-supply' ? (item.realisasi || item.permintaan) : 0;
-            document.getElementById('verifyModal').classList.remove('hidden-page');
-        }
-        function closeVerifyModal() { document.getElementById('verifyModal').classList.add('hidden-page'); }
-
-        function openRegisterModal() { document.getElementById('registerModal').classList.remove('hidden-page'); }
-        function closeRegisterModal() { document.getElementById('registerModal').classList.add('hidden-page'); }
-
-        function previewDocument(url) {
-            if (url && url.startsWith('http')) {
-                window.open(url, '_blank');
-            } else {
-                showToast("Dokumen tidak tersedia atau belum diupload.", "error");
-            }
-        }
-
-        function navigateTo(pageId) {
-            document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden-page'));
-            const target = document.getElementById(pageId);
-            if(target) target.classList.remove('hidden-page');
-            if (window.innerWidth < 768) {
-                document.getElementById('mainSidebar').classList.add('-translate-x-full');
-                document.getElementById('mobileOverlay').classList.add('hidden-page');
-            }
-        }
-
-       function renderAllTables() {
-    const selectedMonth = document.getElementById('dashMonthFilter') ? document.getElementById('dashMonthFilter').value : 'ALL';
-    const selectedYear = document.getElementById('dashYearFilter') ? document.getElementById('dashYearFilter').value : '2026';
-
-    const filteredForDash = requestsData.filter(item => {
-        if (!item.tanggalMinta) return true;
-        const parts = item.tanggalMinta.split('-');
-        return parts[0] === selectedYear && (selectedMonth === 'ALL' || parts[1] === selectedMonth);
     });
 
-    const totalCount = filteredForDash.length;
-    const suppliedListDash = filteredForDash.filter(d => d.status === 'Ter-supply' || d.status === 'Departed');
-    const suppliedCount = suppliedListDash.length;
-    const cancelledCount = filteredForDash.filter(d => d.status === 'Batal Supply').length;
-    const totalRevenue = suppliedListDash.reduce((sum, item) => sum + (item.realisasi * item.tarif), 0);
-
-    if(document.getElementById('stat-total')) document.getElementById('stat-total').innerText = totalCount;
-    if(document.getElementById('stat-supplied')) document.getElementById('stat-supplied').innerText = suppliedCount;
-    if(document.getElementById('stat-cancelled')) document.getElementById('stat-cancelled').innerText = cancelledCount;
-    if(document.getElementById('stat-revenue')) document.getElementById('stat-revenue').innerText = formatRupiah(totalRevenue);
-
-    // Render Tabel Admin Order
-    const permBody = document.getElementById('table-permintaan-body');
-    if (permBody) {
-        permBody.innerHTML = '';
-        if (requestsData.length === 0) {
-            permBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Belum ada order masuk.</td></tr>`;
-        } else {
-            requestsData.forEach((item, index) => {
-                let actionHTML = '';
-                if (item.status === 'Pending') {
-                    actionHTML = `<div class="flex justify-center gap-2"><button onclick="openJettyModal(${item.id})" class="bg-sky-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">1. Set Jetty</button><button onclick="openVerifyModal(${item.id}, 'Batal Supply')" class="bg-rose-500 text-white w-7 h-7 rounded-full font-bold">✕</button></div>`;
-                } else if (item.status === 'Moored') {
-                    actionHTML = `<div class="flex justify-center gap-2"><button onclick="openVerifyModal(${item.id}, 'Ter-supply')" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">2. Input Realisasi</button><button onclick="resetVerification(${item.id})" class="bg-slate-200 text-slate-700 px-2 py-1.5 rounded text-xs font-bold">Reset</button></div>`;
-                } else if (item.status === 'Ter-supply') {
-                    actionHTML = `<div class="flex justify-center gap-2"><button onclick="setDeparted(${item.id})" class="bg-blue-800 text-white font-bold px-3 py-1.5 rounded-lg text-xs cursor-pointer">3. Sail</button><button onclick="resetVerification(${item.id})" class="bg-slate-200 text-slate-700 px-2 py-1.5 rounded text-xs font-bold">Reset</button></div>`;
-                } else {
-                    actionHTML = `<span class="font-bold text-xs">${item.status}</span>`;
-                }
-
-                permBody.innerHTML += `
-                    <tr>
-                        <td class="p-3.5">${index + 1}</td>
-                        <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                        <td class="p-3.5 font-bold">${item.kapal}</td>
-                        <td class="p-3.5">${item.trayek}</td>
-                        <td class="p-3.5">${item.permintaan} Tons</td>
-                        <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
-                        <td class="p-3.5 font-bold text-blue-900">${item.realisasi > 0 ? item.realisasi + ' Tons' : '-'}</td>
-                        <td class="p-3.5 whitespace-nowrap">${item.tanggalMinta || '-'}</td>
-                        <td class="p-3.5 text-center">${actionHTML}</td>
-                    </tr>`;
-            });
-        }
-    } // <--- Penutup untuk if (permBody) yang sebelumnya kurang
-
-    // Render Laporan Seluruh Kegiatan
-    const laporanBody = document.getElementById('table-laporan-body');
-    if (laporanBody) {
-        laporanBody.innerHTML = '';
-        const searchVal = document.getElementById('searchReportInput') ? document.getElementById('searchReportInput').value.toLowerCase() : '';
-        const filterDateVal = document.getElementById('filterDateInput') ? document.getElementById('filterDateInput').value : '';
-
-        const filteredLaporan = requestsData.filter(item => {
-            const matchSearch = !searchVal || item.kapal.toLowerCase().includes(searchVal) || item.orderCode.toLowerCase().includes(searchVal);
-            const matchDate = !filterDateVal || item.tanggalMinta === filterDateVal || item.tanggalTiba === filterDateVal;
-            return matchSearch && matchDate;
-        });
-
-        if (filteredLaporan.length === 0) {
-            laporanBody.innerHTML = `<tr><td colspan="10" class="p-4 text-center text-slate-400">Tidak ada data laporan yang sesuai.</td></tr>`;
-        } else {
-            filteredLaporan.forEach((item, index) => {
-                laporanBody.innerHTML += `
-                    <tr>
-                        <td class="p-3.5">${index + 1}</td>
-                        <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                        <td class="p-3.5 font-bold">${item.kapal}</td>
-                        <td class="p-3.5">${item.trayek}</td>
-                        <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
-                        <td class="p-3.5 font-bold text-blue-900">${item.realisasi > 0 ? item.realisasi + ' Tons' : '-'}</td>
-                        <td class="p-3.5 font-bold text-emerald-700">${item.realisasi > 0 ? formatRupiah(item.realisasi * item.tarif) : 'Rp 0'}</td>
-                        <td class="p-3.5 text-xs whitespace-nowrap">${item.tanggalTiba || '-'}</td>
-                        <td class="p-3.5 text-xs whitespace-nowrap">${item.tanggalMinta || '-'}</td>
-                        <td class="p-3.5 text-center flex justify-center gap-2">
-                            <button onclick="previewDocument('${item.fileBuktiBayar}')" class="bg-sky-500 text-white px-2 py-1 rounded text-xs">Bukti</button>
-                            <button onclick="previewDocument('${item.fileBA}')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs">BA</button>
-                        </td>
-                    </tr>`;
-            });
-        }
+    if (window.innerWidth < 768) {
+        $('mainSidebar').classList.add('-translate-x-full');
+        $('mobileOverlay').classList.add('hidden-page');
     }
-
-    // Render Rekapitulasi
-    const rekapBody = document.getElementById('table-rekapitulasi-body');
-    if (rekapBody) {
-        rekapBody.innerHTML = '';
-        const suppliedAll = requestsData.filter(i => i.status === 'Ter-supply' || i.status === 'Departed');
-        if (suppliedAll.length === 0) {
-            rekapBody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Belum ada data rekap.</td></tr>`;
-        } else {
-            suppliedAll.forEach((item, index) => {
-                rekapBody.innerHTML += `
-                    <tr>
-                        <td class="p-3.5">${index + 1}</td>
-                        <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                        <td class="p-3.5 font-bold">${item.kapal}</td>
-                        <td class="p-3.5">${item.trayek}</td>
-                        <td class="p-3.5 font-bold">${item.jetty}</td>
-                        <td class="p-3.5 font-bold text-blue-900">${item.realisasi} Tons</td>
-                        <td class="p-3.5 font-bold text-emerald-700">${formatRupiah(item.realisasi * item.tarif)}</td>
-                        <td class="p-3.5 text-xs">Tiba: ${item.tanggalTiba}</td>
-                        <td class="p-3.5 text-center flex justify-center gap-2">
-                            <button onclick="previewDocument('${item.fileBuktiBayar}')" class="bg-sky-500 text-white px-2 py-1 rounded text-xs">Bukti Bayar</button>
-                            <button onclick="previewDocument('${item.fileBA}')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs">BA</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-    }
-
-    // Render Customer History
-    const custBody = document.getElementById('table-customer-history-body');
-    if (custBody) {
-        custBody.innerHTML = '';
-        // Filter agar hanya order miliknya sendiri yang tampil (Jika dia Customer)
-        let userHistory = requestsData;
-        if (currentRole === 'Customer') {
-            // Asumsi properti 'pembuat_order' ditambahkan ke requestsData map saat loadSupabaseData
-            userHistory = requestsData.filter(item => item.pembuat_order === currentUser);
-        }
-
-        if (userHistory.length === 0) {
-            custBody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Belum ada riwayat pesanan.</td></tr>`;
-        } else {
-            userHistory.forEach((item, index) => {
-                custBody.innerHTML += `
-                    <tr>
-                        <td class="p-3.5">${index + 1}</td>
-                        <td class="p-3.5 font-mono text-xs text-blue-800 font-bold">${item.orderCode}</td>
-                        <td class="p-3.5 font-bold">${item.kapal}</td>
-                        <td class="p-3.5">${item.trayek}</td>
-                        <td class="p-3.5">${item.permintaan} Tons</td>
-                        <td class="p-3.5 font-bold text-sky-700">${item.jetty}</td>
-                        <td class="p-3.5">${item.tanggalMinta}</td>
-                        <td class="p-3.5 text-center"><span class="bg-sky-100 text-sky-800 px-3 py-1 rounded-full text-xs font-bold">${item.status}</span></td>
-                    </tr>`;
-            });
-        }
-    }
-        function toggleCharterMode(checkbox) {
-    const inputBukti = document.getElementById('custBuktiBayar');
-    const lblText = document.getElementById('lblBuktiBayarText');
-
-    if (checkbox.checked) {
-        inputBukti.required = false;
-        inputBukti.disabled = true;
-        inputBukti.value = '';
-        if(lblText) lblText.innerHTML = `Upload Bukti Bayar <span class="text-xs text-sky-600 font-bold">(Khusus Charter - Tidak Wajib Upload)</span>`;
-    } else {
-        inputBukti.required = true;
-        inputBukti.disabled = false;
-        if(lblText) lblText.innerHTML = `Upload Bukti Bayar * <span class="text-xs text-slate-400 font-normal">(Maks. 1 MB)</span>`;
-    }
-  }
 }
-        function validateFileSize(inputElement) {
-        if (inputElement.files && inputElement.files[0]) {
-            const file = inputElement.files[0];
-            if (file.size > 1 * 1024 * 1024) {
-                showToast(`Ukuran file "${file.name}" melebihi batas maksimal 1 MB!`, 'error');
-                inputElement.value = '';
-            } else {
-                showToast(`File "${file.name}" terverifikasi.`, 'success');
-            }
-        }
+
+async function handleRegisterSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const orig = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = 'Memproses... ⏳';
+    try {
+        const company = $('regCompany').value.trim();
+        const username = $('regUsername').value.trim().toLowerCase();
+        const password = $('regPassword').value.trim();
+        // Kolom tambahan
+        const pic = $('regPIC').value.trim();
+        const wa = $('regWa').value.trim();
+        const notes = $('regNotes').value.trim();
+        
+        const { data: ex } = await supabaseClient.from('users').select('id').eq('username', username);
+        if (ex && ex.length) { showToast('Username ini sudah terdaftar.', 'error'); return; }
+        
+        // Simpan semua data, pastikan kolom pic, wa, notes sudah Anda tambahkan di tabel users Supabase Anda nanti
+        const { error } = await supabaseClient.from('users').insert([{
+            name: company, 
+            username, 
+            password, 
+            role: 'Customer', 
+            status: 'Pending',
+            pic: pic, // pastikan kolom 'pic' ada di tabel users
+            wa: wa,   // pastikan kolom 'wa' ada di tabel users
+            notes: notes // pastikan kolom 'notes' ada di tabel users
+        }]);
+        if (error) throw error;
+        
+        showToast('Pendaftaran berhasil. Menunggu verifikasi Admin.');
+        addAuditLog('USER_REGISTER', `Pendaftaran baru: ${company} (${username})`);
+        closeRegisterModal();
+        ['regCompany','regUsername','regPassword','regPIC','regWa','regNotes'].forEach(i => $(i).value = '');
+        await loadSupabaseData();
+    } catch (err) {
+        showToast('Gagal mendaftar: Pastikan tabel users di database sudah memiliki kolom pic, wa, dan notes', 'error');
+        console.error(err);
+    } finally {
+        btn.disabled = false; btn.innerHTML = orig;
     }
-    </script>
+}
+
+async function approveUserWithRole(id, role) {
+    if (role === 'Admin' && !confirm('Beri akses penuh (Admin) kepada akun ini?')) return;
+    const { error } = await supabaseClient.from('users').update({status: 'Approved', role}).eq('id', id);
+    if (error) { showToast('Gagal menyetujui akun: ' + error.message, 'error'); return; }
+    showToast(`Akun disetujui sebagai ${role}.`);
+    addAuditLog('USER_APPROVE', `User ID ${id} disetujui sebagai ${role}`);
+    await loadSupabaseData();
+}
+
+async function rejectUser(id) {
+    const { error } = await supabaseClient.from('users').update({status: 'Rejected'}).eq('id', id);
+    if (error) { showToast('Gagal menolak: ' + error.message, 'error'); return; }
+    showToast('Pendaftaran ditolak.', 'error');
+    addAuditLog('USER_REJECT', `User ID ${id} ditolak`);
+    await loadSupabaseData();
+}
+
+async function deleteUser(id) {
+    const u = registeredUsers.find(x => x.id === id);
+    if (u && u.role === 'Admin' && registeredUsers.filter(x => x.role === 'Admin' && x.status === 'Approved').length <= 1) {
+        showToast('Admin terakhir tidak boleh dihapus.', 'error'); return;
+    }
+    if (u && u.name === currentUser) { showToast('Anda tidak bisa menghapus akun yang sedang dipakai.', 'error'); return; }
+    if (!confirm('Yakin ingin menghapus akun ini?')) return;
+    const { error } = await supabaseClient.from('users').delete().eq('id', id);
+    if (error) { showToast('Gagal menghapus: ' + error.message, 'error'); return; }
+    showToast('Akun dihapus.');
+    addAuditLog('USER_DELETE', `User ID ${id} dihapus`);
+    await loadSupabaseData();
+}
+
+async function resetUserPassword(id) {
+    const np = prompt('Masukkan password sementara yang baru:');
+    if (!np) return;
+    const { error } = await supabaseClient.from('users').update({password: np}).eq('id', id);
+    if (error) { showToast('Gagal reset: ' + error.message, 'error'); return; }
+    showToast('Password berhasil direset.');
+    addAuditLog('PASSWORD_RESET', `Password user ID ${id} direset`);
+}
+
+function renderUserApprovalTable() {
+    const pb = $('table-pending-users-body'), ab = $('table-approved-users-body'), badge = $('pendingUserBadge');
+    if (!pb || !ab) return;
+    const pending = registeredUsers.filter(u => u.status === 'Pending');
+    const others = registeredUsers.filter(u => u.status === 'Approved' || u.status === 'Rejected');
+    badge.classList.toggle('hidden-page', !pending.length);
+    badge.innerText = pending.length;
+    pb.innerHTML = pending.length ? pending.map((u, i) => `<tr>${td(i + 1)}${td(esc(u.name), 'font-bold')}${td(esc(u.username), 'font-mono text-xs')}${td(u.created_at ? esc(u.created_at.slice(0, 10)) : '-', 'text-xs')}
+<td class="p-3.5"><div class="flex justify-center flex-wrap gap-2">
+<button onclick="approveUserWithRole(${u.id}, 'Customer')" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs">Approve (Customer)</button>
+<button onclick="approveUserWithRole(${u.id}, 'Admin')" class="bg-slate-300 text-slate-700 font-bold px-3 py-1.5 rounded-xl text-xs">Approve (Admin)</button>
+<button onclick="rejectUser(${u.id})" class="bg-rose-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs">Tolak</button></div></td></tr>`).join('')
+        : `<tr><td colspan="5" class="p-4 text-center text-slate-400">Tidak ada pendaftaran baru.</td></tr>`;
+    ab.innerHTML = others.map((u, i) => `<tr>${td(i + 1)}${td(esc(u.name), 'font-bold')}${td(esc(u.username), 'font-mono text-xs')}
+${td(u.role === 'Admin' ? '<span class="bg-blue-900 text-white px-2 py-0.5 rounded text-xs font-bold">Admin</span>' : '<span class="bg-slate-200 text-slate-800 px-2 py-0.5 rounded text-xs font-bold">Customer</span>')}
+${td(u.status === 'Approved' ? '<span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-xs font-bold">Aktif</span>' : '<span class="bg-rose-100 text-rose-800 px-2.5 py-0.5 rounded-full text-xs font-bold">Ditolak</span>')}
+<td class="p-3.5"><div class="flex justify-center gap-2"><button onclick="resetUserPassword(${u.id})" class="bg-amber-500 text-white px-2.5 py-1 rounded text-xs font-bold">🔑 Reset</button>
+<button onclick="deleteUser(${u.id})" class="bg-red-600 text-white px-2.5 py-1 rounded text-xs font-bold">🗑️ Hapus</button></div></td></tr>`).join('');
+}
+
+// --- FUNGSI KOMPRESI GAMBAR OTOMATIS ---
+async function compressImage(file) {
+    return new Promise((resolve) => {
+        // Jika bukan gambar (misal PDF), kembalikan aslinya
+        if (!file.type.startsWith('image/')) {
+            resolve(file);
+            return;
+        }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // Batasi dimensi maksimal agar ukuran file mengecil drastis
+                const MAX_WIDTH = 1200;
+                const MAX_HEIGHT = 1200;
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Kompres ke format JPEG dengan kualitas 0.7 (70%)
+                canvas.toBlob((blob) => {
+                    const compressedFile = new File([blob], file.name, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now(),
+                    });
+                    resolve(compressedFile);
+                }, 'image/jpeg', 0.7);
+            };
+        };
+    });
+}
+
+// --- MODIFIKASI SUBMIT CUSTOMER DENGAN KOMPRESI ---
+async function handleCustomerSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const orig = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = 'Memproses &amp; Kompresi File... ⏳'; btn.classList.add('opacity-70', 'cursor-not-allowed');
+    
+    const nama = $('custNamaKapal').value.trim();
+    const trayek = $('custTrayek').value;
+    const qty = parseFloat($('custQty').value) || 0;
+    const tglTiba = $('custTanggalTiba').value, tglMinta = $('custTanggalMinta').value;
+    const isCharter = $('custIsCharter').checked;
+    
+    let fBukti = $('custBuktiBayar').files[0];
+    let fBA = $('custBA').files[0];
+    
+    showToast('Mengompresi dan mengunggah dokumen...', 'info');
+    let buktiUrl = isCharter ? '(Kapal Charter)' : '', baUrl = '';
+    
+    try {
+        // Kompres otomatis jika file berupa gambar
+        if (fBukti && !isCharter) fBukti = await compressImage(fBukti);
+        if (fBA) fBA = await compressImage(fBA);
+
+        const up = async (file, prefix) => {
+            const ext = file.name.split('.').pop().toLowerCase();
+            const path = `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+            const { error } = await supabaseClient.storage.from('dokumen-order').upload(path, file);
+            if (error) throw error;
+            return supabaseClient.storage.from('dokumen-order').getPublicUrl(path).data.publicUrl;
+        };
+
+        if (!isCharter && fBukti) buktiUrl = await up(fBukti, 'bukti');
+        if (fBA) baUrl = await up(fBA, 'ba');
+
+        const maxNo = Math.max(0, ...requestsData.map(o => parseInt((o.orderCode || '').slice(3)) || 0));
+        const dp = tglMinta.split('-');
+        const code = `FW-${String(maxNo + 1).padStart(3, '0')}/PTK/BAUBAU/${dp[2]}${dp[1]}${dp[0]}`;
+        
+        const { error: ie } = await supabaseClient.from('orders').insert([{
+            order_code: code, kapal: nama.toUpperCase(), trayek, tarif: tarifOf(trayek), permintaan: qty, realisasi: 0, jetty: '-',
+            tanggal_tiba: tglTiba, tanggal_minta: tglMinta, status: 'Pending', url_bukti_bayar: buktiUrl, url_ba: baUrl,
+            audit_log: 'Order dibuat customer', pembuat_order: currentUser, is_charter: isCharter
+        }]);
+        
+        if (ie) throw ie;
+        showToast(`Order berhasil. Kode: ${code}`);
+        addAuditLog('CREATE_ORDER', `Order ${code} untuk ${nama.toUpperCase()}`);
+        $('custNamaKapal').value = ''; $('custQty').value = ''; $('custBuktiBayar').value = ''; $('custBA').value = '';
+        calculateCost();
+        await loadSupabaseData();
+        navigateTo('page-customer-history');
+    } catch (err) {
+        showToast('Terjadi kesalahan: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false; btn.innerHTML = orig; btn.classList.remove('opacity-70', 'cursor-not-allowed');
+    }
+}
+
+function toggleCharterMode(cb) {
+    const inp = $('custBuktiBayar'), lbl = $('lblBuktiBayarText');
+    if (cb.checked) {
+        inp.required = false; inp.disabled = true; inp.value = '';
+        lbl.innerHTML = 'Upload Bukti Bayar <span class="text-xs text-sky-600 font-bold">(Kapal charter: tidak wajib)</span>';
+    } else {
+        inp.required = true; inp.disabled = false;
+        lbl.innerHTML = 'Upload Bukti Bayar * <span class="text-xs text-slate-400 font-normal">(Maks. 1 MB)</span>';
+    }
+}
+
+function validateFileSize(inp) {
+    const f = inp.files && inp.files[0];
+    if (!f) return;
+    if (f.size > 1024 * 1024) { showToast(`Ukuran file "${f.name}" melebihi 1 MB.`, 'error'); inp.value = ''; }
+    else showToast(`File "${f.name}" terverifikasi.`);
+}
+
+function actionButtons(o) {
+    const b = (cls, label, fn) => `<button onclick="${fn}" class="${cls} text-white font-bold px-3 py-1.5 rounded-lg text-xs">${label}</button>`;
+    const reset = `<button onclick="resetVerification(${o.id})" class="bg-slate-200 text-slate-700 px-2 py-1.5 rounded text-xs font-bold">Reset</button>`;
+    const cancel = b('bg-rose-500', '✕', `openVerifyModal(${o.id}, 'Batal Supply')`);
+    
+    if (o.status === 'Pending') {
+        let charterBtn = o.isCharter ? `<button onclick="rejectCharter(${o.id})" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs shadow">Tolak Charter</button>` : '';
+        return `<div class="flex justify-center gap-2 flex-wrap">${charterBtn}${b('bg-sky-600', '1. Verifikasi Jetty', `openJettyModal(${o.id})`)}${cancel}</div>`;
+    }
+    if (o.status === 'Menunggu Bukti Bayar') return `<span class="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">Menunggu Bukti Bayar Agen</span>`;
+    if (o.status === 'Sandar') return `<div class="flex justify-center gap-2">${b('bg-emerald-600', '2. Input Realisasi', `openVerifyModal(${o.id}, 'Ter-supply')`)}${cancel}${reset}</div>`;
+    if (o.status === 'Ter-supply') return `<div class="flex justify-center gap-2">${b('bg-blue-800', '3. Upload Dok. Kegiatan', `openActivityDocModal(${o.id})`)}${reset}</div>`;
+    return '<span class="text-xs text-slate-400">-</span>';
+}
+
+function openJettyModal(id) { $('jettyModalOrderId').value = id; $('jettyModal').classList.remove('hidden-page'); }
+function closeJettyModal() { $('jettyModal').classList.add('hidden-page'); }
+
+async function submitJettyModal() {
+    const id = parseInt($('jettyModalOrderId').value), jetty = $('modalJettyChoice').value;
+    const o = requestsData.find(d => d.id === id);
+    if (!o) return closeJettyModal();
+    const { error } = await supabaseClient.from('orders').update({jetty, status: 'Sandar', audit_log: `Sandar di ${jetty}`}).eq('id', id);
+    if (error) { showToast('Gagal menyimpan: ' + error.message, 'error'); return; }
+    showToast(`${o.kapal} sandar di ${jetty}`);
+    addAuditLog('SET_JETTY', `${o.kapal} -> ${jetty}`);
+    closeJettyModal();
+    await loadSupabaseData();
+}
+
+function openVerifyModal(id, actionType) {
+    const o = requestsData.find(d => d.id === id);
+    if (!o) return;
+    const cancel = actionType === 'Batal Supply';
+    $('verifyModalOrderId').value = id;
+    $('verifyModalActionType').value = actionType;
+    $('verifyModalTitle').innerText = cancel ? 'Batalkan Order' : 'Tahap 2: Input Realisasi Supply';
+    $('verifyRealBox').classList.toggle('hidden-page', cancel);
+    $('modalNoteLabel').innerText = cancel ? 'Alasan Pembatalan *' : 'Catatan (opsional)';
+    $('modalRealQty').value = '';
+    $('modalSupplyDate').value = todayLocal();
+    $('modalNote').value = '';
+    $('modalDiffInfo').innerText = `Order: ${o.permintaan} ton`;
+    $('verifyModal').classList.remove('hidden-page');
+}
+function closeVerifyModal() { $('verifyModal').classList.add('hidden-page'); }
+
+function updateDiffInfo() {
+    const o = requestsData.find(d => d.id === parseInt($('verifyModalOrderId').value));
+    if (!o) return;
+    const real = parseFloat($('modalRealQty').value) || 0;
+    if (real <= 0) { $('modalDiffInfo').innerText = `Order: ${o.permintaan} ton`; return; }
+    const dTon = Math.round((real - o.permintaan) * 100) / 100, dBiaya = dTon * o.tarif;
+    $('modalDiffInfo').innerText = `Order ${o.permintaan} ton. Selisih ${dTon > 0 ? '+' : ''}${dTon} ton (${dBiaya >= 0 ? '+' : '-'}${formatRupiah(Math.abs(dBiaya))}).`;
+}
+
+async function submitVerificationModal() {
+    const id = parseInt($('verifyModalOrderId').value), action = $('verifyModalActionType').value;
+    const real = parseFloat($('modalRealQty').value) || 0, sd = $('modalSupplyDate').value, note = $('modalNote').value.trim();
+    const o = requestsData.find(d => d.id === id);
+    if (!o) return;
+    let payload;
+    if (action === 'Batal Supply') {
+        if (!note) { showToast('Isi alasan pembatalan.', 'error'); return; }
+        payload = {status: 'Batal Supply', realisasi: 0, tanggal_supply: null, alasan_batal: note, audit_log: `Dibatalkan: ${note}`};
+    } else {
+        if (real <= 0 || !sd) { showToast('Isi realisasi (lebih dari 0 ton) dan tanggal supply.', 'error'); return; }
+        if (Math.abs(real - o.permintaan) / o.permintaan > 0.5 && !confirm(`Realisasi ${real} ton berbeda jauh dari order ${o.permintaan} ton. Lanjutkan?`)) return;
+        payload = {status: 'Ter-supply', realisasi: real, tanggal_supply: sd, catatan_realisasi: note || null, audit_log: `Supply ${real} ton`};
+    }
+    const { error } = await supabaseClient.from('orders').update(payload).eq('id', id);
+    if (error) { showToast('Gagal menyimpan: ' + error.message, 'error'); return; }
+    showToast(`Status ${o.kapal}: ${payload.status}`);
+    addAuditLog('VERIFY', `${o.kapal} -> ${payload.status}`);
+    closeVerifyModal();
+    await loadSupabaseData();
+}
+
+function openActivityDocModal(id) {
+    $('activityDocOrderId').value = id;
+    $('activityDocInput').value = '';
+    $('activityDocModal').classList.remove('hidden-page');
+}
+
+async function submitActivityDoc() {
+    const id = parseInt($('activityDocOrderId').value), file = $('activityDocInput').files[0], btn = $('activityDocBtn');
+    if (!file) { showToast('Pilih file dulu.', 'error'); return; }
+    if (file.size > 2 * 1024 * 1024) { showToast('Ukuran file maksimal 2 MB.', 'error'); return; }
+    btn.disabled = true;
+    try {
+        const ext = file.name.split('.').pop().toLowerCase();
+        const path = `kegiatan/${id}_${Date.now()}.${ext}`;
+        const { error: ue } = await supabaseClient.storage.from('dokumen-order').upload(path, file);
+        if (ue) throw ue;
+        const url = supabaseClient.storage.from('dokumen-order').getPublicUrl(path).data.publicUrl;
+        const { error } = await supabaseClient.from('orders').update({url_dokumen_kegiatan: url, status: 'Selesai', audit_log: 'Dokumen kegiatan diupload'}).eq('id', id);
+        if (error) throw error;
+        showToast('Order selesai dan masuk rekap.');
+        addAuditLog('UPLOAD_KEGIATAN', `Order ID ${id} selesai`);
+        $('activityDocModal').classList.add('hidden-page');
+        await loadSupabaseData();
+    } catch (err) {
+        showToast('Gagal: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function resetVerification(id) {
+    if (!confirm('Reset order ini ke status Pending?')) return;
+    const { error } = await supabaseClient.from('orders').update({status: 'Pending', jetty: '-', realisasi: 0, tanggal_supply: null, url_dokumen_kegiatan: '', alasan_batal: null, audit_log: 'Direset admin'}).eq('id', id);
+    if (error) { showToast('Gagal reset: ' + error.message, 'error'); return; }
+    showToast('Status berhasil direset.');
+    addAuditLog('RESET_ORDER', `Order ID ${id} direset`);
+    await loadSupabaseData();
+}
+
+function openRegisterModal() { $('registerModal').classList.remove('hidden-page'); }
+function closeRegisterModal() { $('registerModal').classList.add('hidden-page'); }
+
+const statusBadge = s => `<span class="bg-sky-100 text-sky-800 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap">${esc(s)}</span>`;
+const charterBadge = o => o.isCharter ? ' <span class="ml-1 bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-[10px] font-bold">Charter</span>' : '';
+
+// --- FUNGSI DOWNLOAD GABUNGAN PDF ---
+const docBtns = o => {
+    if (!o.fileKegiatan && !o.fileBA && !o.fileBuktiBayar) return '<span class="text-xs text-slate-400">-</span>';
+    return `<button onclick="downloadCombinedPDF(${o.id})" class="bg-blue-800 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md flex items-center justify-center gap-1 w-full"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> Unduh File</button>`;
+};
+
+async function downloadCombinedPDF(id) {
+    const o = requestsData.find(d => d.id === id);
+    if (!o) return;
+    showToast("Menyiapkan dokumen, mohon tunggu beberapa saat...", "info");
+    
+    try {
+        const { PDFDocument } = PDFLib;
+        const pdfDoc = await PDFDocument.create();
+
+        const addFileToPdf = async (url) => {
+            if (!url || url === '(Kapal Charter)' || url === '-') return;
+            try {
+                const res = await fetch(url);
+                const buffer = await res.arrayBuffer();
+                const ext = url.split('.').pop().toLowerCase().split('?')[0];
+
+                if (ext === 'pdf') {
+                    const loadedPdf = await PDFDocument.load(buffer);
+                    const pages = await pdfDoc.copyPages(loadedPdf, loadedPdf.getPageIndices());
+                    pages.forEach(page => pdfDoc.addPage(page));
+                } else if (['jpg', 'jpeg', 'png'].includes(ext)) {
+                    let image;
+                    if (ext === 'png') image = await pdfDoc.embedPng(buffer);
+                    else image = await pdfDoc.embedJpg(buffer);
+
+                    const page = pdfDoc.addPage();
+                    const { width, height } = page.getSize();
+                    const imgDims = image.scaleToFit(width - 40, height - 40);
+                    page.drawImage(image, {
+                        x: page.getWidth() / 2 - imgDims.width / 2,
+                        y: page.getHeight() / 2 - imgDims.height / 2,
+                        width: imgDims.width,
+                        height: imgDims.height
+                    });
+                }
+            } catch(e) {
+                console.error("Error membaca file:", e);
+            }
+        };
+
+        await addFileToPdf(o.fileKegiatan);
+        await addFileToPdf(o.fileBA);
+        if (!o.isCharter) await addFileToPdf(o.fileBuktiBayar);
+
+        if (pdfDoc.getPageCount() === 0) {
+            showToast("Tidak ada dokumen yang valid untuk diunduh.", "error");
+            return;
+        }
+
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: "application/pdf" });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        const safeName = (o.kapal + "_" + o.orderCode).replace(/[^a-zA-Z0-9]/g, "_");
+        link.download = `Dokumen_${safeName}.pdf`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        
+        showToast("Dokumen berhasil diunduh!", "success");
+    } catch (err) {
+        showToast("Gagal menggabungkan PDF. Pastikan format file sesuai.", "error");
+        console.error(err);
+    }
+}
+// -------------------------------------
+
+function fillBody(id, cols, list, rowFn) {
+    const b = $(id);
+    if (b) b.innerHTML = list.length ? list.map(rowFn).join('') : `<tr><td colspan="${cols}" class="p-4 text-center text-slate-400">Belum ada data.</td></tr>`;
+}
+
+function resetDashFilter() { 
+    $('dashStartDate').value = ''; 
+    $('dashEndDate').value = ''; 
+    renderAllTables(); 
+}
+
+function resetReportFilter() { 
+    if($('searchReportInput')) $('searchReportInput').value = ''; 
+    if($('filterStartDate')) $('filterStartDate').value = ''; 
+    if($('filterEndDate')) $('filterEndDate').value = ''; 
+    if($('reportLimit')) $('reportLimit').value = '10'; 
+    renderAllTables(); 
+}
+
+function renderAllTables() {
+    const sDate = $('dashStartDate') ? $('dashStartDate').value : '';
+    const eDate = $('dashEndDate') ? $('dashEndDate').value : '';
+    const dash = requestsData.filter(o => {
+        const d = o.tanggalSupply || o.tanggalMinta; 
+        if (!d) return true;
+        if (sDate && d < sDate) return false;
+        if (eDate && d > eDate) return false;
+        return true;
+    });
+
+    const sup = dash.filter(isSupplied);
+    const pending = dash.filter(o => o.status === 'Pending' || o.status === 'Sandar');
+    const cancelled = dash.filter(o => o.status === 'Batal Supply');
+    
+    const rev = list => list.reduce((s, o) => s + (o.realisasi * o.tarif), 0);
+    const totalTon = list => list.reduce((s, o) => s + (o.realisasi || 0), 0);
+
+    if($('stat-total')) $('stat-total').innerText = dash.length;
+    if($('stat-processing')) $('stat-processing').innerText = `Sedang diproses: ${pending.length}`;
+    if($('stat-supplied')) $('stat-supplied').innerText = sup.length;
+    if($('stat-ton')) $('stat-ton').innerHTML = `${totalTon(sup)} <span class="text-sm font-bold">Ton</span>`;
+    if($('stat-cancelled')) $('stat-cancelled').innerText = cancelled.length;
+    
+    if($('stat-revenue')) $('stat-revenue').innerText = formatRupiah(rev(sup));
+    if($('stat-rev-dom')) $('stat-rev-dom').innerText = 'Dom: ' + formatRupiah(rev(sup.filter(o => o.trayek === 'Domestik')));
+    if($('stat-rev-imp')) $('stat-rev-imp').innerText = 'Imp: ' + formatRupiah(rev(sup.filter(o => o.trayek === 'Import')));
+
+    const jettyBoard = $('jetty-board');
+    if(jettyBoard) {
+        jettyBoard.innerHTML = [1, 2, 3].map(n => {
+            const ships = requestsData.filter(o => o.status === 'Sandar' && (o.jetty || '').startsWith('Jetty ' + n));
+            const hasShip = ships.length > 0;
+            let shipHtml = `<div class="h-28 flex items-center justify-center border-2 border-dashed border-sky-500/30 rounded-2xl bg-gradient-to-b from-blue-950/40 to-slate-900/60 text-sky-300/60 text-xs font-bold mt-3 backdrop-blur-sm">Dermaga Kosong</div>`;
+            
+            if (hasShip) {
+                shipHtml = ships.map(s => `
+                <div class="animate-float mt-3 bg-gradient-to-br from-blue-600/40 via-sky-600/30 to-blue-950/80 backdrop-blur-xl border border-white/30 rounded-2xl p-4 shadow-2xl relative overflow-hidden">
+                    <!-- Efek Glossy / Refleksi Cahaya Kaca -->
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent pointer-events-none"></div>
+                    
+                    <div class="relative z-10 flex items-center justify-between gap-3">
+                        <div>
+                            <span class="bg-emerald-500 text-white px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-md">SANDAR</span>
+                            <p class="font-black text-white text-sm md:text-base mt-1.5 truncate" title="${esc(s.kapal)}">${esc(s.kapal)}</p>
+                            <p class="text-sky-200 text-[10px] font-bold uppercase mt-0.5">${s.permintaan} Ton • ${esc(s.trayek)}</p>
+                        </div>
+                        <div class="w-20 h-14 flex-shrink-0 bg-white/15 backdrop-blur-md rounded-xl p-1.5 border border-white/30 shadow-inner flex items-center justify-center transform hover:scale-105 transition-transform">
+                            <img src="LOGO KAPAL.png" alt="Kapal" class="w-full h-full object-contain blend-multiply brightness-200" onerror="this.onerror=null;this.src='LOGO KAPAL.jpg';">
+                        </div>
+                    </div>
+                </div>`).join('');
+            }
+            return `<div class="bg-gradient-to-b from-slate-900/90 to-blue-950/90 border border-sky-500/30 rounded-3xl p-5 flex flex-col backdrop-blur-md shadow-xl relative overflow-hidden">
+                <!-- Efek Gelombang Air Tipis di Background Card -->
+                <div class="absolute bottom-0 left-0 right-0 opacity-10 pointer-events-none">
+                    <svg viewBox="0 0 500 50" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 25C150 50 350 0 500 25V50H0V25Z" fill="#38bdf8"/></svg>
+                </div>
+                <div class="flex justify-between items-center relative z-10">
+                    <span class="font-black text-sm text-sky-300 uppercase tracking-widest">Jetty ${n}</span>
+                    <span class="${hasShip ? 'radar-pulse bg-emerald-400' : 'bg-slate-600'} w-3 h-3 rounded-full inline-block shadow-md"></span>
+                </div>
+                ${shipHtml}</div>`;
+        }).join('');
+    }
+
+    fillBody('table-permintaan-body', 10, requestsData, (o, i) => `<tr>${td(i + 1)}${td(esc(o.orderCode), 'font-mono text-xs text-blue-800 font-bold')}${td(esc(o.kapal) + charterBadge(o), 'font-bold')}${td(esc(o.trayek))}${td(o.permintaan + ' Tons')}${td(esc(o.jetty), 'font-bold text-sky-700')}${td(o.realisasi > 0 ? o.realisasi + ' Tons' : '-', 'font-bold text-blue-900')}${td(statusBadge(o.status))}${td(esc(o.tanggalMinta || '-'), 'whitespace-nowrap')}${td(actionButtons(o), 'text-center')}</tr>`);
+    
+    // RENDER REKAP
+    const rekap = requestsData.filter(isSupplied);
+    fillBody('table-rekapitulasi-body', 12, rekap, (o, i) => {
+        const sTon = o.realisasi - o.permintaan;
+        const sBiaya = sTon * o.tarif;
+        const colBiaya = sBiaya > 0 ? 'text-rose-600' : (sBiaya < 0 ? 'text-emerald-600' : 'text-slate-500');
+        return `<tr>${td(i + 1)}${td(esc(o.orderCode), 'font-mono text-xs text-blue-800 font-bold')}${td(esc(o.kapal) + charterBadge(o), 'font-bold')}${td(esc(o.trayek))}${td(esc(o.jetty), 'font-bold')}${td(o.permintaan + ' Tons')}${td(o.realisasi + ' Tons', 'font-bold text-blue-900')}${td((sTon>0?'+':'')+sTon + ' Tons', 'font-bold '+colBiaya)}${td((sBiaya>0?'+':'')+formatRupiah(sBiaya), 'font-bold '+colBiaya)}${td(formatRupiah(o.realisasi * o.tarif), 'font-bold text-emerald-700')}${td(esc(o.tanggalSupply || '-'), 'text-xs whitespace-nowrap')}${td(docBtns(o), 'text-center')}</tr>`;
+    });
+    
+    if (rekap.length > 0) {
+        const sOrd = rekap.reduce((a,b)=>a+b.permintaan,0), sReal = rekap.reduce((a,b)=>a+b.realisasi,0), sTon = sReal-sOrd, sBiaya = rekap.reduce((a,b)=>a+((b.realisasi-b.permintaan)*b.tarif),0), sTot = rekap.reduce((a,b)=>a+(b.realisasi*b.tarif),0);
+        $('table-rekapitulasi-body').innerHTML += `<tr class="bg-blue-50 border-t-2 border-blue-200 font-black text-blue-900"><td colspan="5" class="p-3.5 text-right uppercase text-xs">Total Rekap:</td><td class="p-3.5">${sOrd} Tons</td><td class="p-3.5">${sReal} Tons</td><td class="p-3.5">${sTon>0?'+':''}${sTon} Tons</td><td class="p-3.5">${sBiaya>0?'+':''}${formatRupiah(sBiaya)}</td><td class="p-3.5 text-emerald-700">${formatRupiah(sTot)}</td><td colspan="2"></td></tr>`;
+    }
+
+    // BADGE ORDER PENDING
+    const unverifiedCount = requestsData.filter(o => o.status === 'Pending').length;
+    const orderBadge = $('pendingOrderBadge');
+    if (orderBadge) {
+        orderBadge.classList.toggle('hidden-page', unverifiedCount === 0);
+        orderBadge.innerText = unverifiedCount;
+    }
+
+    // RENDER LAPORAN
+    const q = $('searchReportInput') ? $('searchReportInput').value.toLowerCase() : '';
+    const fStart = $('filterStartDate') ? $('filterStartDate').value : '';
+    const fEnd = $('filterEndDate') ? $('filterEndDate').value : '';
+    const limitVal = $('reportLimit') ? $('reportLimit').value : '10';
+
+    let lap = requestsData.filter(o => {
+        if (q && !o.kapal.toLowerCase().includes(q) && !(o.orderCode || '').toLowerCase().includes(q)) return false;
+        const d = o.tanggalSupply || o.tanggalMinta;
+        if (fStart && d < fStart) return false;
+        if (fEnd && d > fEnd) return false;
+        return true;
+    });
+
+    if (limitVal !== 'ALL') { lap = lap.slice(0, parseInt(limitVal)); }
+
+    fillBody('table-laporan-body', 15, lap, (o, i) => {
+        const sTon = o.realisasi > 0 ? o.realisasi - o.permintaan : 0;
+        const sBiaya = sTon * o.tarif;
+        const colBiaya = sBiaya > 0 ? 'text-rose-600' : (sBiaya < 0 ? 'text-emerald-600' : 'text-slate-500');
+        // Urutan: Tgl Tiba -> Tgl Order -> Tgl Supply
+        return `<tr>${td(i + 1)}${td(esc(o.orderCode), 'font-mono text-xs text-blue-800 font-bold')}${td(esc(o.kapal) + charterBadge(o), 'font-bold')}${td(esc(o.trayek))}${td(esc(o.jetty), 'font-bold text-sky-700')}${td(statusBadge(o.status))}${td(o.permintaan + ' Tons')}${td(o.realisasi > 0 ? o.realisasi + ' Tons' : '-', 'font-bold text-blue-900')}${td(o.realisasi > 0 ? (sTon>0?'+':'')+sTon+' Tons' : '-', 'font-bold '+colBiaya)}${td(o.realisasi > 0 ? (sBiaya>0?'+':'')+formatRupiah(sBiaya) : '-', 'font-bold '+colBiaya)}${td(o.realisasi > 0 ? formatRupiah(o.realisasi * o.tarif) : 'Rp 0', 'font-bold text-emerald-700')}${td(esc(o.tanggalTiba || '-'), 'text-xs whitespace-nowrap')}${td(esc(o.tanggalMinta || '-'), 'text-xs whitespace-nowrap')}${td(esc(o.tanggalSupply || '-'), 'text-xs whitespace-nowrap')}${td(docBtns(o), 'text-center')}</tr>`;
+    });
+
+    if (lap.filter(o => o.realisasi > 0).length > 0) {
+        const lapSup = lap.filter(o => o.realisasi > 0);
+        const lOrd = lapSup.reduce((a,b)=>a+b.permintaan,0), lReal = lapSup.reduce((a,b)=>a+b.realisasi,0), lTon = lReal-lOrd, lBiaya = lapSup.reduce((a,b)=>a+((b.realisasi-b.permintaan)*b.tarif),0), lTot = lapSup.reduce((a,b)=>a+(b.realisasi*b.tarif),0);
+        $('table-laporan-body').innerHTML += `<tr class="bg-blue-50 border-t-2 border-blue-200 font-black text-blue-900"><td colspan="6" class="p-3.5 text-right uppercase text-xs">Total Filter:</td><td class="p-3.5">${lOrd} Tons</td><td class="p-3.5">${lReal} Tons</td><td class="p-3.5">${lTon>0?'+':''}${lTon} Tons</td><td class="p-3.5">${lBiaya>0?'+':''}${formatRupiah(lBiaya)}</td><td class="p-3.5 text-emerald-700">${formatRupiah(lTot)}</td><td colspan="4"></td></tr>`;
+    }
+
+   const mine = currentRole === 'Customer' ? requestsData.filter(o => o.pembuat_order === currentUser) : requestsData;
+    fillBody('table-customer-history-body', 9, mine, (o, i) => {
+        let statusCol = statusBadge(o.status);
+        if (o.status === 'Menunggu Bukti Bayar') {
+            statusCol = `<button onclick="openCustomerUploadModal(${o.id})" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow animate-pulse">Upload Bukti Bayar ⚠️</button>`;
+        }
+        return `<tr>${td(i + 1)}${td(esc(o.orderCode), 'font-mono text-xs text-blue-800 font-bold')}${td(esc(o.kapal), 'font-bold')}${td(esc(o.trayek))}${td(o.permintaan + ' Tons')}${td(o.realisasi > 0 ? o.realisasi + ' Tons' : '-', 'font-bold text-blue-900')}${td(esc(o.jetty), 'font-bold text-sky-700')}${td(esc(o.tanggalMinta || '-'))}${td(statusCol, 'text-center')}</tr>`;
+    });
+} // <--- Pastikan hanya ada satu penutup ini di akhir fungsi renderAllTables()
+
+function contactAdmin() { window.open(waLink('Halo Admin Fresh Water Baubau, saya butuh bantuan.'), '_blank', 'noopener'); }
+function forgotPasswordNotice() {
+    const u = $('usernameInput').value.trim();
+    window.open(waLink('Halo Admin Fresh Water Baubau, saya lupa password.' + (u ? ' Username: ' + u : '')), '_blank', 'noopener');
+}
+function copyAccountNo() { navigator.clipboard.writeText('184127595').then(() => showToast('Nomor rekening disalin.'), () => showToast('Gagal menyalin.', 'error')); }
+function changeLanguage(lang) { showToast(lang === 'en' ? 'Versi bahasa Inggris belum tersedia.' : 'Bahasa Indonesia aktif.', 'info'); }
+function exportToExcel() {
+    const q = v => { let s = String(v ?? ''); if (/^[=+\-@]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
+    const head = ['Kode Order','Kapal','Trayek','Jetty','Status','Order (ton)','Realisasi (ton)','Selisih Ton','Selisih Biaya','Total Biaya','Tgl Tiba','Tgl Order','Tgl Supply'];
+    const rows = requestsData.map(o => {
+        const sTon = o.realisasi > 0 ? o.realisasi - o.permintaan : 0;
+        const sBiaya = sTon * o.tarif;
+        return [o.orderCode, o.kapal, o.trayek, o.jetty, o.status, o.permintaan, o.realisasi, sTon, sBiaya, o.realisasi * o.tarif, o.tanggalTiba, o.tanggalMinta, o.tanggalSupply];
+    });
+    const csv = '\uFEFF' + [head, ...rows].map(r => r.map(q).join(',')).join('\r\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'}));
+    a.download = 'laporan-fresh-water.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+   
+async function rejectCharter(id) {
+    const reason = prompt('Masukkan alasan penolakan klaim kapal charter:');
+    if (!reason) return;
+    const { error } = await supabaseClient.from('orders').update({
+        is_charter: false,
+        status: 'Menunggu Bukti Bayar',
+        url_bukti_bayar: '',
+        audit_log: `Klaim charter ditolak: ${reason}`
+    }).eq('id', id);
+    if (error) { showToast('Gagal menolak klaim charter: ' + error.message, 'error'); return; }
+    showToast('Klaim charter ditolak. Status order diubah menjadi Menunggu Bukti Bayar.');
+    addAuditLog('REJECT_CHARTER', `Order ID ${id} charter ditolak: ${reason}`);
+    await loadSupabaseData();
+}
+
+function openCustomerUploadModal(id) {
+    $('customerUploadOrderId').value = id;
+    $('customerUploadInput').value = '';
+    $('customerUploadModal').classList.remove('hidden-page');
+}
+
+async function submitCustomerUpload() {
+    const id = parseInt($('customerUploadOrderId').value);
+    let file = $('customerUploadInput').files[0];
+    if (!file) { showToast('Pilih file bukti bayar terlebih dahulu.', 'error'); return; }
+    showToast('Mengompresi dan mengunggah bukti bayar...', 'info');
+    try {
+        if (file.size > 1024 * 1024) file = await compressImage(file);
+        const ext = file.name.split('.').pop().toLowerCase();
+        const path = `bukti_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: ue } = await supabaseClient.storage.from('dokumen-order').upload(path, file);
+        if (ue) throw ue;
+        const url = supabaseClient.storage.from('dokumen-order').getPublicUrl(path).data.publicUrl;
+        
+        const { error } = await supabaseClient.from('orders').update({
+            url_bukti_bayar: url,
+            status: 'Pending',
+            audit_log: 'Bukti bayar diupload ulang oleh customer'
+        }).eq('id', id);
+        if (error) throw error;
+        
+        showToast('Bukti bayar berhasil diunggah. Order kembali diproses Admin.');
+        addAuditLog('UPLOAD_BUKTI_ULANG', `Order ID ${id} upload ulang bukti bayar`);
+        $('customerUploadModal').classList.add('hidden-page');
+        await loadSupabaseData();
+    } catch (err) {
+        showToast('Gagal mengunggah: ' + err.message, 'error');
+    }
+}    
+}
+</script>
 </body>
 </html>
